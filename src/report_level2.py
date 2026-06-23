@@ -6,8 +6,13 @@ Reads outputs/{supply_observed,demand_forecast,scenario_participation}.csv and
 writes outputs/level2_demand_report.html.
 """
 from __future__ import annotations
+import sys
+import json
 from pathlib import Path
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from map_section import build_map_section  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "outputs"
@@ -102,6 +107,34 @@ def row_html(s):
 charts_html = "".join(chart_svg(series[c]) for c in countries)
 rows_html = "".join(row_html(series[c]) for c in countries)
 
+# ---------- interactive choropleth section ----------
+# Reuse the supply-side metrics (outputs/map_data.json) and prepend a Level-2
+# demand metric (2035 career person-years, by sex) so the map opens on demand.
+md = json.loads((OUT / "map_data.json").read_text(encoding="utf-8"))
+dem = {"label": "Potential labour demand 2035 (career person-years)",
+       "unit": "person-years", "total": "sum", "fmt": "millions",
+       "values": {}, "years": {}}
+f2035 = fc[fc.year == 2035]
+for c in countries:
+    sub = f2035[f2035.country == c]
+    vals = {}
+    vf, vm = sub[sub.sex == "F"]["demand"].sum(), sub[sub.sex == "M"]["demand"].sum()
+    if vf:
+        vals["F"] = round(float(vf))
+    if vm:
+        vals["M"] = round(float(vm))
+    vals["T"] = round(float(sub["demand"].sum()))
+    dem["values"][c] = vals
+    dem["years"][c] = 2035
+map_data = {"countries": md["countries"], "regime": md["regime"],
+            "metrics": {"demand_2035": dem, **md["metrics"]}}
+map_html = build_map_section(
+    map_data, container="geomap2", default_metric="demand_2035",
+    title="Geographic overview — demand &amp; its drivers",
+    intro="Choropleth of the 8 countries. Default shows 2035 potential demand "
+          "(career person-years); switch the metric to its drivers — employment, "
+          "vacancies — or supply-side context. Toggle sex; hover a country.")
+
 CSS = """
 :root{--bg:#0f1420;--card:#171e2e;--ink:#e8edf7;--mut:#94a3b8;--line:#2a3445;
 --acc:#5b9dff;--obs:#7dd3fc;--fc:#fbbf24;--band:rgba(251,191,36,.16);
@@ -155,6 +188,7 @@ HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <div class="kpi"><div class="v">{jobs24:.0f} → {jobs35:.0f}M</div><div class="l">Jobs (employed + vacancies), people</div></div>
 <div class="kpi"><div class="v">{sexF:,} / {sexM:,}M</div><div class="l">2035 demand by sex (F / M)</div></div>
 </div>
+{map_html}
 <h2>Demand predictions by country</h2><div class="grid">{charts_html}</div>
 <h2>Forecast table</h2>
 <table><thead><tr><th>Country</th><th>Region</th><th>2024</th><th>2035</th>

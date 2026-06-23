@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Longevity & Labour Market — 8-Country Map</title>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+<style>
+  :root{
+    --bg:#0f1420; --panel:#172033; --ink:#e8eef7; --muted:#9fb0c8;
+    --accent:#5db0ff; --line:#2a3650;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);
+       color:var(--ink);}
+  header{padding:20px 28px 6px}
+  h1{margin:0;font-size:20px;font-weight:650;letter-spacing:.2px}
+  .sub{color:var(--muted);font-size:13px;margin-top:4px}
+  .wrap{display:flex;gap:18px;padding:14px 28px 28px;flex-wrap:wrap}
+  .map-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:10px;flex:1 1 620px;min-width:340px;position:relative}
+  .side{flex:0 0 290px;display:flex;flex-direction:column;gap:14px}
+  .controls{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+  label.ctl{display:block;font-size:12px;color:var(--muted);margin:0 0 6px;text-transform:uppercase;letter-spacing:.6px}
+  select{width:100%;background:#0c1322;color:var(--ink);border:1px solid var(--line);
+    border-radius:8px;padding:9px 10px;font-size:14px}
+  .seg{display:flex;gap:6px;margin-top:4px}
+  .seg button{flex:1;background:#0c1322;color:var(--muted);border:1px solid var(--line);
+    border-radius:8px;padding:8px 0;font-size:13px;cursor:pointer}
+  .seg button.on{background:var(--accent);color:#06203a;border-color:var(--accent);font-weight:600}
+  .legend{font-size:12px;color:var(--muted)}
+  .bars{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .bars h3{margin:0 0 10px;font-size:13px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+  .bar-row{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:12px}
+  .bar-row .nm{width:78px;color:var(--ink)}
+  .bar-row .tk{height:14px;border-radius:3px;min-width:2px}
+  .bar-row .vl{color:var(--muted);font-variant-numeric:tabular-nums}
+  .country{stroke:#0c1322;stroke-width:.6px;cursor:pointer;transition:opacity .15s}
+  .country.other{fill:#222c40;stroke:#1a2233}
+  .country:hover{opacity:.82}
+  .clab{font-size:10px;fill:#06203a;font-weight:700;pointer-events:none;text-anchor:middle}
+  .tip{position:absolute;pointer-events:none;background:#06121f;border:1px solid var(--accent);
+    border-radius:8px;padding:8px 11px;font-size:12px;color:var(--ink);opacity:0;
+    transition:opacity .1s;max-width:220px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+  .tip b{color:var(--accent)}
+  .scalewrap{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .scalebar{height:12px;flex:1;border-radius:3px}
+  .foot{color:var(--muted);font-size:11px;padding:0 28px 22px;line-height:1.5}
+</style>
+</head>
+<body>
+<header>
+  <h1>Longevity &amp; the Labour Market — 8-Country Data Map</h1>
+  <div class="sub">Eurostat Level-0 panel · latest available year per metric · by sex. Hover a country for details.</div>
+</header>
+<div class="wrap">
+  <div class="map-card">
+    <svg id="map" viewBox="0 0 720 560" width="100%" style="display:block"></svg>
+    <div class="tip" id="tip"></div>
+  </div>
+  <div class="side">
+    <div class="controls">
+      <label class="ctl">Metric</label>
+      <select id="metric"></select>
+      <label class="ctl" style="margin-top:14px">Sex</label>
+      <div class="seg" id="sex">
+        <button data-s="T" class="on">Total</button>
+        <button data-s="F">Women</button>
+        <button data-s="M">Men</button>
+      </div>
+      <div class="scalewrap"><span id="lo" class="legend"></span>
+        <div class="scalebar" id="scalebar"></div><span id="hi" class="legend"></span></div>
+      <div class="legend" id="meta" style="margin-top:10px"></div>
+    </div>
+    <div class="bars">
+      <h3>Ranking</h3>
+      <div id="ranking"></div>
+    </div>
+  </div>
+</div>
+<div class="foot">
+  Source: Eurostat (<code>hlth_hlye, demo_pjan, lfsa_egan, jvs_q_r21</code>). Colour = selected metric for the selected sex.
+  Grey countries are geographic context only. "Potential labour supply" = population × healthy life years (person-years),
+  the case's labour-supply proxy. Switzerland's healthy-life-years are self-reported lower (GALI measurement difference) despite its high life expectancy.
+</div>
+<script>
+const NAME_TO_ISO = {Bulgaria:"BG",Poland:"PL",Czechia:"CZ","Czech Republic":"CZ",
+  Romania:"RO",Germany:"DE",France:"FR",Norway:"NO",Switzerland:"CH"};
+const PALETTE = d3.interpolateYlGnBu;
+let DATA, state={metric:null, sex:"T"};
+
+function fmtVal(v, fmt){
+  if(v==null||isNaN(v)) return "n/a";
+  if(fmt==="millions"){
+    if(v>=1e9) return (v/1e9).toFixed(2)+" bn";
+    if(v>=1e6) return (v/1e6).toFixed(2)+" M";
+    return d3.format(",")(Math.round(v));
+  }
+  return d3.format(",.2~f")(v);
+}
+
+Promise.all([
+  fetch("map_data.json").then(r=>r.json()),
+  fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(r=>r.json())
+]).then(([data, topo])=>{
+  DATA=data;
+  // metric dropdown
+  const sel=d3.select("#metric");
+  Object.entries(data.metrics).forEach(([k,m])=>
+    sel.append("option").attr("value",k).text(m.label));
+  state.metric=Object.keys(data.metrics)[0];
+
+  const feats=topojson.feature(topo, topo.objects.countries).features;
+  const euroOnly=f=>{ if(f.geometry.type!=="MultiPolygon") return f;
+    const polys=f.geometry.coordinates.filter(poly=>{
+      const c=d3.geoCentroid({type:"Polygon",coordinates:poly});
+      return c[0]>-25&&c[0]<45&&c[1]>34&&c[1]<73;});
+    return {...f,geometry:{type:"MultiPolygon",coordinates:polys.length?polys:f.geometry.coordinates}};};
+  const eight=feats.filter(f=>Object.keys(data.countries).includes(NAME_TO_ISO[f.properties.name])).map(euroOnly);
+
+  const svg=d3.select("#map");
+  const proj=d3.geoConicConformal().rotate([-10,0]).parallels([43,62])
+    .fitExtent([[28,22],[692,496]], {type:"FeatureCollection",features:eight});
+  const path=d3.geoPath(proj);
+
+  // context countries — only those in the European window, else a conic
+  // projection sends distant geometry to near-infinity and breaks rendering.
+  const inEurope=f=>{ try{const [[w,s],[e,n]]=d3.geoBounds(f);
+    return n>33 && s<73 && w<55 && e>-32 && (e-w)<90;}catch(_){return false;} };
+  svg.append("g").selectAll("path.ctx").data(feats.filter(inEurope)).join("path")
+    .attr("class","country other").attr("d",path);
+  const g=svg.append("g");
+  g.selectAll("path.c8").data(eight).join("path")
+    .attr("class","country").attr("d",path)
+    .attr("data-iso",d=>NAME_TO_ISO[d.properties.name])
+    .on("mousemove",onHover).on("mouseleave",()=>d3.select("#tip").style("opacity",0));
+  // labels
+  svg.append("g").selectAll("text").data(eight).join("text")
+    .attr("class","clab")
+    .attr("x",d=>path.centroid(d)[0]).attr("y",d=>path.centroid(d)[1]+3)
+    .text(d=>NAME_TO_ISO[d.properties.name]);
+
+  // controls
+  sel.on("change",function(){state.metric=this.value;render();});
+  d3.selectAll("#sex button").on("click",function(){
+    d3.selectAll("#sex button").classed("on",false);
+    d3.select(this).classed("on",true);
+    state.sex=this.dataset.s; render();
+  });
+  render();
+
+  function vals(){
+    const m=DATA.metrics[state.metric];
+    return Object.keys(DATA.countries).map(iso=>({iso,
+      v:(m.values[iso]||{})[state.sex] ?? null}));
+  }
+  function render(){
+    const m=DATA.metrics[state.metric];
+    const arr=vals().filter(d=>d.v!=null).map(d=>d.v);
+    const lo=d3.min(arr), hi=d3.max(arr);
+    const color=d3.scaleSequential(PALETTE).domain([lo,hi]);
+    g.selectAll("path.country").transition().duration(350)
+      .attr("fill",d=>{const v=(m.values[NAME_TO_ISO[d.properties.name]]||{})[state.sex];
+        return v==null?"#42506b":color(v);});
+    // scale bar
+    const grad=`linear-gradient(90deg,${d3.range(0,1.01,.1).map(t=>PALETTE(t)).join(",")})`;
+    d3.select("#scalebar").style("background",grad);
+    d3.select("#lo").text(fmtVal(lo,m.fmt));
+    d3.select("#hi").text(fmtVal(hi,m.fmt));
+    const yrs=Object.values(m.years||{});
+    d3.select("#meta").html(`Unit: <b style="color:var(--ink)">${m.unit}</b> &nbsp;·&nbsp; years ${d3.min(yrs)}–${d3.max(yrs)}`);
+    // ranking bars
+    const sorted=vals().filter(d=>d.v!=null).sort((a,b)=>b.v-a.v);
+    const bw=d3.scaleLinear().domain([0,hi]).range([0,150]);
+    const rank=d3.select("#ranking").html("");
+    sorted.forEach(d=>{
+      const row=rank.append("div").attr("class","bar-row");
+      row.append("span").attr("class","nm").text(DATA.countries[d.iso]);
+      row.append("span").attr("class","tk").style("width",bw(d.v)+"px")
+        .style("background",color(d.v));
+      row.append("span").attr("class","vl").text(fmtVal(d.v,m.fmt));
+    });
+  }
+  function onHover(ev,d){
+    const iso=NAME_TO_ISO[d.properties.name], m=DATA.metrics[state.metric];
+    const rec=m.values[iso]||{};
+    const tip=d3.select("#tip");
+    const rows=["T","F","M"].filter(s=>rec[s]!=null)
+      .map(s=>`${({T:"Total",F:"Women",M:"Men"})[s]}: <b>${fmtVal(rec[s],m.fmt)}</b>`).join("<br>");
+    tip.html(`<b>${DATA.countries[iso]}</b> · ${DATA.regime[iso]}<br>
+      <span style="color:var(--muted)">${m.label}</span><br>${rows||"n/a"}`)
+      .style("opacity",1);
+    const r=document.getElementById("map").getBoundingClientRect();
+    tip.style("left",(ev.clientX-r.left+14)+"px").style("top",(ev.clientY-r.top+10)+"px");
+  }
+});
+</script>
+</body>
+</html>

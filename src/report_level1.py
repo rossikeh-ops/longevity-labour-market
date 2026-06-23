@@ -5,8 +5,13 @@ in human-working-years; observed 2011-2024 + forecast to 2035.
 Reads outputs/{supply_observed,supply_forecast}.csv -> outputs/level1_supply_report.html
 """
 from __future__ import annotations
+import sys
+import json
 from pathlib import Path
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from map_section import build_map_section  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "outputs"
@@ -84,6 +89,35 @@ def chart_svg(s):
             f'</svg></div>')
 
 
+# ---------- interactive choropleth section ----------
+# Prepend a Level-1 supply metric (2035 realized career person-years, by sex) to
+# the shared supply-side metrics in outputs/map_data.json; map opens on supply.
+md = json.loads((OUT / "map_data.json").read_text(encoding="utf-8"))
+sup = {"label": "Potential labour supply 2035 (realized career person-years)",
+       "unit": "person-years", "total": "sum", "fmt": "millions",
+       "values": {}, "years": {}}
+s2035 = sf[sf.year == 2035]
+for c in countries:
+    sub = s2035[s2035.country == c]
+    vals = {}
+    vf, vm = sub[sub.sex == "F"]["supply_realized"].sum(), sub[sub.sex == "M"]["supply_realized"].sum()
+    if vf:
+        vals["F"] = round(float(vf))
+    if vm:
+        vals["M"] = round(float(vm))
+    vals["T"] = round(float(sub["supply_realized"].sum()))
+    sup["values"][c] = vals
+    sup["years"][c] = 2035
+map_data = {"countries": md["countries"], "regime": md["regime"],
+            "metrics": {"supply_2035": sup, **md["metrics"]}}
+map_html = build_map_section(
+    map_data, container="geomap1", default_metric="supply_2035",
+    title="Geographic overview — supply &amp; its drivers",
+    intro="Choropleth of the 8 countries. Default shows 2035 potential labour "
+          "supply (realized career person-years); switch the metric to its drivers — "
+          "healthy life years, life expectancy, working-age population, employment. "
+          "Toggle sex; hover a country.")
+
 charts_html = "".join(chart_svg(series[c]) for c in countries)
 rows_html = "".join(
     f'<tr><td>{series[c]["name"]}</td><td style="color:#94a3b8">{series[c]["region"]}</td>'
@@ -146,6 +180,7 @@ ageing) vs <b>Germany, France, Norway +3–5%</b> (participation + health gains 
 <div class="kpi"><div class="v">{ceil24:,}M</div><div class="l">Ceiling supply if all healthy years worked</div></div>
 <div class="kpi"><div class="v">{realiz} · {unused}% idle</div><div class="l">Realization ratio (working-life ÷ max span)</div></div>
 </div>
+{map_html}
 <h2>Supply predictions by country</h2><div class="grid">{charts_html}</div>
 <h2>Forecast table</h2>
 <table><thead><tr><th>Country</th><th>Region</th><th>2024</th><th>2035</th>
