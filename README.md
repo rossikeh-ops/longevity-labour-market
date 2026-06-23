@@ -31,7 +31,8 @@ band methodology, scenarios) and `docs/definitions.md` for the identities.
 - **L0 Data foundation** — `src/fetch.py`, `src/clean.py` → balanced panel 2011–2024 ✓
 - **L1 Supply** — `src/supply.py`, `src/supply_forecast.py` ✓
 - **L2 Demand** — `src/balance_forecast.py`; report `outputs/level2_demand_report.html` ✓
-- **L3 Balance** — supply − demand (computed jointly in `balance_forecast.py`) — in progress
+- **L3 Balance** — supply − demand in human-working-years; report `outputs/level3_balance_report.html` ✓
+- Model trust — rolling-origin backtest; report `outputs/model_validation_report.html` ✓
 - L4 health costs / L5 consumption — planned
 
 ## Reproduce
