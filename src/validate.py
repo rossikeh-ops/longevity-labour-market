@@ -105,7 +105,47 @@ for col, c, s in SHOW:
         "hi": [round(float(x), 3) for x in out["hi"]],
     }
 
-result = {"metrics": metrics, "show": show, "test_h": TEST_H}
+# ---- accuracy of the COMPOSED level outputs (Supply / Demand / Balance) ----
+# Backtest the assembled quantities, not just the input drivers. Supply is a product
+# (errors combine); Balance is a difference of two large numbers (relative error amplified).
+ret = pd.read_csv(ROOT / "data" / "retirement_params.csv")
+svc = {(r.country, r.sex): r.required_service_years for r in ret.itertuples()}
+sobs = pd.read_csv(OUT / "supply_observed.csv")
+eS, eD, eB, baseB = [], [], [], []
+for c in COUNTRIES:
+    oc = sobs[sobs.country == c].groupby("year").agg(
+        S=("supply_realized", "sum"), D=("demand", "sum"), B=("balance_realized", "sum"))
+    for origin in [2020, 2021, 2022, 2023]:
+        tgt = [y for y in range(origin + 1, 2025)]
+        if not tgt:
+            continue
+        fcm = lambda s, col: _ensemble_mean(*history(panel, c, s, col), tgt)
+        supF = fcm("F", "pop_15_64") * fcm("F", "healthy_share") * fcm("F", "working_life_yrs")
+        supM = fcm("M", "pop_15_64") * fcm("M", "healthy_share") * fcm("M", "working_life_yrs")
+        empF = fcm("F", "emp_rate") * fcm("F", "pop_15_64")
+        empM = fcm("M", "emp_rate") * fcm("M", "pop_15_64")
+        vac = fcm("F", "vacancy_count")
+        den = np.where(empF + empM == 0, 1, empF + empM)
+        demF = (empF + vac * empF / den) * svc[(c, "F")]
+        demM = (empM + vac * empM / den) * svc[(c, "M")]
+        Sp, Dp = supF + supM, demF + demM
+        Bp = Sp - Dp
+        for i, y in enumerate(tgt):
+            if y in oc.index:
+                So, Do, Bo = oc.loc[y, "S"], oc.loc[y, "D"], oc.loc[y, "B"]
+                eS.append(abs(Sp[i] - So) / So)
+                eD.append(abs(Dp[i] - Do) / Do)
+                eB.append(abs(Bp[i] - Bo) / 1e6)
+                baseB.append(abs(Bo) / 1e6)
+level_acc = {
+    "supply_mape": round(float(np.mean(eS)) * 100, 1),
+    "demand_mape": round(float(np.mean(eD)) * 100, 1),
+    "balance_mae_m": round(float(np.mean(eB))),
+    "balance_base_m": round(float(np.mean(baseB))),
+    "balance_rel": round(float(np.mean(eB) / np.mean(baseB)) * 100),
+}
+
+result = {"metrics": metrics, "show": show, "test_h": TEST_H, "level_acc": level_acc}
 (OUT / "validation_metrics.json").write_text(json.dumps(result, indent=1), encoding="utf-8")
 
 print("=== Backtest accuracy by driver (held out last 4 years, rolling origin) ===")

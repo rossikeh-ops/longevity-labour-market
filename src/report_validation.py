@@ -37,6 +37,7 @@ for k in order:
                  "verdict": lab, "cls": cls, "why": why})
 n_trust = sum(1 for r in rows if r["cls"] == "ok")
 COL = {"ok": "#34d399", "warn": "#fbbf24", "bad": "#f87171"}
+la = val.get("level_acc", {})
 
 # ---------- static SVG: showcase observed-vs-predicted traces ----------
 def trace_svg(s):
@@ -156,6 +157,27 @@ last-value naive forecast (positive is good). Coverage = share of actuals inside
 <table><thead><tr><th>Driver</th><th>MAPE (model)</th><th>MAPE (naive)</th>
 <th>Skill vs naive</th><th>Coverage 80%</th><th>Verdict</th></tr></thead><tbody>{table_html}</tbody></table>
 <div style="margin-top:14px">{mape_svg}</div>
+<h2>Accuracy of the composed outputs (Levels 1–3)</h2>
+<p class="sub">The drivers above are the inputs. The actual <b>level outputs</b> have their own
+accuracy — backtested by assembling supply/demand/balance from history-only forecasts and
+comparing to observed values. They differ: supply is a <i>product</i> (errors combine), demand is
+dominated by accurate employment, and the balance is a <i>difference</i> of two large numbers (so its
+relative error is amplified).</p>
+<div class="cards">
+<div class="vc" style="border-top:3px solid #34d399"><div class="h">Level 2 — Demand</div>
+<div class="kpi" style="border:0;padding:0"><div class="v" style="color:#34d399">{la.get("demand_mape","?")}%</div>
+<div class="l">MAPE · most accurate (employment-driven)</div></div></div>
+<div class="vc" style="border-top:3px solid #fbbf24"><div class="h">Level 1 — Supply</div>
+<div class="kpi" style="border:0;padding:0"><div class="v" style="color:#fbbf24">{la.get("supply_mape","?")}%</div>
+<div class="l">MAPE · health-share noise propagates through the product</div></div></div>
+<div class="vc" style="border-top:3px solid #fbbf24"><div class="h">Level 3 — Balance</div>
+<div class="kpi" style="border:0;padding:0"><div class="v" style="color:#fbbf24">±{la.get("balance_mae_m","?")}M</div>
+<div class="l">~{la.get("balance_rel","?")}% rel. · difference of ~4,500M numbers → amplified</div></div></div>
+</div>
+<div class="note">Read the balance error in <b>absolute</b> terms: ±{la.get("balance_mae_m","?")}M career
+person-years on a typical |balance| of ~{la.get("balance_base_m","?")}M. It is the least accurate
+<i>relatively</i> by construction — small % moves in the two large stocks (supply, demand) translate
+into larger % moves in their difference. Backtest origins 2020–2023, all 8 countries.</div>
 <h2>How the forecast tracks reality</h2>
 <p class="sub">Each chart forecasts the last 4 years from history only (gold = prediction,
 shaded = 80% band) and overlays what actually happened (blue dots). If dots sit in the band, the model is honest.</p>

@@ -403,5 +403,12 @@
    ]
   }
  },
- "test_h": 4
+ "test_h": 4,
+ "level_acc": {
+  "supply_mape": 3.5,
+  "demand_mape": 1.6,
+  "balance_mae_m": 15,
+  "balance_base_m": 91,
+  "balance_rel": 16
+ }
 }
