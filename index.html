@@ -1,0 +1,75 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Longevity & the Labour Market — Person-Year Engine</title>
+<style>
+:root{--bg:#0f1420;--card:#171e2e;--ink:#e8edf7;--mut:#94a3b8;--line:#2a3445;
+--acc:#5b9dff;--ok:#34d399;--warn:#fbbf24;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);
+font:16px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:40px 24px}
+.wrap{max-width:920px;margin:0 auto}
+h1{font-size:30px;margin:0 0 6px}.tag{color:var(--mut);font-size:15px;margin:0 0 24px}
+h2{font-size:19px;margin:34px 0 14px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+a.card{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;
+padding:22px;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s}
+a.card:hover{border-color:var(--acc);transform:translateY(-2px)}
+a.card .ic{font-size:26px}a.card h3{margin:8px 0 4px;font-size:17px;color:var(--ink)}
+a.card p{margin:0;color:var(--mut);font-size:14px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.kpi .v{font-size:20px;font-weight:700}.kpi .l{color:var(--mut);font-size:12px;margin-top:3px}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+td,th{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--mut);font-weight:600}.done{color:var(--ok)}.prog{color:var(--warn)}
+.note{color:var(--mut);font-size:14px;background:var(--card);border:1px solid var(--line);
+border-radius:10px;padding:16px;margin-top:12px}code{color:var(--acc)}
+a{color:var(--acc)}.foot{color:var(--mut);font-size:13px;margin-top:30px}
+</style></head><body><div class="wrap">
+
+<h1>Longevity &amp; the Labour Market</h1>
+<p class="tag">A person-year engine: converting demographic averages into human-working-years,
+forecasting labour <b>supply</b>, <b>demand</b> and their <b>balance</b> to 2035 for 8 European
+countries (BG, PL, CZ, RO, DE, FR, NO, CH), by sex. Solution to the
+<a href="https://github.com/Marchev-Science/case-longevity-and-labour-market">Marchev-Science case</a>.</p>
+
+<div class="kpis">
+<div class="kpi"><div class="v">8 × 2</div><div class="l">countries × sex</div></div>
+<div class="kpi"><div class="v">2011–2024</div><div class="l">common observed period</div></div>
+<div class="kpi"><div class="v">→ 2035</div><div class="l">forecast horizon</div></div>
+<div class="kpi"><div class="v">no NN</div><div class="l">simple ensemble + Monte-Carlo</div></div>
+</div>
+
+<h2>Interactive reports</h2>
+<div class="cards">
+<a class="card" href="outputs/level2_demand_report.html">
+<div class="ic">📊</div><h3>Labour demand to 2035</h3>
+<p>Per-country predictions with uncertainty bands, jobs, sex split and the
+participation-plateau scenario.</p></a>
+<a class="card" href="outputs/model_validation_report.html">
+<div class="ic">🔍</div><h3>Can we trust the model?</h3>
+<p>Rolling-origin backtest: accuracy by driver, calibration, observed-vs-predicted
+charts, and honest failure points.</p></a>
+</div>
+
+<h2>Method in one paragraph</h2>
+<div class="note">Each driver series is forecast on its full history by an <b>ensemble of four simple
+models</b> (linear trend, damped Holt, drift, naive) — damping and the naive anchor stop saturating
+rates from over-extrapolating. <b>Population</b> uses Eurostat's projection <code>proj_23np</code>,
+calibrated to observed 2024. <b>Supply</b> = healthy working-age people × expected working life;
+<b>demand</b> = (employed + vacancies) × required service. <b>Monte-Carlo bands</b> combine model
+disagreement, out-of-sample backtest error and demographic uncertainty.</div>
+
+<h2>Progress by level</h2>
+<table><thead><tr><th>Level</th><th>Status</th></tr></thead><tbody>
+<tr><td>L0 — Data foundation (Eurostat pipeline, balanced panel)</td><td class="done">✓ done</td></tr>
+<tr><td>L1 — Labour supply (working-age, forecast to 2035)</td><td class="done">✓ done</td></tr>
+<tr><td>L2 — Labour demand (jobs × service, scenarios)</td><td class="done">✓ done</td></tr>
+<tr><td>L3 — Balance (supply − demand)</td><td class="prog">in progress</td></tr>
+<tr><td>L4 — Cost of unhealthy years · L5 — Retirement dividend</td><td>planned</td></tr>
+</tbody></table>
+
+<p class="foot">Reproducible pipeline in <code>src/</code> · data in <code>data/</code> ·
+see <a href="https://github.com/rossikeh-ops/longevity-labour-market">the repository</a> and
+<code>docs/</code> for assumptions and definitions.</p>
+
+</div></body></html>
