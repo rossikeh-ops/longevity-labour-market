@@ -116,6 +116,8 @@ border-bottom:1px solid var(--line);padding-bottom:6px}
 border-radius:12px;padding:16px 22px;margin:18px 0;font-size:21px;font-weight:600;
 text-align:center;line-height:1.45;color:var(--ink)}
 .formula b{color:#5b9dff}.formula .u{display:block;font-size:13px;color:var(--mut);font-weight:400;margin-top:5px}
+code{background:#0e1830;border:1px solid #2a3445;border-radius:5px;padding:1px 6px;
+color:#7dd3fc;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
 .kpi .v{font-size:22px;font-weight:700}.kpi .l{color:var(--mut);font-size:12px;margin-top:4px}
@@ -168,6 +170,12 @@ model error and demographic uncertainty (decisions D5/D6).</div>
 • <b>Required service</b> held at baseline (France's points system ≈ 43y effective); pension reforms are levers.<br>
 • Population from Eurostat <code>proj_23np</code> calibrated to observed 2024 (decision D4).<br>
 • 2024 demand reproduces exactly from raw data; verified by a 5-agent audit.</div>
+<h2>Data sources — Eurostat dataset codes</h2>
+<div class="note"><code>lfsa_egan</code> employment by sex &amp; age ·
+<code>jvs_q_r21</code> job vacancies (NACE Rev 2.1, quarterly→annual) ·
+<code>demo_pjangroup</code> working-age population (for the employment rate) ·
+<code>proj_23np</code> population projections. ·
+Required length of service: <b>MISSOC</b> / <b>OECD Pensions at a Glance</b> (not published by Eurostat).</div>
 <p class="sub" style="margin-top:24px;font-size:12px">Generated from outputs/demand_forecast.csv · src/balance_forecast.py</p>
 </div></body></html>"""
 

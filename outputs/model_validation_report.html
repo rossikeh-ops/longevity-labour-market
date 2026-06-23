@@ -30,6 +30,8 @@ th:first-child,td:first-child{text-align:left}th{color:var(--mut);font-weight:60
 .vc .h{font-weight:600;margin-bottom:4px}.vc .d{color:var(--mut);font-size:13px}
 .note{color:var(--mut);font-size:13.5px;background:var(--card);border:1px solid var(--line);
 border-radius:10px;padding:15px;margin-top:10px}.note b{color:var(--ink)}
+code{background:#0e1830;border:1px solid #2a3445;border-radius:5px;padding:1px 6px;
+color:#7dd3fc;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace}
 .lgd{display:flex;gap:16px;color:var(--mut);font-size:12px;margin:4px 0 0;flex-wrap:wrap}
 .sw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 </style></head><body><div class="wrap">
@@ -137,5 +139,11 @@ is 2.2% of jobs.<br>
 • <b>Short horizons of judgement</b> — HLY has ~18 points; forecasts past ~2035 would be speculative.<br>
 • <b>Participation-dependent results</b> (DE, FR) — baseline assumes employment rates keep rising; the plateau scenario is the honest downside.<br>
 • <b>No causal claims</b> for health-cost / consumption (Levels 4–5) — those are descriptive relationships, not mechanisms.</div>
+<h2>Data sources — Eurostat dataset codes</h2>
+<div class="note">Drivers validated here come from
+<code>hlth_hlye</code> (LE, HLY) · <code>demo_pjangroup</code> (working-age population) ·
+<code>lfsi_dwl_a</code> (working-life duration) · <code>lfsa_egan</code> (employment) ·
+<code>jvs_q_r21</code> (vacancies). Population forecast benchmarked to <code>proj_23np</code>;
+retirement rules from MISSOC / OECD Pensions at a Glance.</div>
 <p class="sub" style="margin-top:24px;font-size:12px">Generated from outputs/validation_metrics.json · src/validate.py · rolling-origin backtest, 500 Monte-Carlo sims.</p>
 </div></body></html>

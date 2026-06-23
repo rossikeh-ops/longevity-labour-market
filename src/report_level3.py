@@ -130,6 +130,8 @@ border-bottom:1px solid var(--line);padding-bottom:6px}
 border-radius:12px;padding:16px 22px;margin:18px 0;font-size:21px;font-weight:600;
 text-align:center;line-height:1.45;color:var(--ink)}
 .formula b{color:#5b9dff}.formula .u{display:block;font-size:13px;color:var(--mut);font-weight:400;margin-top:5px}
+code{background:#0e1830;border:1px solid #2a3445;border-radius:5px;padding:1px 6px;
+color:#7dd3fc;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace}
 .hero{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--up);
 border-radius:12px;padding:18px 20px;margin:20px 0}
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0}
@@ -192,6 +194,11 @@ read shortages/surpluses as structural capacity, not literal vacancies.<br>
 • <b>Germany &amp; France</b> shortages depend on participation continuing to rise; under the plateau scenario they deepen.<br>
 • <b>France</b> vacancies carry Eurostat flag <code>d</code>; population from <code>proj_23np</code> calibrated to 2024 (D4).<br>
 • Drivers validated by rolling-origin backtest (see the model-trust report).</div>
+<h2>Data sources — Eurostat dataset codes</h2>
+<div class="note">Combines all Level 1 &amp; Level 2 sources:
+<code>hlth_hlye</code>, <code>demo_pjangroup</code>, <code>proj_23np</code>, <code>lfsi_dwl_a</code>
+(supply) · <code>lfsa_egan</code>, <code>jvs_q_r21</code> (demand) · optional slack <code>une_rt_a</code>.
+Retirement rules: <b>MISSOC</b> / <b>OECD Pensions at a Glance</b> (not Eurostat).</div>
 <p class="sub" style="margin-top:24px;font-size:12px">Generated from outputs/balance_forecast.csv · src/balance_forecast.py</p>
 </div></body></html>"""
 

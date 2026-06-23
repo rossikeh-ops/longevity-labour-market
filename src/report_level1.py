@@ -105,6 +105,8 @@ border-bottom:1px solid var(--line);padding-bottom:6px}
 border-radius:12px;padding:16px 22px;margin:18px 0;font-size:21px;font-weight:600;
 text-align:center;line-height:1.45;color:var(--ink)}
 .formula b{color:#5b9dff}.formula .u{display:block;font-size:13px;color:var(--mut);font-weight:400;margin-top:5px}
+code{background:#0e1830;border:1px solid #2a3445;border-radius:5px;padding:1px 6px;
+color:#7dd3fc;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace}
 .hero{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--up);
 border-radius:12px;padding:18px 20px;margin:20px 0}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}
@@ -160,6 +162,12 @@ the lever the West uses to offset shrinking populations. Population from Eurosta
 • Forecasts assume the recent rise in working-life duration continues; the <b>participation-plateau</b>
 scenario (D6) flattens supply growth in the West.<br>
 • Supply feeds the Level 3 balance (supply − demand).</div>
+<h2>Data sources — Eurostat dataset codes</h2>
+<div class="note"><code>hlth_hlye</code> life expectancy &amp; healthy life years (LE, HLY) ·
+<code>demo_pjangroup</code> population by age (working-age 15–64) ·
+<code>proj_23np</code> population projections (baseline + migration) ·
+<code>lfsi_dwl_a</code> expected duration of working life ·
+<code>demo_pjan</code> / <code>demo_mlexpec</code> total population &amp; LE cross-check.</div>
 <p class="sub" style="margin-top:24px;font-size:12px">Generated from outputs/supply_forecast.csv · src/supply.py, supply_forecast.py</p>
 </div></body></html>"""
 
