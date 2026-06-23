@@ -101,6 +101,10 @@ font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:
 h1{font-size:26px;margin:0 0 4px}h2{font-size:18px;margin:34px 0 12px;
 border-bottom:1px solid var(--line);padding-bottom:6px}
 .sub{color:var(--mut);margin:0 0 8px}
+.formula{background:#101a2e;border:1px solid #5b9dff;border-left:5px solid #5b9dff;
+border-radius:12px;padding:16px 22px;margin:18px 0;font-size:21px;font-weight:600;
+text-align:center;line-height:1.45;color:var(--ink)}
+.formula b{color:#5b9dff}.formula .u{display:block;font-size:13px;color:var(--mut);font-weight:400;margin-top:5px}
 .hero{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--up);
 border-radius:12px;padding:18px 20px;margin:20px 0}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}
@@ -128,6 +132,8 @@ HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <h1>Level 1 — Labour Supply to 2035</h1>
 <p class="sub">Potential labour supply in <b>human-working-years</b> = health-adjusted working-age
 people × expected working life · observed 2011–2024, forecast to 2035 · 8 countries, by sex.</p>
+<div class="formula"><b>Supply</b> = health-adjusted working-age people <b>×</b> expected working life
+<span class="u">measured in human-working-years (career person-years)</span></div>
 <div class="hero">Total supply is <b>essentially flat ({tot24:,}M → {tot35:,}M, {totchg:+.1f}%)</b> to 2035 — a
 <b>longevity dividend</b>: working-age populations shrink, but rising healthy-life share and longer
 working lives offset the loss. The split is demographic: <b>Romania −13%, Bulgaria −9%</b> (emigration +

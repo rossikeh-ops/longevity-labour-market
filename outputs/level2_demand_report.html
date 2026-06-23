@@ -10,6 +10,10 @@ font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:
 h1{font-size:26px;margin:0 0 4px}h2{font-size:18px;margin:34px 0 12px;
 border-bottom:1px solid var(--line);padding-bottom:6px}
 .sub{color:var(--mut);margin:0 0 8px}
+.formula{background:#101a2e;border:1px solid #5b9dff;border-left:5px solid #5b9dff;
+border-radius:12px;padding:16px 22px;margin:18px 0;font-size:21px;font-weight:600;
+text-align:center;line-height:1.45;color:var(--ink)}
+.formula b{color:#5b9dff}.formula .u{display:block;font-size:13px;color:var(--mut);font-weight:400;margin-top:5px}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
 .kpi .v{font-size:22px;font-weight:700}.kpi .l{color:var(--mut);font-size:12px;margin-top:4px}
@@ -31,6 +35,8 @@ border-radius:10px;padding:14px;margin-top:10px}
 <h1>Level 2 — Labour Demand to 2035</h1>
 <p class="sub">Potential labour demand in <b>career person-years</b> (jobs × required length of service),
 8 countries, by sex · model 2011–2024, forecast to 2035 · Eurostat + MISSOC.</p>
+<div class="formula"><b>Demand</b> = jobs (employed + vacancies) <b>×</b> required length of service
+<span class="u">measured in human-working-years (career person-years)</span></div>
 <div class="lgd"><span><span class="sw" style="background:var(--obs)"></span>Observed 2011–2024</span>
 <span><span class="sw" style="background:var(--fc)"></span>Forecast 2025–2035</span>
 <span><span class="sw" style="background:var(--band)"></span>80% uncertainty band</span>
