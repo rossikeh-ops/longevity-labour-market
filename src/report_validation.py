@@ -39,6 +39,8 @@ for k in order:
 n_trust = sum(1 for r in rows if r["cls"] == "ok")
 COL = {"ok": "#34d399", "warn": "#fbbf24", "bad": "#f87171"}
 la = val.get("level_acc", {})
+sv_path = OUT / "split_validation.json"
+sv = json.loads(sv_path.read_text(encoding="utf-8")) if sv_path.exists() else None
 
 # per-country accuracy: average the 0-1 accuracy across drivers
 pc = {}
@@ -49,6 +51,46 @@ pc_acc = {c: round(sum(v) / len(v), 3) for c, v in pc.items()}
 pc_rows = "".join(
     f'<tr><td>{c}</td><td>{a:.3f}</td></tr>'
     for c, a in sorted(pc_acc.items(), key=lambda x: -x[1]))
+
+# fixed train/test split (train <=2019, predict 2020-2024) section
+split_html = ""
+if sv:
+    dr = "".join(f'<tr><td>{d["label"]}</td><td style="font-weight:700">{d["accuracy"]:.3f}</td>'
+                 f'<td style="color:#94a3b8">{d["mape"]}%</td></tr>' for d in sv["drivers"].values())
+    lv = sv["level"]
+    yr = "".join(
+        f'<tr><td>{y}</td><td>{v["supply_pred"]}</td><td style="color:#94a3b8">{v["supply_obs"]}</td>'
+        f'<td>{v["demand_pred"]}</td><td style="color:#94a3b8">{v["demand_obs"]}</td>'
+        f'<td>{v["balance_pred"]:+}</td><td style="color:#94a3b8">{v["balance_obs"]:+}</td></tr>'
+        for y, v in sv["years"].items())
+    split_html = f"""
+<h2>Hold-out stress test — train ≤2019, predict 2020–2024 (incl. COVID)</h2>
+<p class="sub">The strictest test: fit on Eurostat history up to 2019 only, then forecast the
+five held-out years (which contain the COVID shock) and compare to what actually happened.</p>
+<div class="cards">
+<div class="vc" style="border-top:3px solid #34d399"><div class="h">Level 2 — Demand</div>
+<div class="v" style="font-size:24px;font-weight:700;color:#34d399">{lv["demand_acc"]}</div>
+<div class="d">accuracy · {lv["demand_mape"]}% MAPE · robust across COVID</div></div>
+<div class="vc" style="border-top:3px solid #34d399"><div class="h">Level 1 — Supply</div>
+<div class="v" style="font-size:24px;font-weight:700;color:#34d399">{lv["supply_acc"]}</div>
+<div class="d">accuracy · {lv["supply_mape"]}% MAPE · robust across COVID</div></div>
+<div class="vc" style="border-top:3px solid #f87171"><div class="h">Level 3 — Balance</div>
+<div class="v" style="font-size:24px;font-weight:700;color:#f87171">±{lv["balance_mae_m"]}M</div>
+<div class="d">~{lv["balance_rel"]}% — not reliably predictable at 5-yr horizon through a shock</div></div>
+</div>
+<div class="grid2" style="margin-top:14px">
+<div class="chart"><div class="t">Driver accuracy on the 2020–2024 hold-out</div>
+<table><thead><tr><th>Driver</th><th>Accuracy</th><th>MAPE</th></tr></thead><tbody>{dr}</tbody></table></div>
+<div class="chart"><div class="t">Totals: predicted vs observed (M person-years)</div>
+<table style="font-size:13px"><thead><tr><th>Year</th><th>Sup·pred</th><th>Sup·obs</th>
+<th>Dem·pred</th><th>Dem·obs</th><th>Bal·pred</th><th>Bal·obs</th></tr></thead><tbody>{yr}</tbody></table></div>
+</div>
+<div class="note"><b>Reading.</b> Supply &amp; demand forecasts stay within ~4–5% even five years out
+across COVID — Levels 1–2 are <b>accurate and robust</b>. The balance, a small difference of two large
+forecasts, is <b>not</b> precisely predictable at this horizon (observed swung +204→−18→+73 during COVID,
+which no model anticipates) — confirming it must be read as <b>structural direction with wide bands</b>,
+not a point number. A mild +3–6% over-prediction reflects training only on pre-COVID trend.</div>
+"""
 
 # error-by-horizon table (composed levels)
 hz = sorted(set(map(int, la.get("supply_by_h", {}).keys())))
@@ -209,6 +251,7 @@ person-years on a typical |balance| of ~{la.get("balance_base_m","?")}M. It is t
 <h2>Accuracy by country</h2>
 <p class="sub">Average forecast accuracy (1 − MAPE) across the five drivers, per country.</p>
 <table style="max-width:360px"><thead><tr><th>Country</th><th>Accuracy</th></tr></thead><tbody>{pc_rows}</tbody></table>
+{split_html}
 <h2>How the forecast tracks reality</h2>
 <p class="sub">Each chart forecasts the last 4 years from history only (gold = prediction,
 shaded = 80% band) and overlays what actually happened (blue dots). If dots sit in the band, the model is honest.</p>

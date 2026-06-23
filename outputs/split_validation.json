@@ -1,0 +1,88 @@
+{
+ "train_end": 2019,
+ "test": [
+  2020,
+  2021,
+  2022,
+  2023,
+  2024
+ ],
+ "drivers": {
+  "le_birth": {
+   "label": "Life expectancy",
+   "accuracy": 0.988,
+   "mape": 1.2
+  },
+  "healthy_share": {
+   "label": "Healthy share (HLY/LE)",
+   "accuracy": 0.966,
+   "mape": 3.4
+  },
+  "emp_rate": {
+   "label": "Employment rate",
+   "accuracy": 0.974,
+   "mape": 2.6
+  },
+  "working_life_yrs": {
+   "label": "Working-life duration",
+   "accuracy": 0.98,
+   "mape": 2.0
+  },
+  "vacancy_count": {
+   "label": "Job vacancies",
+   "accuracy": 0.728,
+   "mape": 27.2
+  }
+ },
+ "level": {
+  "supply_acc": 0.95,
+  "supply_mape": 5.0,
+  "demand_acc": 0.964,
+  "demand_mape": 3.6,
+  "balance_mae_m": 104,
+  "balance_base_m": 97,
+  "balance_rel": 106
+ },
+ "years": {
+  "2020": {
+   "supply_pred": 4606,
+   "supply_obs": 4482,
+   "demand_pred": 4458,
+   "demand_obs": 4294,
+   "balance_pred": 147,
+   "balance_obs": 188
+  },
+  "2021": {
+   "supply_pred": 4641,
+   "supply_obs": 4503,
+   "demand_pred": 4491,
+   "demand_obs": 4299,
+   "balance_pred": 150,
+   "balance_obs": 204
+  },
+  "2022": {
+   "supply_pred": 4676,
+   "supply_obs": 4384,
+   "demand_pred": 4523,
+   "demand_obs": 4402,
+   "balance_pred": 153,
+   "balance_obs": -18
+  },
+  "2023": {
+   "supply_pred": 4712,
+   "supply_obs": 4412,
+   "demand_pred": 4554,
+   "demand_obs": 4417,
+   "balance_pred": 157,
+   "balance_obs": -5
+  },
+  "2024": {
+   "supply_pred": 4747,
+   "supply_obs": 4492,
+   "demand_pred": 4585,
+   "demand_obs": 4419,
+   "balance_pred": 162,
+   "balance_obs": 73
+  }
+ }
+}
