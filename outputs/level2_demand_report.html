@@ -1,0 +1,99 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Level 2 — Labour Demand to 2035</title><style>
+:root{--bg:#0f1420;--card:#171e2e;--ink:#e8edf7;--mut:#94a3b8;--line:#2a3445;
+--acc:#5b9dff;--obs:#7dd3fc;--fc:#fbbf24;--band:rgba(251,191,36,.16);
+--up:#34d399;--down:#f87171;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);
+font:15px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:32px}
+.wrap{max-width:1080px;margin:0 auto}
+h1{font-size:26px;margin:0 0 4px}h2{font-size:18px;margin:34px 0 12px;
+border-bottom:1px solid var(--line);padding-bottom:6px}
+.sub{color:var(--mut);margin:0 0 8px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.kpi .v{font-size:22px;font-weight:700}.kpi .l{color:var(--mut);font-size:12px;margin-top:4px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.chart .hd{display:flex;justify-content:space-between;align-items:baseline}
+.chart .t{font-weight:600}.chart .r{color:var(--mut);font-size:11px}
+.pill{font-size:12px;font-weight:700;padding:2px 8px;border-radius:20px}
+.pos{color:var(--up);background:rgba(52,211,153,.12)}
+.neg{color:var(--down);background:rgba(248,113,113,.12)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}th{color:var(--mut);font-weight:600}
+.note{color:var(--mut);font-size:13px;background:var(--card);border:1px solid var(--line);
+border-radius:10px;padding:14px;margin-top:10px}
+.lgd{display:flex;gap:16px;color:var(--mut);font-size:12px;margin:6px 0 0;flex-wrap:wrap}
+.sw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+</style></head><body><div class="wrap">
+<h1>Level 2 — Labour Demand to 2035</h1>
+<p class="sub">Potential labour demand in <b>career person-years</b> (jobs × required length of service),
+8 countries, by sex · model 2011–2024, forecast to 2035 · Eurostat + MISSOC.</p>
+<div class="lgd"><span><span class="sw" style="background:var(--obs)"></span>Observed 2011–2024</span>
+<span><span class="sw" style="background:var(--fc)"></span>Forecast 2025–2035</span>
+<span><span class="sw" style="background:var(--band)"></span>80% uncertainty band</span>
+<span><span class="sw" style="background:#fff;border:1px dashed #888"></span>Participation-plateau 2035</span></div>
+<div class="kpis">
+<div class="kpi"><div class="v">4,420 → 4,391M</div><div class="l">Total demand, career person-years (2024 → 2035)</div></div>
+<div class="kpi"><div class="v" style="color:var(--down)">-0.7%</div><div class="l">Change to 2035 (broadly flat, ageing-tilted)</div></div>
+<div class="kpi"><div class="v">111 → 110M</div><div class="l">Jobs (employed + vacancies), people</div></div>
+<div class="kpi"><div class="v">2,073 / 2,315M</div><div class="l">2035 demand by sex (F / M)</div></div>
+</div>
+<h2>Demand predictions by country</h2><div class="grid" id="charts"></div>
+<h2>Forecast table</h2>
+<table><thead><tr><th>Country</th><th>Region</th><th>2024</th><th>2035</th>
+<th>80% band</th><th>Δ%</th><th>Plateau 2035</th></tr></thead><tbody id="tbody"></tbody></table>
+<div class="note"><b>How to read it.</b> Demand = (employed + vacancies) × required years of service —
+the stock of career-years the economy's jobs require. <b>East (BG/CZ/PL/RO) declines</b> as the
+working-age population shrinks; <b>West holds or grows</b>. The <b>plateau</b> column is the downside
+where employment rates stop rising — it hits DE, FR and BG hardest. Bands include out-of-sample
+model error and demographic uncertainty (decisions D5/D6).</div>
+<h2>Caveats</h2>
+<div class="note">• <b>France</b> vacancies carry Eurostat flag <code>d</code> (definition differs); its
++growth depends on rising participation (plateau → ~flat).<br>
+• <b>Required service</b> held at baseline (France's points system ≈ 43y effective); pension reforms are levers.<br>
+• Population from Eurostat <code>proj_23np</code> calibrated to observed 2024 (decision D4).<br>
+• 2024 demand reproduces exactly from raw data; verified by a 5-agent audit.</div>
+<p class="sub" style="margin-top:24px;font-size:12px">Generated from outputs/demand_forecast.csv · src/balance_forecast.py</p>
+</div>
+
+<script>
+const D={"DE": {"name": "Germany", "region": "West\u00b7EU", "obs_years": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "obs": [1750.3, 1760.7, 1774.4, 1790.0, 1804.5, 1851.3, 1871.3, 1885.2, 1909.3, 1853.9, 1837.7, 1899.6, 1914.5, 1898.8], "fyears": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "mean": [1891.8, 1892.7, 1889.6, 1882.2, 1878.1, 1871.3, 1869.6, 1871.7, 1866.1, 1864.2, 1868.3], "lo": [1857.5, 1834.6, 1810.2, 1794.8, 1782.0, 1766.1, 1745.4, 1732.4, 1725.3, 1705.2, 1703.9], "hi": [1928.0, 1952.2, 1967.0, 1967.9, 1971.8, 1977.4, 1992.9, 2006.3, 2013.4, 2022.9, 2036.8], "d2024": 1899.0, "d2035": 1868.0, "chg": -1.6, "jobs2035": 41.5, "plateau2035": 1783.0}, "FR": {"name": "France", "region": "West\u00b7EU", "obs_years": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "obs": [1107.6, 1107.5, 1105.4, 1130.2, 1131.9, 1138.7, 1150.1, 1160.2, 1165.6, 1158.3, 1194.7, 1224.5, 1231.0, 1242.2], "fyears": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "mean": [1250.7, 1257.4, 1262.8, 1266.4, 1270.8, 1276.5, 1277.9, 1279.4, 1282.9, 1285.7, 1285.5], "lo": [1226.6, 1225.3, 1223.8, 1217.3, 1209.1, 1201.6, 1198.8, 1190.0, 1183.2, 1182.6, 1170.1], "hi": [1271.3, 1288.4, 1302.4, 1316.9, 1332.7, 1349.4, 1358.4, 1365.9, 1380.0, 1392.3, 1399.5], "d2024": 1242.0, "d2035": 1286.0, "chg": 3.5, "jobs2035": 29.9, "plateau2035": 1241.0}, "PL": {"name": "Poland", "region": "East\u00b7EU", "obs_years": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "obs": [350.1, 350.3, 349.7, 356.1, 361.3, 363.7, 368.6, 370.4, 379.9, 378.8, 383.7, 385.0, 385.2, 383.0], "fyears": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "mean": [378.2, 378.1, 377.0, 376.7, 375.7, 375.6, 375.0, 374.8, 373.1, 376.4, 371.8], "lo": [365.0, 360.8, 353.8, 347.4, 339.3, 333.3, 328.6, 323.2, 315.8, 315.8, 306.0], "hi": [389.0, 394.8, 400.5, 405.9, 413.1, 417.9, 422.2, 429.1, 431.8, 438.7, 437.0], "d2024": 383.0, "d2035": 372.0, "chg": -2.9, "jobs2035": 16.4, "plateau2035": 363.0}, "RO": {"name": "Romania", "region": "East\u00b7EU", "obs_years": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "obs": [285.8, 288.6, 287.3, 290.2, 289.9, 287.9, 294.8, 295.5, 296.1, 290.8, 269.8, 272.1, 267.9, 273.2], "fyears": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "mean": [265.2, 263.7, 261.3, 258.9, 257.5, 256.2, 254.7, 253.5, 249.1, 245.2, 241.5], "lo": [260.6, 252.8, 248.1, 244.3, 243.4, 237.5, 235.9, 233.1, 231.0, 226.9, 221.4], "hi": [269.8, 274.5, 274.5, 273.4, 272.9, 275.1, 274.0, 274.3, 267.3, 264.2, 262.6], "d2024": 273.0, "d2035": 242.0, "chg": -11.6, "jobs2035": 6.9, "plateau2035": 242.0}, "CZ": {"name": "Czechia", "region": "East\u00b7EU", "obs_years": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "obs": [169.1, 169.7, 170.9, 172.8, 175.9, 179.9, 184.2, 189.0, 190.3, 186.6, 185.3, 183.2, 176.8, 180.5], "fyears": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "mean": [180.8, 180.7, 180.9, 180.4, 179.9, 179.1, 178.7, 178.8, 178.7, 179.8, 179.5], "lo": [173.2, 169.1, 167.3, 166.3, 164.6, 162.7, 160.6, 159.6, 159.7, 160.0, 157.6], "hi": [188.9, 192.8, 194.9, 194.6, 195.6, 195.9, 197.6, 198.4, 199.1, 200.4, 202.1], "d2024": 181.0, "d2035": 180.0, "chg": -0.6, "jobs2035": 5.1, "plateau2035": 176.0}, "CH": {"name": "Switzerland", "region": "EFTA", "obs_years": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "obs": [186.0, 187.8, 189.3, 192.1, 194.6, 197.0, 198.6, 200.8, 202.9, 201.8, 203.1, 206.8, 209.7, 209.9], "fyears": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "mean": [208.6, 208.9, 209.0, 209.1, 209.2, 208.9, 209.3, 209.0, 209.0, 209.3, 209.6], "lo": [206.4, 205.0, 203.5, 202.9, 201.8, 200.2, 199.4, 198.3, 197.3, 196.1, 195.5], "hi": [210.9, 213.0, 214.5, 215.5, 216.6, 218.0, 219.2, 219.7, 220.8, 222.3, 223.9], "d2024": 210.0, "d2035": 210.0, "chg": -0.1, "jobs2035": 4.8, "plateau2035": 208.0}, "BG": {"name": "Bulgaria", "region": "East\u00b7EU", "obs_years": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "obs": [113.1, 111.8, 111.5, 113.1, 114.9, 114.3, 118.9, 118.7, 114.0, 109.5, 107.7, 109.9, 109.1, 109.0], "fyears": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "mean": [109.1, 108.9, 108.6, 108.2, 108.0, 107.5, 107.2, 107.3, 107.1, 106.3, 105.7], "lo": [106.5, 104.6, 102.8, 101.1, 100.2, 98.3, 96.3, 95.1, 93.7, 91.1, 90.0], "hi": [112.1, 113.4, 114.4, 115.3, 115.9, 116.8, 117.9, 119.2, 120.5, 121.3, 121.7], "d2024": 109.0, "d2035": 106.0, "chg": -3.0, "jobs2035": 2.8, "plateau2035": 98.0}, "NO": {"name": "Norway", "region": "EFTA", "obs_years": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "obs": [108.1, 109.9, 110.4, 110.9, 111.1, 111.0, 111.5, 113.5, 114.9, 114.0, 117.3, 121.2, 122.7, 122.6], "fyears": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "mean": [121.5, 122.1, 122.8, 123.6, 124.1, 124.7, 125.2, 125.3, 126.1, 126.2, 126.7], "lo": [120.6, 119.7, 119.0, 119.1, 118.8, 118.4, 118.4, 117.8, 118.2, 117.3, 117.2], "hi": [122.4, 124.6, 126.4, 128.1, 129.5, 130.9, 132.1, 133.0, 134.1, 134.9, 136.3], "d2024": 123.0, "d2035": 127.0, "chg": 3.3, "jobs2035": 3.0, "plateau2035": 126.0}};
+const W=470,H=210,P={l:42,r:12,t:12,b:24};
+function chart(c){
+ const s=D[c],ow=s.obs_years,ov=s.obs,fy=s.fyears,fm=s.mean,lo=s.lo,hi=s.hi;
+ const xs=[...ow,...fy],allv=[...ov,...hi,...lo,s.plateau2035];
+ const x0=Math.min(...xs),x1=Math.max(...xs),y1=Math.max(...allv)*1.08;
+ const X=v=>P.l+(v-x0)/(x1-x0)*(W-P.l-P.r);
+ const Y=v=>H-P.b-(v)/(y1)*(H-P.t-P.b);
+ const lp=(xx,yy)=>xx.map((x,i)=>(i?'L':'M')+X(x).toFixed(1)+' '+Y(yy[i]).toFixed(1)).join(' ');
+ const band=fy.map((x,i)=>X(x).toFixed(1)+' '+Y(hi[i]).toFixed(1)).join(' L ')
+   +' L '+fy.slice().reverse().map((x,i)=>X(x).toFixed(1)+' '+Y(lo[lo.length-1-i]).toFixed(1)).join(' L ');
+ let g='';
+ for(let yr=x0;yr<=x1;yr+=4){g+=`<line x1=${X(yr)} y1=${P.t} x2=${X(yr)} y2=${H-P.b} stroke="var(--line)"/>`
+   +`<text x=${X(yr)} y=${H-8} fill="var(--mut)" font-size=10 text-anchor=middle>${yr}</text>`;}
+ for(let k=0;k<=2;k++){const v=y1*k/2;g+=`<line x1=${P.l} y1=${Y(v)} x2=${W-P.r} y2=${Y(v)} stroke="var(--line)" opacity=.5/>`
+   +`<text x=${P.l-6} y=${Y(v)+3} fill="var(--mut)" font-size=10 text-anchor=end>${Math.round(v)}</text>`;}
+ const join=[ow[ow.length-1],fy[0]],joinv=[ov[ov.length-1],fm[0]];
+ const cls=s.chg<0?'neg':'pos';
+ return `<div class="chart"><div class="hd"><div><span class="t">${s.name}</span>
+   <span class="r"> ${s.region}</span></div><span class="pill ${cls}">${s.chg>0?'+':''}${s.chg}%</span></div>
+ <svg viewBox="0 0 ${W} ${H}" width="100%">${g}
+ <path d="M ${band} Z" fill="var(--band)"/>
+ <path d="${lp(ow,ov)}" fill="none" stroke="var(--obs)" stroke-width="2"/>
+ <path d="${lp(join,joinv)}" fill="none" stroke="var(--fc)" stroke-width="1.5" stroke-dasharray="2 2"/>
+ <path d="${lp(fy,fm)}" fill="none" stroke="var(--fc)" stroke-width="2"/>
+ <circle cx=${X(2035)} cy=${Y(s.plateau2035)} r=3.2 fill="none" stroke="#fff" stroke-dasharray="2 1.5"/>
+ </svg></div>`;
+}
+document.getElementById('charts').innerHTML=Object.keys(D).map(chart).join('');
+document.getElementById('tbody').innerHTML=Object.keys(D).map(c=>{const s=D[c];
+ const cls=s.chg<0?'neg':'pos';
+ return `<tr><td>${s.name}</td><td style="color:var(--mut)">${s.region}</td>
+ <td>${s.d2024}</td><td>${s.d2035}</td>
+ <td style="color:var(--mut)">${s.lo[s.lo.length-1]}–${s.hi[s.hi.length-1]}</td>
+ <td class="${cls}" style="text-align:right">${s.chg>0?'+':''}${s.chg}%</td>
+ <td style="color:var(--mut)">${s.plateau2035}</td></tr>`;}).join('');
+</script></body></html>

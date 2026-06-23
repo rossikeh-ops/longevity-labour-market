@@ -1,0 +1,21 @@
+# Large provided case materials (not ours to redistribute — see case repo)
+haralampiev/
+*.pdf
+*.mp4
+*.png
+*.jpg
+Bridging Longevity and Labour Markets.xlsx
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Claude Code local settings
+.claude/

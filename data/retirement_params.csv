@@ -1,0 +1,17 @@
+country,sex,statutory_retirement_age,required_service_years,source_note
+BG,M,64.75,39.83,Excel/MISSOC 64y9m / service 39y10m
+BG,F,62.50,36.83,Excel/MISSOC 62y6m / service 36y10m
+PL,M,65.00,25.00,Excel/MISSOC 65 / 25y (min pension basis)
+PL,F,60.00,20.00,Excel/MISSOC 60 / 20y (min pension basis)
+CZ,M,64.50,35.00,Excel/MISSOC ~64y6m / min 35y
+CZ,F,64.50,35.00,Excel: age varies by children; service 35y (approx)
+RO,M,65.00,35.00,Excel/MISSOC 15y min / 35y full
+RO,F,62.50,35.00,Excel ~62y6m / 35y full
+DE,M,66.33,45.00,Excel/MISSOC 66y4m / 45y full
+DE,F,66.33,45.00,Excel/MISSOC 66y4m / 45y full
+FR,M,64.00,43.00,Excel flexible 62-75; no classic service -> effective career ~43y
+FR,F,64.00,43.00,Excel flexible 62-75; no classic service -> effective career ~43y
+NO,M,62.75,42.75,Excel ~62y9m / 42.5-43y
+NO,F,62.75,42.75,Excel ~62y9m / 42.5-43y
+CH,M,64.50,44.00,Excel ~64y6m / 1y min / 44y full
+CH,F,64.50,44.00,Excel ~64y6m / 1y min / 44y full

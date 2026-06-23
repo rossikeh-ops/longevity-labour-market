@@ -1,0 +1,14 @@
+code,level,download_date,filter,rows,countries_with_data,missing_geo,units,file,status
+hlth_hlye,1,2026-06-22,"{'sex': ['F', 'M'], 'indic_he': ['LE_0', 'LE_65', 'HLY_0', 'HLY_65']}",1344,"BG,CH,CZ,DE,FR,NO,PL,RO",,YR,hlth_hlye__2026-06-22.parquet,ok
+demo_mlexpec,1,2026-06-22,"{'sex': ['F', 'M'], 'age': ['Y_LT1', 'Y15', 'Y65']}",3120,"BG,CH,CZ,DE,FR,NO,PL,RO",,YR,demo_mlexpec__2026-06-22.parquet,ok
+demo_pjan,1,2026-06-22,"{'sex': ['F', 'M'], 'age': ['TOTAL']}",1056,"BG,CH,CZ,DE,FR,NO,PL,RO",,NR,demo_pjan__2026-06-22.parquet,ok
+demo_pjangroup,1,2026-06-22,"{'sex': ['F', 'M'], 'age': ['TOTAL', 'Y15-19', 'Y20-24', 'Y25-29', 'Y30-34', 'Y35-39', 'Y40-44', 'Y45-49', 'Y50-54', 'Y55-59', 'Y60-64', 'Y65-69', 'Y70-74', 'Y_GE75']}",14784,"BG,CH,CZ,DE,FR,NO,PL,RO",,NR,demo_pjangroup__2026-06-22.parquet,ok
+une_rt_a,3,2026-06-22,"{'sex': ['F', 'M'], 'age': ['Y15-74'], 'unit': ['PC_ACT']}",368,"BG,CH,CZ,DE,FR,NO,PL,RO",,PC_ACT,une_rt_a__2026-06-22.parquet,ok
+nama_10_a64,4,2026-06-22,"{'nace_r2': ['Q'], 'na_item': ['B1G'], 'unit': ['CLV15_MEUR']}",408,"BG,CH,CZ,DE,FR,NO,PL,RO",,CLV15_MEUR,nama_10_a64__2026-06-22.parquet,ok
+gov_10a_exp,4,2026-06-22,"{'cofog99': ['GF07', 'GF10'], 'na_item': ['TE'], 'sector': ['S13'], 'unit': ['MIO_EUR']}",576,"BG,CH,CZ,DE,FR,NO,PL,RO",,MIO_EUR,gov_10a_exp__2026-06-22.parquet,ok
+nama_10_co3_p3,5,2026-06-22,"{'coicop': ['CP09', 'CP10', 'CP11'], 'unit': ['CLV15_MEUR']}",1224,"BG,CH,CZ,DE,FR,NO,PL,RO",,CLV15_MEUR,nama_10_co3_p3__2026-06-22.parquet,ok
+jvs_a_rate_r2,2,2026-06-22,"{'nace_r2': ['A-S'], 's_adj': ['NSA']}",432,"BG,CZ,DE,NO,PL,RO",,"AVG_3Y,AVG_A",jvs_a_rate_r2__2026-06-22.parquet,ok
+jvs_a_r21,2,2026-06-22,nace_r2_1=B-T; unit=AVG_A; sizeclas=TOTAL|GE10,144,"BG,CH,CZ,DE,FR,NO,PL,RO",,AVG_A,jvs_a_r21__2026-06-22.parquet,ok
+jvs_q_r21,2,2026-06-22,"nace_r2_1=B-T; sizeclas=TOTAL; s_adj=NSA; indic_em=JVR,JOBVAC",303,"BG,CH,CZ,DE,FR,NO,PL,RO",,annual_mean,jvs_q_r21__2026-06-22.parquet,ok
+lfsa_egan,2,2026-06-22,"{'sex': ['F', 'M'], 'age': ['Y15-64'], 'unit': ['THS_PER'], 'citizen': ['TOTAL']}",496,"BG,CH,CZ,DE,FR,NO,PL,RO",,THS_PER,lfsa_egan__2026-06-22.parquet,ok
+lfsi_dwl_a,2,2026-06-22,"{'sex': ['F', 'M'], 'unit': ['YR']}",416,"BG,CH,CZ,DE,FR,NO,PL,RO",,YR,lfsi_dwl_a__2026-06-22.parquet,ok
