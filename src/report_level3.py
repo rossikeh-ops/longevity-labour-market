@@ -44,23 +44,31 @@ deficit35 = round(sum(series[c]["b2035"] for c in countries if series[c]["b2035"
 surplus35 = round(sum(series[c]["b2035"] for c in countries if series[c]["b2035"] > 0))
 
 # ---- static diverging bar (2035 balance by country) ----
-W1, rh = 940, 30
+# Layout: fixed left gutter for names, centred zero axis, value labels at bar ends.
+W1, rh = 960, 34
+NAMEX, PLOTL, PLOTR = 14, 150, W1 - 100   # name col | plot region [150 .. 860]
+cx = (PLOTL + PLOTR) / 2                   # zero axis
+half = (PLOTR - PLOTL) / 2
 maxabs = max(abs(series[c]["b2035"]) for c in countries)
-cx = 360
+nrows = len(countries)
 bars = []
 for i, c in enumerate(countries):
-    s = series[c]; y = i * rh + 8
-    w = abs(s["b2035"]) / maxabs * (W1 - cx - 90)
-    col = "#34d399" if s["b2035"] >= 0 else "#f87171"
-    x = cx if s["b2035"] >= 0 else cx - w
-    bars.append(f'<text x="{cx-90}" y="{y+15}" fill="#e8edf7" font-size="13">{s["name"]}</text>'
-                f'<rect x="{x:.1f}" y="{y+3}" width="{w:.1f}" height="18" rx="3" fill="{col}" opacity="0.85"/>'
-                f'<text x="{(cx+w+6) if s["b2035"]>=0 else (cx-w-6):.1f}" y="{y+16}" fill="{col}" '
-                f'font-size="12" text-anchor="{"start" if s["b2035"]>=0 else "end"}">{"+" if s["b2035"]>0 else ""}{s["b2035"]}M</text>')
-bars.append(f'<line x1="{cx}" y1="4" x2="{cx}" y2="{len(countries)*rh+4}" stroke="#94a3b8" stroke-width="1"/>')
-bars.append(f'<text x="{cx+70}" y="{len(countries)*rh+22}" fill="#34d399" font-size="11">surplus →</text>')
-bars.append(f'<text x="{cx-70}" y="{len(countries)*rh+22}" fill="#f87171" font-size="11" text-anchor="end">← shortage</text>')
-diverge_svg = (f'<svg viewBox="0 0 {W1} {len(countries)*rh+30}" width="100%" '
+    s = series[c]; v = s["b2035"]
+    yc = i * rh + rh / 2 + 4                # row vertical centre (baseline)
+    w = abs(v) / maxabs * half
+    col = "#34d399" if v >= 0 else "#f87171"
+    x = cx if v >= 0 else cx - w
+    lab_x = (cx + w + 8) if v >= 0 else (cx - w - 8)
+    anchor = "start" if v >= 0 else "end"
+    bars.append(
+        f'<text x="{NAMEX}" y="{yc:.1f}" fill="#e8edf7" font-size="13" dominant-baseline="middle">{s["name"]}</text>'
+        f'<rect x="{x:.1f}" y="{i*rh+9}" width="{w:.1f}" height="16" rx="3" fill="{col}" opacity="0.85"/>'
+        f'<text x="{lab_x:.1f}" y="{yc:.1f}" fill="{col}" font-size="12" '
+        f'text-anchor="{anchor}" dominant-baseline="middle">{"+" if v>0 else ""}{v}M</text>')
+bars.append(f'<line x1="{cx}" y1="4" x2="{cx}" y2="{nrows*rh+2}" stroke="#94a3b8" stroke-width="1"/>')
+bars.append(f'<text x="{cx+8}" y="{nrows*rh+20}" fill="#34d399" font-size="11">surplus →</text>')
+bars.append(f'<text x="{cx-8}" y="{nrows*rh+20}" fill="#f87171" font-size="11" text-anchor="end">← shortage</text>')
+diverge_svg = (f'<svg viewBox="0 0 {W1} {nrows*rh+28}" width="100%" '
                f'xmlns="http://www.w3.org/2000/svg">{"".join(bars)}</svg>')
 
 
