@@ -32,12 +32,30 @@ rows = []
 for k in order:
     m = metrics[k]
     lab, cls, why = VERDICT[k]
-    rows.append({"label": m["label"], "mape": m["mape_ens"], "naive": m["mape_naive"],
+    rows.append({"label": m["label"], "acc": m["accuracy"], "mape": m["mape_ens"],
+                 "rmse": m["rmse"], "bias": m["bias_pct"], "naive": m["mape_naive"],
                  "skill": m["skill"], "cover": round(m["coverage80"] * 100),
                  "verdict": lab, "cls": cls, "why": why})
 n_trust = sum(1 for r in rows if r["cls"] == "ok")
 COL = {"ok": "#34d399", "warn": "#fbbf24", "bad": "#f87171"}
 la = val.get("level_acc", {})
+
+# per-country accuracy: average the 0-1 accuracy across drivers
+pc = {}
+for k in order:
+    for c, a in metrics[k].get("per_country_acc", {}).items():
+        pc.setdefault(c, []).append(a)
+pc_acc = {c: round(sum(v) / len(v), 3) for c, v in pc.items()}
+pc_rows = "".join(
+    f'<tr><td>{c}</td><td>{a:.3f}</td></tr>'
+    for c, a in sorted(pc_acc.items(), key=lambda x: -x[1]))
+
+# error-by-horizon table (composed levels)
+hz = sorted(set(map(int, la.get("supply_by_h", {}).keys())))
+hz_rows = "".join(
+    f'<tr><td>{h} yr</td><td>{la["supply_by_h"].get(str(h),la["supply_by_h"].get(h,"?"))}%</td>'
+    f'<td>{la["demand_by_h"].get(str(h),la["demand_by_h"].get(h,"?"))}%</td>'
+    f'<td>±{la["balance_by_h"].get(str(h),la["balance_by_h"].get(h,"?"))}M</td></tr>' for h in hz)
 
 # ---------- static SVG: showcase observed-vs-predicted traces ----------
 def trace_svg(s):
@@ -89,10 +107,14 @@ trow = []
 for r in rows:
     sk = (f'<span style="color:#34d399">+{r["skill"]}</span>' if r["skill"] > 0
           else f'<span style="color:#f87171">{r["skill"]}</span>')
-    trow.append(f'<tr><td>{r["label"]}</td><td>{r["mape"]}%</td>'
-                f'<td style="color:#94a3b8">{r["naive"]}%</td><td style="text-align:right">{sk}</td>'
-                f'<td>{r["cover"]}%</td><td style="text-align:right">'
-                f'<span class="tag {r["cls"]}">{r["verdict"]}</span></td></tr>')
+    acol = "#34d399" if r["acc"] >= 0.95 else ("#fbbf24" if r["acc"] >= 0.85 else "#f87171")
+    bsign = "+" if r["bias"] > 0 else ""
+    trow.append(f'<tr><td>{r["label"]}</td>'
+                f'<td style="font-weight:700;color:{acol}">{r["acc"]:.3f}</td>'
+                f'<td>{r["mape"]}%</td><td style="color:#94a3b8">{r["rmse"]:g}</td>'
+                f'<td style="color:#94a3b8">{bsign}{r["bias"]}%</td>'
+                f'<td style="text-align:right">{sk}</td><td>{r["cover"]}%</td>'
+                f'<td style="text-align:right"><span class="tag {r["cls"]}">{r["verdict"]}</span></td></tr>')
 table_html = "".join(trow)
 cards_html = "".join(
     f'<div class="vc" style="border-top:3px solid {COL[r["cls"]]}"><div class="h">{r["label"]}</div>'
@@ -152,10 +174,11 @@ Uncertainty bands cover 84–89% of reality (target 80%) — honest, slightly co
 <div class="kpi"><div class="v">~{jobs_impact:.1f}%</div><div class="l">Demand impact of the weak vacancy forecast</div></div>
 </div>
 <h2>Accuracy by driver</h2>
-<p class="sub">MAPE = mean absolute % error on held-out years. Skill = how much better than a
-last-value naive forecast (positive is good). Coverage = share of actuals inside the 80% band.</p>
-<table><thead><tr><th>Driver</th><th>MAPE (model)</th><th>MAPE (naive)</th>
-<th>Skill vs naive</th><th>Coverage 80%</th><th>Verdict</th></tr></thead><tbody>{table_html}</tbody></table>
+<p class="sub"><b>Accuracy = 1 − MAPE</b> (1.000 = perfect). MAPE = mean abs % error on held-out years;
+RMSE in native units; Bias = signed error (+ = over-forecast); Skill = improvement over a naive
+last-value forecast; Coverage = share of actuals inside the 80% band.</p>
+<table><thead><tr><th>Driver</th><th>Accuracy</th><th>MAPE</th><th>RMSE</th><th>Bias</th>
+<th>Skill</th><th>Cover 80%</th><th>Verdict</th></tr></thead><tbody>{table_html}</tbody></table>
 <div style="margin-top:14px">{mape_svg}</div>
 <h2>Accuracy of the composed outputs (Levels 1–3)</h2>
 <p class="sub">The drivers above are the inputs. The actual <b>level outputs</b> have their own
@@ -165,19 +188,27 @@ dominated by accurate employment, and the balance is a <i>difference</i> of two 
 relative error is amplified).</p>
 <div class="cards">
 <div class="vc" style="border-top:3px solid #34d399"><div class="h">Level 2 — Demand</div>
-<div class="kpi" style="border:0;padding:0"><div class="v" style="color:#34d399">{la.get("demand_mape","?")}%</div>
-<div class="l">MAPE · most accurate (employment-driven)</div></div></div>
+<div class="v" style="font-size:24px;font-weight:700;color:#34d399">{la.get("demand_acc","?")}</div>
+<div class="d">accuracy · {la.get("demand_mape","?")}% MAPE · bias {"+" if la.get("demand_bias",0)>0 else ""}{la.get("demand_bias","?")}% · most accurate (employment-driven)</div></div>
 <div class="vc" style="border-top:3px solid #fbbf24"><div class="h">Level 1 — Supply</div>
-<div class="kpi" style="border:0;padding:0"><div class="v" style="color:#fbbf24">{la.get("supply_mape","?")}%</div>
-<div class="l">MAPE · health-share noise propagates through the product</div></div></div>
+<div class="v" style="font-size:24px;font-weight:700;color:#fbbf24">{la.get("supply_acc","?")}</div>
+<div class="d">accuracy · {la.get("supply_mape","?")}% MAPE · bias {"+" if la.get("supply_bias",0)>0 else ""}{la.get("supply_bias","?")}% · health-share noise propagates</div></div>
 <div class="vc" style="border-top:3px solid #fbbf24"><div class="h">Level 3 — Balance</div>
-<div class="kpi" style="border:0;padding:0"><div class="v" style="color:#fbbf24">±{la.get("balance_mae_m","?")}M</div>
-<div class="l">~{la.get("balance_rel","?")}% rel. · difference of ~4,500M numbers → amplified</div></div></div>
+<div class="v" style="font-size:24px;font-weight:700;color:#fbbf24">±{la.get("balance_mae_m","?")}M</div>
+<div class="d">~{la.get("balance_rel","?")}% rel. · difference of ~4,500M stocks → amplified</div></div>
 </div>
 <div class="note">Read the balance error in <b>absolute</b> terms: ±{la.get("balance_mae_m","?")}M career
 person-years on a typical |balance| of ~{la.get("balance_base_m","?")}M. It is the least accurate
-<i>relatively</i> by construction — small % moves in the two large stocks (supply, demand) translate
-into larger % moves in their difference. Backtest origins 2020–2023, all 8 countries.</div>
+<i>relatively</i> by construction. Backtest origins 2020–2023, all 8 countries.</div>
+
+<h2>Error by forecast horizon</h2>
+<p class="sub">How accuracy decays with how far ahead we forecast (1–4 years out), for the composed levels.</p>
+<table style="max-width:520px"><thead><tr><th>Years ahead</th><th>Supply MAPE</th><th>Demand MAPE</th>
+<th>Balance error</th></tr></thead><tbody>{hz_rows}</tbody></table>
+
+<h2>Accuracy by country</h2>
+<p class="sub">Average forecast accuracy (1 − MAPE) across the five drivers, per country.</p>
+<table style="max-width:360px"><thead><tr><th>Country</th><th>Accuracy</th></tr></thead><tbody>{pc_rows}</tbody></table>
 <h2>How the forecast tracks reality</h2>
 <p class="sub">Each chart forecasts the last 4 years from history only (gold = prediction,
 shaded = 80% band) and overlays what actually happened (blue dots). If dots sit in the band, the model is honest.</p>

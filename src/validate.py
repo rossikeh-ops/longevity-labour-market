@@ -64,6 +64,15 @@ def mape(rows, key):
     return float(np.mean(e)) if e else np.nan
 
 
+def rmse(rows, key):
+    return float(np.sqrt(np.mean([(r["actual"] - r[key]) ** 2 for r in rows])))
+
+
+def bias_pct(rows):           # signed: + means model over-forecasts
+    e = [(r["pred"] - r["actual"]) / r["actual"] for r in rows if r["actual"] != 0]
+    return float(np.mean(e)) * 100 if e else np.nan
+
+
 metrics = {}
 for col, label in IND.items():
     allrows = []
@@ -74,18 +83,26 @@ for col, label in IND.items():
             y, v = history(panel, c, s, col)
             crows += backtest_series(y, v)
         if crows:
-            per_country[c] = round(mape(crows, "pred") * 100, 1)
+            per_country[c] = round((1 - mape(crows, "pred")), 3)   # accuracy 0-1
         allrows += crows
     if not allrows:
         continue
     cov = float(np.mean([r["lo"] <= r["actual"] <= r["hi"] for r in allrows]))
     me, mn = mape(allrows, "pred"), mape(allrows, "naive")
+    by_h = {}
+    for h in sorted({r["h"] for r in allrows}):
+        hr = [r for r in allrows if r["h"] == h]
+        by_h[int(h)] = round(mape(hr, "pred") * 100, 1)
     metrics[col] = {
         "label": label, "n": len(allrows),
+        "accuracy": round(1 - me, 3),                    # 0-1, e.g. 0.97
         "mape_ens": round(me * 100, 2), "mape_naive": round(mn * 100, 2),
+        "rmse": round(rmse(allrows, "pred"), 3),
+        "bias_pct": round(bias_pct(allrows), 1),
         "skill": round(1 - me / mn, 3) if mn else None,
         "coverage80": round(cov, 3),
-        "per_country": per_country,
+        "mape_by_h": by_h,
+        "per_country_acc": per_country,
     }
 
 # showcase observed-vs-predicted traces (last-origin forecast vs actual)
@@ -112,6 +129,8 @@ ret = pd.read_csv(ROOT / "data" / "retirement_params.csv")
 svc = {(r.country, r.sex): r.required_service_years for r in ret.itertuples()}
 sobs = pd.read_csv(OUT / "supply_observed.csv")
 eS, eD, eB, baseB = [], [], [], []
+bsS, bsD = [], []                 # signed relative error (bias)
+hS, hD, hB = {}, {}, {}           # error by horizon
 for c in COUNTRIES:
     oc = sobs[sobs.country == c].groupby("year").agg(
         S=("supply_realized", "sum"), D=("demand", "sum"), B=("balance_realized", "sum"))
@@ -133,16 +152,25 @@ for c in COUNTRIES:
         for i, y in enumerate(tgt):
             if y in oc.index:
                 So, Do, Bo = oc.loc[y, "S"], oc.loc[y, "D"], oc.loc[y, "B"]
-                eS.append(abs(Sp[i] - So) / So)
-                eD.append(abs(Dp[i] - Do) / Do)
-                eB.append(abs(Bp[i] - Bo) / 1e6)
-                baseB.append(abs(Bo) / 1e6)
+                h = int(y - origin)
+                eS.append(abs(Sp[i] - So) / So); bsS.append((Sp[i] - So) / So)
+                eD.append(abs(Dp[i] - Do) / Do); bsD.append((Dp[i] - Do) / Do)
+                eB.append(abs(Bp[i] - Bo) / 1e6); baseB.append(abs(Bo) / 1e6)
+                hS.setdefault(h, []).append(abs(Sp[i] - So) / So)
+                hD.setdefault(h, []).append(abs(Dp[i] - Do) / Do)
+                hB.setdefault(h, []).append(abs(Bp[i] - Bo) / 1e6)
+mS, mD = float(np.mean(eS)), float(np.mean(eD))
 level_acc = {
-    "supply_mape": round(float(np.mean(eS)) * 100, 1),
-    "demand_mape": round(float(np.mean(eD)) * 100, 1),
+    "supply_acc": round(1 - mS, 3), "demand_acc": round(1 - mD, 3),
+    "supply_mape": round(mS * 100, 1), "demand_mape": round(mD * 100, 1),
+    "supply_bias": round(float(np.mean(bsS)) * 100, 1),
+    "demand_bias": round(float(np.mean(bsD)) * 100, 1),
     "balance_mae_m": round(float(np.mean(eB))),
     "balance_base_m": round(float(np.mean(baseB))),
     "balance_rel": round(float(np.mean(eB) / np.mean(baseB)) * 100),
+    "supply_by_h": {h: round(float(np.mean(v)) * 100, 1) for h, v in sorted(hS.items())},
+    "demand_by_h": {h: round(float(np.mean(v)) * 100, 1) for h, v in sorted(hD.items())},
+    "balance_by_h": {h: round(float(np.mean(v))) for h, v in sorted(hB.items())},
 }
 
 result = {"metrics": metrics, "show": show, "test_h": TEST_H, "level_acc": level_acc}

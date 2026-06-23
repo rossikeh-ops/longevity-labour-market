@@ -3,91 +3,136 @@
   "le_birth": {
    "label": "Life expectancy (LE)",
    "n": 160,
+   "accuracy": 0.988,
    "mape_ens": 1.2,
    "mape_naive": 1.39,
+   "rmse": 1.395,
+   "bias_pct": -0.7,
    "skill": 0.134,
    "coverage80": 0.881,
-   "per_country": {
-    "BG": 2.8,
-    "PL": 1.7,
-    "CZ": 1.5,
-    "RO": 2.0,
-    "DE": 0.3,
-    "FR": 0.4,
-    "NO": 0.6,
-    "CH": 0.3
+   "mape_by_h": {
+    "1": 1.0,
+    "2": 1.2,
+    "3": 1.7,
+    "4": 1.0
+   },
+   "per_country_acc": {
+    "BG": 0.972,
+    "PL": 0.983,
+    "CZ": 0.985,
+    "RO": 0.98,
+    "DE": 0.997,
+    "FR": 0.996,
+    "NO": 0.994,
+    "CH": 0.997
    }
   },
   "healthy_share": {
    "label": "Healthy share (HLY/LE)",
    "n": 160,
+   "accuracy": 0.969,
    "mape_ens": 3.12,
    "mape_naive": 2.88,
+   "rmse": 0.032,
+   "bias_pct": 1.3,
    "skill": -0.082,
    "coverage80": 0.869,
-   "per_country": {
-    "BG": 2.5,
-    "PL": 1.4,
-    "CZ": 1.6,
-    "RO": 3.9,
-    "DE": 5.6,
-    "FR": 2.2,
-    "NO": 4.8,
-    "CH": 3.1
+   "mape_by_h": {
+    "1": 2.2,
+    "2": 3.2,
+    "3": 4.2,
+    "4": 4.5
+   },
+   "per_country_acc": {
+    "BG": 0.975,
+    "PL": 0.986,
+    "CZ": 0.984,
+    "RO": 0.961,
+    "DE": 0.944,
+    "FR": 0.978,
+    "NO": 0.952,
+    "CH": 0.969
    }
   },
   "emp_rate": {
    "label": "Employment rate",
    "n": 160,
+   "accuracy": 0.982,
    "mape_ens": 1.79,
    "mape_naive": 1.92,
+   "rmse": 0.017,
+   "bias_pct": -0.1,
    "skill": 0.069,
    "coverage80": 0.887,
-   "per_country": {
-    "BG": 1.5,
-    "PL": 1.8,
-    "CZ": 4.5,
-    "RO": 2.1,
-    "DE": 1.2,
-    "FR": 1.3,
-    "NO": 1.0,
-    "CH": 0.9
+   "mape_by_h": {
+    "1": 1.5,
+    "2": 2.0,
+    "3": 2.1,
+    "4": 1.9
+   },
+   "per_country_acc": {
+    "BG": 0.985,
+    "PL": 0.982,
+    "CZ": 0.955,
+    "RO": 0.979,
+    "DE": 0.988,
+    "FR": 0.987,
+    "NO": 0.99,
+    "CH": 0.991
    }
   },
   "working_life_yrs": {
    "label": "Working-life duration",
    "n": 160,
+   "accuracy": 0.985,
    "mape_ens": 1.54,
    "mape_naive": 1.94,
+   "rmse": 0.729,
+   "bias_pct": -1.5,
    "skill": 0.203,
    "coverage80": 0.85,
-   "per_country": {
-    "BG": 2.1,
-    "PL": 2.2,
-    "CZ": 2.4,
-    "RO": 2.2,
-    "DE": 0.8,
-    "FR": 1.4,
-    "NO": 0.7,
-    "CH": 0.5
+   "mape_by_h": {
+    "1": 1.0,
+    "2": 1.5,
+    "3": 2.1,
+    "4": 2.8
+   },
+   "per_country_acc": {
+    "BG": 0.979,
+    "PL": 0.978,
+    "CZ": 0.976,
+    "RO": 0.978,
+    "DE": 0.992,
+    "FR": 0.986,
+    "NO": 0.993,
+    "CH": 0.995
    }
   },
   "vacancy_count": {
    "label": "Job vacancies",
    "n": 160,
+   "accuracy": 0.71,
    "mape_ens": 28.99,
    "mape_naive": 24.39,
+   "rmse": 162814.11,
+   "bias_pct": 21.9,
    "skill": -0.189,
    "coverage80": 0.838,
-   "per_country": {
-    "BG": 6.2,
-    "PL": 37.4,
-    "CZ": 84.3,
-    "RO": 14.8,
-    "DE": 28.6,
-    "FR": 25.1,
-    "NO": 17.5,
-    "CH": 18.0
+   "mape_by_h": {
+    "1": 18.6,
+    "2": 30.2,
+    "3": 39.5,
+    "4": 46.0
+   },
+   "per_country_acc": {
+    "BG": 0.938,
+    "PL": 0.626,
+    "CZ": 0.157,
+    "RO": 0.852,
+    "DE": 0.714,
+    "FR": 0.749,
+    "NO": 0.825,
+    "CH": 0.82
    }
   }
  },
@@ -405,10 +450,32 @@
  },
  "test_h": 4,
  "level_acc": {
+  "supply_acc": 0.965,
+  "demand_acc": 0.984,
   "supply_mape": 3.5,
   "demand_mape": 1.6,
+  "supply_bias": 3.3,
+  "demand_bias": 1.2,
   "balance_mae_m": 15,
   "balance_base_m": 91,
-  "balance_rel": 16
+  "balance_rel": 16,
+  "supply_by_h": {
+   "1": 3.8,
+   "2": 3.6,
+   "3": 3.3,
+   "4": 2.3
+  },
+  "demand_by_h": {
+   "1": 1.7,
+   "2": 1.5,
+   "3": 1.7,
+   "4": 1.6
+  },
+  "balance_by_h": {
+   "1": 18,
+   "2": 15,
+   "3": 12,
+   "4": 8
+  }
  }
 }
