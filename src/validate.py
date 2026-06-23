@@ -17,11 +17,13 @@ import json
 import numpy as np
 import pandas as pd
 from forecast import forecast_series, history, _ensemble_mean
+from vacancy_model import fit_beveridge
 
 ROOT = Path(__file__).resolve().parents[1]
 panel = pd.read_parquet(ROOT / "data" / "processed" / "panel.parquet").copy()
 panel["healthy_share"] = panel["hly_birth"] / panel["le_birth"]
 panel["emp_rate"] = panel["employed_ths"] * 1000.0 / panel["pop_15_64"]
+bev = fit_beveridge(panel)                    # pooled Beveridge: vacancy_rate ~ unemp_rate
 OUT = ROOT / "outputs"
 COUNTRIES = ["BG", "PL", "CZ", "RO", "DE", "FR", "NO", "CH"]
 
@@ -36,8 +38,9 @@ TEST_H = 4           # hold out up to last 4 years
 N_SIM = 500
 
 
-def backtest_series(years, vals):
-    """Rolling origin. Returns lists of (actual, pred, in_band) and naive preds."""
+def backtest_series(years, vals, **fkw):
+    """Rolling origin. Returns lists of (actual, pred, in_band) and naive preds.
+    fkw forwarded to forecast_series (e.g. log/members for the vacancy series)."""
     n = len(vals)
     rows = []
     if n < 8:
@@ -47,7 +50,7 @@ def backtest_series(years, vals):
         fy = years[cut:]
         if len(fy) == 0:
             continue
-        out, sims = forecast_series(ytr, vtr, fy, N_SIM)
+        out, sims = forecast_series(ytr, vtr, fy, N_SIM, **fkw)
         naive = vtr[-1]
         for j, y in enumerate(fy):
             a = vals[cut + j]
@@ -138,13 +141,18 @@ for c in COUNTRIES:
         tgt = [y for y in range(origin + 1, 2025)]
         if not tgt:
             continue
-        fcm = lambda s, col: _ensemble_mean(*history(panel, c, s, col), tgt)
+        def fcm(s, col):                       # train on <= origin only (no leakage)
+            y, v = history(panel, c, s, col)
+            msk = y <= origin
+            return _ensemble_mean(y[msk], v[msk], tgt, weighting="backtest")
         supF = fcm("F", "pop_15_64") * fcm("F", "healthy_share") * fcm("F", "working_life_yrs")
         supM = fcm("M", "pop_15_64") * fcm("M", "healthy_share") * fcm("M", "working_life_yrs")
         empF = fcm("F", "emp_rate") * fcm("F", "pop_15_64")
         empM = fcm("M", "emp_rate") * fcm("M", "pop_15_64")
-        vac = fcm("F", "vacancy_count")
         den = np.where(empF + empM == 0, 1, empF + empM)
+        # vacancies via Beveridge (matches balance_forecast.py): unemployment -> rate -> count
+        ur_tot = (fcm("F", "unemp_rate") * empF + fcm("M", "unemp_rate") * empM) / den
+        vac = bev.reconstruct_count(bev.predict(ur_tot, c), empF + empM, c)
         demF = (empF + vac * empF / den) * svc[(c, "F")]
         demM = (empM + vac * empM / den) * svc[(c, "M")]
         Sp, Dp = supF + supM, demF + demM
@@ -173,8 +181,72 @@ level_acc = {
     "balance_by_h": {h: round(float(np.mean(v))) for h, v in sorted(hB.items())},
 }
 
-result = {"metrics": metrics, "show": show, "test_h": TEST_H, "level_acc": level_acc}
+# ---- reverse test: NEW Beveridge vacancy model vs OLD direct ensemble ----
+# Per country, rolling-origin backtest of the TOTAL job-vacancy count:
+#   OLD: extrapolate vacancy_count directly with the ensemble.
+#   NEW: forecast unemployment -> Beveridge vacancy rate -> rebuild count from the
+#        JVR identity V = O·r/(1-r), using OBSERVED occupied posts O (isolates the
+#        rate model). Reports MAPE / skill-vs-naive / bias for both.
+def _ctotals(c):
+    f = panel[(panel.country == c) & (panel.sex == "F")].set_index("year")
+    m = panel[(panel.country == c) & (panel.sex == "M")].set_index("year")
+    Y, VC, UT, ET = [], [], [], []
+    for y in sorted(set(f.index) & set(m.index)):
+        vc, uF, uM = f["vacancy_count"].get(y), f["unemp_rate"].get(y), m["unemp_rate"].get(y)
+        eF, eM = f["employed_ths"].get(y), m["employed_ths"].get(y)
+        if any(pd.isna(z) for z in (vc, uF, uM, eF, eM)):
+            continue
+        eF, eM = eF * 1000.0, eM * 1000.0
+        Y.append(int(y)); VC.append(float(vc))
+        UT.append((uF * eF + uM * eM) / (eF + eM)); ET.append(eF + eM)
+    return tuple(np.array(z, float) for z in (Y, VC, UT, ET))
+
+vt_old, vt_new = [], []
+for c in COUNTRIES:
+    Y, VC, UT, ET = _ctotals(c)
+    n = len(Y)
+    if n < 8:
+        continue
+    for cut in range(n - TEST_H, n):
+        fy = Y[cut:]
+        if len(fy) == 0:
+            continue
+        old_pred = _ensemble_mean(Y[:cut], VC[:cut], fy, weighting="backtest")
+        un_pred = _ensemble_mean(Y[:cut], UT[:cut], fy, weighting="backtest")
+        new_pred = bev.reconstruct_count(bev.predict(un_pred, c), ET[cut:cut + len(fy)], c)
+        naive = VC[cut - 1]
+        for j in range(len(fy)):
+            a = float(VC[cut + j])
+            vt_old.append({"actual": a, "pred": float(old_pred[j]), "naive": naive})
+            vt_new.append({"actual": a, "pred": float(new_pred[j]), "naive": naive})
+
+def _summ(rows):
+    mn = mape(rows, "naive")
+    return {"n": len(rows), "mape": round(mape(rows, "pred") * 100, 2),
+            "mape_naive": round(mn * 100, 2),
+            "skill": round(1 - mape(rows, "pred") / mn, 3) if mn else None,
+            "bias_pct": round(bias_pct(rows), 1)}
+
+vacancy_model_test = {
+    "old_direct_ensemble": _summ(vt_old) if vt_old else None,
+    "new_beveridge": _summ(vt_new) if vt_new else None,
+    "beveridge_fit": {"slope": round(bev.slope, 4), "country_fe": True,
+                      "r2": round(bev.r2, 3), "n": bev.n},
+}
+
+result = {"metrics": metrics, "show": show, "test_h": TEST_H, "level_acc": level_acc,
+          "vacancy_model_test": vacancy_model_test}
 (OUT / "validation_metrics.json").write_text(json.dumps(result, indent=1), encoding="utf-8")
+
+vo, vn = vacancy_model_test["old_direct_ensemble"], vacancy_model_test["new_beveridge"]
+if vo and vn:
+    print("\n=== Reverse test — job vacancies: OLD direct ensemble vs NEW Beveridge ===")
+    print(f"Beveridge fit: {bev}")
+    print(f"{'model':22s} {'n':>4} {'MAPE':>7} {'naive':>7} {'skill':>7} {'bias%':>7}")
+    print(f"{'OLD direct ensemble':22s} {vo['n']:>4} {vo['mape']:>6.1f}% {vo['mape_naive']:>6.1f}% "
+          f"{(vo['skill'] or 0):>7.2f} {vo['bias_pct']:>6.1f}%")
+    print(f"{'NEW Beveridge':22s} {vn['n']:>4} {vn['mape']:>6.1f}% {vn['mape_naive']:>6.1f}% "
+          f"{(vn['skill'] or 0):>7.2f} {vn['bias_pct']:>6.1f}%")
 
 print("=== Backtest accuracy by driver (held out last 4 years, rolling origin) ===")
 print(f"{'indicator':26s} {'n':>4} {'MAPE_ens':>9} {'MAPE_naive':>11} {'skill':>7} {'cover80':>8}")

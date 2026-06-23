@@ -21,6 +21,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from forecast import forecast_series, history, RNG
+from vacancy_model import fit_beveridge
 
 ROOT = Path(__file__).resolve().parents[1]
 panel = pd.read_parquet(ROOT / "data" / "processed" / "panel.parquet").copy()
@@ -34,6 +35,8 @@ N = 1000
 panel["healthy_share"] = panel["hly_birth"] / panel["le_birth"]
 panel["emp_rate"] = panel["employed_ths"] * 1000.0 / panel["pop_15_64"]
 svc = {(r.country, r.sex): r.required_service_years for r in ret.itertuples()}
+bev = fit_beveridge(panel)                    # pooled Beveridge: vacancy_rate ~ unemp_rate
+print(f"Beveridge fit: {bev}")
 proj_w = proj.pivot_table(index=["country", "sex", "year"], columns="scenario",
                           values="pop_15_64_proj").reset_index()
 
@@ -74,8 +77,16 @@ for c in COUNTRIES:
     erF = fc(c, "F", "emp_rate", bounds=(0, 0.95))
     erM = fc(c, "M", "emp_rate", bounds=(0, 0.95))
     empF, empM = erF * pF, erM * pM
-    vac = fc(c, "F", "vacancy_count", nonneg=True)        # total (broadcast); apportion
+    # Vacancies via the Beveridge curve instead of extrapolating the noisy count:
+    # forecast unemployment -> Beveridge -> vacancy RATE -> rebuild the COUNT from the
+    # JVR identity (Step 5):  JVR = V/(V+O)  =>  V = O · r/(1-r),  O = occupied posts
+    # (≈ total employment). This stabilises the weakest demand-side driver.
+    urF = fc(c, "F", "unemp_rate", nonneg=True)           # % unemployment sims, per sex
+    urM = fc(c, "M", "unemp_rate", nonneg=True)
     denom = np.where((empF + empM) == 0, 1, empF + empM)
+    ur_tot = (urF * empF + urM * empM) / denom            # employment-weighted total unemployment
+    rate_pct = bev.predict(ur_tot, c)                     # vacancy rate (%), Beveridge curve
+    vac = bev.reconstruct_count(rate_pct, empF + empM, c)  # total vacancy COUNT (Step-5 inversion)
     jobsF = empF + vac * empF / denom
     jobsM = empM + vac * empM / denom
     demF, demM = jobsF * svc[(c, "F")], jobsM * svc[(c, "M")]
