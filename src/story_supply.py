@@ -224,7 +224,9 @@ a{color:var(--acc)}
 </main>
 <footer>
   <button class="nav ghost" id="prev">‹ Back</button>
-  <span class="who" id="counter"></span>
+  <div style="display:flex;align-items:center;gap:14px">
+    <button class="nav ghost" id="play">▶ Present</button>
+    <span class="who" id="counter"></span></div>
   <button class="nav" id="next">Next ›</button>
 </footer>
 <script>const DATA = __DATA__;</script>
@@ -360,6 +362,13 @@ function renderAll(){
   else if(state.slide===2)drawMig();
   else if(state.slide===3)drawSupply();
 }
+// ---- present / autoplay mode (loops every 7s) ----
+let timer=null;
+function setPlay(on){const b=document.getElementById('play');
+  if(on){b.textContent='⏸ Pause';b.classList.remove('ghost');
+    timer=setInterval(()=>go(state.slide>=3?0:state.slide+1),7000);}
+  else{b.textContent='▶ Present';b.classList.add('ghost');clearInterval(timer);timer=null;}}
+document.getElementById('play').onclick=()=>setPlay(!timer);
 go(0);
 </script>
 </body></html>"""

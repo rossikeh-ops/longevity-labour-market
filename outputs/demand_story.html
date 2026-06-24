@@ -1,0 +1,180 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Labour Demand — a guided story</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+:root{--bg:#FAFAF9;--card:#FFFFFF;--ink:#292524;--mut:#78716C;--line:#E7E5E4;--acc:#166534;
+--slate:#475569;--mustard:#D97706;--sage:#4ADE80;--terra:#B91C1C;}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+display:flex;flex-direction:column;min-height:100vh}
+header{padding:18px 28px 8px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+header h1{font-size:19px;margin:0;font-weight:650}
+header .who{color:var(--mut);font-size:13px}
+.spacer{flex:1}
+select{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px}
+.track{display:flex;align-items:center;gap:0;padding:6px 28px 12px;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:9px;cursor:pointer;color:var(--mut);font-size:13px;font-weight:600}
+.step .dot{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:var(--card);
+display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--mut);transition:.2s}
+.step.active .dot,.step.done .dot{border-color:var(--acc);background:var(--acc);color:#fff}
+.step.active{color:var(--ink)}
+.link{flex:0 0 46px;height:3px;background:var(--line);margin:0 6px;border-radius:2px}
+.link.done{background:var(--acc)}
+main{flex:1;padding:6px 28px 20px;max-width:1080px;margin:0 auto;width:100%}
+.slide{display:none;animation:fade .35s ease}.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kick{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--acc);font-weight:700}
+.slide h2{font-size:24px;margin:4px 0 6px}
+.slide p.lead{color:var(--mut);margin:0 0 14px;max-width:760px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:12px 0}
+.chwrap{position:relative;height:430px}
+.kpis{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;min-width:150px}
+.kpi .v{font-size:22px;font-weight:700}.kpi .l{color:var(--mut);font-size:12px;margin-top:2px}
+.note{color:var(--mut);font-size:13px;background:var(--card);border:1px solid var(--line);
+border-radius:10px;padding:12px 14px;margin-top:10px}code{color:var(--acc)}
+footer{display:flex;align-items:center;justify-content:space-between;padding:14px 28px 26px;max-width:1080px;margin:0 auto;width:100%}
+button.nav{background:var(--acc);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer}
+button.nav:disabled{background:var(--line);color:var(--mut);cursor:default}
+button.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+a{color:var(--acc)}
+</style></head><body>
+<header>
+  <h1>Labour Demand — a guided story</h1>
+  <span class="who">8 European countries · to 2035</span>
+  <span class="spacer"></span>
+  <label class="who" for="country">Country&nbsp;</label><select id="country"></select>
+</header>
+<nav class="track" id="track"></nav>
+<main>
+  <section class="slide" data-i="0">
+    <div class="kick">Step 1 · Jobs</div>
+    <h2>The jobs base</h2>
+    <p class="lead">Demand starts from the jobs the economy runs: <b>employed people plus open
+    vacancies</b>. We forecast each and add them, observed then projected to 2035.</p>
+    <div class="panel"><div class="chwrap"><canvas id="jobs"></canvas></div></div>
+    <div class="kpis" id="jobsKpis"></div>
+    <div class="note">Jobs = employment (<code>lfsa_egan</code>) + job vacancies (<code>jvs_q_r21</code>).</div>
+  </section>
+  <section class="slide" data-i="1">
+    <div class="kick">Step 2 · Vacancies</div>
+    <h2>Vacancies &amp; the Beveridge curve</h2>
+    <p class="lead">Vacancies are shock-driven, but they obey one rule: they <b>fall as unemployment
+    rises</b> (the Beveridge curve). We forecast vacancies through this relationship. Each point is a year.</p>
+    <div class="panel"><div class="chwrap"><canvas id="bev"></canvas></div></div>
+    <div class="kpis" id="bevKpis"></div>
+    <div class="note">Job vacancy rate vs unemployment rate, per year (<code>jvs_q_r21</code>, <code>une_rt_a</code>).
+    The downward cloud is the Beveridge curve the vacancy model anchors to.</div>
+  </section>
+  <section class="slide" data-i="2">
+    <div class="kick">Step 3 · Required service</div>
+    <h2>Required length of service</h2>
+    <p class="lead">Each job demands a full career to earn a pension. The <b>required years of service</b>
+    differ sharply by country and sex — the multiplier that turns jobs into career person-years.</p>
+    <div class="panel"><div class="chwrap"><canvas id="service"></canvas></div></div>
+    <div class="kpis" id="svcKpis"></div>
+    <div class="note">Required contributory years for a full pension, by sex (MISSOC / OECD Pensions at a Glance).
+    France uses a points system (effective ≈ 43y). Shown for all 8 countries.</div>
+  </section>
+  <section class="slide" data-i="3">
+    <div class="kick">Step 4 · Total demand</div>
+    <h2>Potential labour demand</h2>
+    <p class="lead">Jobs × required service = potential demand for labour in <b>human-working-years</b>,
+    observed then forecast to 2035 with an 80% uncertainty band.</p>
+    <div class="panel"><div class="chwrap"><canvas id="demand"></canvas></div></div>
+    <div class="kpis" id="demKpis"></div>
+    <div class="note">Demand = (employed + vacancies) × required length of service. Broadly flat to 2035,
+    tilted by the East's shrinking workforce vs the West holding steady.</div>
+  </section>
+</main>
+<footer>
+  <button class="nav ghost" id="prev">‹ Back</button>
+  <div style="display:flex;align-items:center;gap:14px">
+    <button class="nav ghost" id="play">▶ Present</button>
+    <span class="who" id="counter"></span></div>
+  <button class="nav" id="next">Next ›</button>
+</footer>
+<script>const DATA = {"countries": {"ALL": "All 8 countries", "BG": "Bulgaria", "PL": "Poland", "CZ": "Czechia", "RO": "Romania", "DE": "Germany", "FR": "France", "NO": "Norway", "CH": "Switzerland"}, "jobs": {"ALL": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [102.73, 103.11, 103.37, 104.84, 105.63, 107.03, 108.44, 109.31, 110.39, 108.52, 108.67, 111.04, 111.33, 111.4], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "fv": [110.77, 110.59, 110.28, 109.92, 109.46, 109.23, 108.86, 108.52, 108.36, 107.9, 107.72]}, "BG": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [2.94, 2.91, 2.9, 2.94, 2.99, 2.97, 3.09, 3.09, 2.97, 2.85, 2.8, 2.86, 2.84, 2.84], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "fv": [2.83, 2.82, 2.81, 2.8, 2.78, 2.78, 2.76, 2.75, 2.76, 2.73, 2.71]}, "PL": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [15.37, 15.39, 15.36, 15.65, 15.88, 15.99, 16.2, 16.29, 16.69, 16.64, 16.88, 16.95, 16.97, 16.88], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "fv": [16.71, 16.59, 16.38, 16.31, 16.08, 16.04, 15.87, 15.74, 15.79, 15.57, 15.39]}, "CZ": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [4.83, 4.85, 4.88, 4.94, 5.03, 5.14, 5.26, 5.4, 5.44, 5.33, 5.29, 5.23, 5.05, 5.16], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "fv": [5.13, 5.12, 5.11, 5.08, 5.05, 5.07, 5.03, 5.0, 5.0, 4.98, 4.99]}, "RO": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [8.16, 8.25, 8.21, 8.29, 8.28, 8.23, 8.42, 8.44, 8.46, 8.31, 7.71, 7.77, 7.65, 7.81], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "fv": [7.58, 7.52, 7.47, 7.41, 7.37, 7.33, 7.27, 7.25, 7.13, 7.03, 6.91]}, "DE": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [38.9, 39.13, 39.43, 39.78, 40.1, 41.14, 41.58, 41.89, 42.43, 41.2, 40.84, 42.21, 42.54, 42.19], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "fv": [41.88, 41.84, 41.75, 41.53, 41.36, 41.26, 41.08, 41.0, 40.89, 40.88, 40.96]}, "FR": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [25.76, 25.76, 25.71, 26.28, 26.32, 26.48, 26.75, 26.98, 27.11, 26.94, 27.78, 28.48, 28.63, 28.89], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "fv": [29.06, 29.12, 29.16, 29.17, 29.19, 29.11, 29.21, 29.12, 29.13, 29.05, 29.07]}, "NO": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [2.53, 2.57, 2.58, 2.59, 2.6, 2.6, 2.61, 2.65, 2.69, 2.67, 2.74, 2.84, 2.87, 2.87], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "fv": [2.84, 2.85, 2.86, 2.88, 2.89, 2.9, 2.92, 2.93, 2.93, 2.94, 2.95]}, "CH": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [4.23, 4.27, 4.3, 4.37, 4.42, 4.48, 4.51, 4.56, 4.61, 4.59, 4.61, 4.7, 4.77, 4.77], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "fv": [4.73, 4.73, 4.73, 4.74, 4.73, 4.73, 4.72, 4.73, 4.72, 4.72, 4.72]}}, "bev": {"ALL": [{"x": 7.56, "y": 1.28, "year": 2011}, {"x": 7.61, "y": 1.23, "year": 2012}, {"x": 7.76, "y": 1.18, "year": 2013}, {"x": 7.37, "y": 1.27, "year": 2014}, {"x": 6.91, "y": 1.4, "year": 2015}, {"x": 6.23, "y": 1.57, "year": 2016}, {"x": 5.57, "y": 1.83, "year": 2017}, {"x": 5.02, "y": 2.2, "year": 2018}, {"x": 4.62, "y": 2.34, "year": 2019}, {"x": 4.94, "y": 1.95, "year": 2020}, {"x": 4.89, "y": 2.29, "year": 2021}, {"x": 4.38, "y": 2.62, "year": 2022}, {"x": 4.38, "y": 2.39, "year": 2023}, {"x": 4.59, "y": 2.06, "year": 2024}], "BG": [{"x": 12.26, "y": 0.7, "year": 2011}, {"x": 13.27, "y": 0.72, "year": 2012}, {"x": 13.9, "y": 0.65, "year": 2013}, {"x": 12.35, "y": 0.72, "year": 2014}, {"x": 10.09, "y": 0.8, "year": 2015}, {"x": 8.59, "y": 0.85, "year": 2016}, {"x": 7.17, "y": 0.83, "year": 2017}, {"x": 6.19, "y": 0.93, "year": 2018}, {"x": 5.17, "y": 0.88, "year": 2019}, {"x": 6.03, "y": 0.75, "year": 2020}, {"x": 5.17, "y": 0.78, "year": 2021}, {"x": 4.11, "y": 0.85, "year": 2022}, {"x": 4.31, "y": 0.78, "year": 2023}, {"x": 4.16, "y": 0.78, "year": 2024}], "PL": [{"x": 9.98, "y": 0.55, "year": 2011}, {"x": 10.37, "y": 0.42, "year": 2012}, {"x": 10.62, "y": 0.4, "year": 2013}, {"x": 9.19, "y": 0.5, "year": 2014}, {"x": 7.64, "y": 0.6, "year": 2015}, {"x": 6.25, "y": 0.78, "year": 2016}, {"x": 5.0, "y": 1.02, "year": 2017}, {"x": 3.9, "y": 1.2, "year": 2018}, {"x": 3.27, "y": 1.08, "year": 2019}, {"x": 3.19, "y": 0.67, "year": 2020}, {"x": 3.4, "y": 1.1, "year": 2021}, {"x": 2.85, "y": 1.12, "year": 2022}, {"x": 2.85, "y": 0.88, "year": 2023}, {"x": 2.88, "y": 0.85, "year": 2024}], "CZ": [{"x": 6.7, "y": 0.9, "year": 2011}, {"x": 6.95, "y": 0.97, "year": 2012}, {"x": 6.94, "y": 0.93, "year": 2013}, {"x": 6.1, "y": 1.3, "year": 2014}, {"x": 5.03, "y": 2.17, "year": 2015}, {"x": 3.97, "y": 2.88, "year": 2016}, {"x": 2.87, "y": 3.8, "year": 2017}, {"x": 2.24, "y": 5.53, "year": 2018}, {"x": 2.01, "y": 6.18, "year": 2019}, {"x": 2.55, "y": 5.35, "year": 2020}, {"x": 2.79, "y": 4.97, "year": 2021}, {"x": 2.24, "y": 4.72, "year": 2022}, {"x": 2.59, "y": 3.67, "year": 2023}, {"x": 2.62, "y": 3.27, "year": 2024}], "RO": [{"x": 9.06, "y": 0.65, "year": 2011}, {"x": 8.72, "y": 0.6, "year": 2012}, {"x": 8.98, "y": 0.72, "year": 2013}, {"x": 8.58, "y": 0.9, "year": 2014}, {"x": 8.37, "y": 1.12, "year": 2015}, {"x": 7.17, "y": 1.3, "year": 2016}, {"x": 6.06, "y": 1.23, "year": 2017}, {"x": 5.24, "y": 1.25, "year": 2018}, {"x": 4.87, "y": 1.1, "year": 2019}, {"x": 6.05, "y": 0.78, "year": 2020}, {"x": 5.62, "y": 0.88, "year": 2021}, {"x": 5.62, "y": 0.9, "year": 2022}, {"x": 5.56, "y": 0.8, "year": 2023}, {"x": 5.44, "y": 0.72, "year": 2024}], "DE": [{"x": 5.51, "y": 2.3, "year": 2011}, {"x": 5.11, "y": 2.27, "year": 2012}, {"x": 4.92, "y": 2.1, "year": 2013}, {"x": 4.72, "y": 2.27, "year": 2014}, {"x": 4.37, "y": 2.4, "year": 2015}, {"x": 3.87, "y": 2.42, "year": 2016}, {"x": 3.53, "y": 2.73, "year": 2017}, {"x": 3.18, "y": 3.05, "year": 2018}, {"x": 2.97, "y": 3.27, "year": 2019}, {"x": 3.62, "y": 2.52, "year": 2020}, {"x": 3.57, "y": 3.23, "year": 2021}, {"x": 3.16, "y": 4.3, "year": 2022}, {"x": 3.06, "y": 4.05, "year": 2023}, {"x": 3.46, "y": 3.2, "year": 2024}], "FR": [{"x": 9.19, "y": 1.1, "year": 2011}, {"x": 9.75, "y": 1.07, "year": 2012}, {"x": 10.3, "y": 0.95, "year": 2013}, {"x": 10.31, "y": 1.0, "year": 2014}, {"x": 10.36, "y": 1.07, "year": 2015}, {"x": 10.06, "y": 1.38, "year": 2016}, {"x": 9.45, "y": 1.77, "year": 2017}, {"x": 9.0, "y": 1.88, "year": 2018}, {"x": 8.45, "y": 2.15, "year": 2019}, {"x": 8.05, "y": 2.03, "year": 2020}, {"x": 7.9, "y": 2.67, "year": 2021}, {"x": 7.3, "y": 3.35, "year": 2022}, {"x": 7.35, "y": 3.1, "year": 2023}, {"x": 7.45, "y": 2.62, "year": 2024}], "NO": [{"x": 3.56, "y": 2.8, "year": 2011}, {"x": 3.47, "y": 2.6, "year": 2012}, {"x": 3.91, "y": 2.48, "year": 2013}, {"x": 3.76, "y": 2.27, "year": 2014}, {"x": 4.67, "y": 1.98, "year": 2015}, {"x": 4.88, "y": 1.9, "year": 2016}, {"x": 4.42, "y": 2.1, "year": 2017}, {"x": 4.01, "y": 2.35, "year": 2018}, {"x": 3.86, "y": 2.48, "year": 2019}, {"x": 4.71, "y": 2.23, "year": 2020}, {"x": 4.41, "y": 2.98, "year": 2021}, {"x": 3.26, "y": 3.45, "year": 2022}, {"x": 3.6, "y": 3.75, "year": 2023}, {"x": 4.01, "y": 3.2, "year": 2024}], "CH": [{"x": 4.42, "y": 1.27, "year": 2011}, {"x": 4.48, "y": 1.15, "year": 2012}, {"x": 4.74, "y": 1.18, "year": 2013}, {"x": 4.84, "y": 1.2, "year": 2014}, {"x": 4.79, "y": 1.07, "year": 2015}, {"x": 4.95, "y": 1.1, "year": 2016}, {"x": 4.83, "y": 1.2, "year": 2017}, {"x": 4.73, "y": 1.45, "year": 2018}, {"x": 4.38, "y": 1.62, "year": 2019}, {"x": 4.84, "y": 1.3, "year": 2020}, {"x": 5.09, "y": 1.7, "year": 2021}, {"x": 4.13, "y": 2.23, "year": 2022}, {"x": 4.09, "y": 2.12, "year": 2023}, {"x": 4.39, "y": 1.82, "year": 2024}]}, "service": {"countries": ["Bulgaria", "Poland", "Czechia", "Romania", "Germany", "France", "Norway", "Switzerland"], "codes": ["BG", "PL", "CZ", "RO", "DE", "FR", "NO", "CH"], "M": [39.83, 25.0, 35.0, 35.0, 45.0, 43.0, 42.75, 44.0], "F": [36.83, 20.0, 35.0, 35.0, 45.0, 43.0, 42.75, 44.0]}, "demand": {"ALL": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [4070.2, 4086.4, 4098.9, 4155.3, 4184.2, 4243.9, 4298.0, 4333.4, 4373.0, 4293.6, 4299.3, 4402.2, 4416.9, 4419.3], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "fm": [4396.9, 4392.4, 4383.9, 4370.4, 4354.9, 4346.4, 4334.3, 4323.0, 4315.1, 4301.5, 4298.7], "lo": [4318.9, 4257.8, 4188.8, 4129.6, 4047.1, 3993.3, 3936.5, 3871.0, 3832.9, 3761.8, 3721.8], "hi": [4474.1, 4527.9, 4580.1, 4614.4, 4655.9, 4698.7, 4722.9, 4768.7, 4787.3, 4825.5, 4843.2]}, "BG": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [113.1, 111.8, 111.5, 113.1, 114.9, 114.3, 118.9, 118.7, 114.0, 109.5, 107.7, 109.9, 109.1, 109.0], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "fm": [108.8, 108.4, 108.0, 107.6, 106.9, 106.6, 106.1, 105.7, 106.0, 104.9, 104.3], "lo": [106.6, 104.4, 102.4, 101.1, 99.6, 97.9, 96.6, 95.1, 94.3, 91.7, 90.8], "hi": [111.4, 112.5, 113.6, 113.9, 114.7, 115.9, 115.8, 116.4, 117.9, 118.1, 118.1]}, "PL": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [350.1, 350.3, 349.7, 356.1, 361.3, 363.7, 368.6, 370.4, 379.9, 378.8, 383.7, 385.0, 385.2, 383.0], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "fm": [379.3, 376.7, 372.1, 370.5, 365.2, 364.7, 360.6, 358.0, 358.8, 354.1, 350.4], "lo": [367.6, 353.2, 332.4, 316.6, 293.5, 281.2, 270.6, 257.6, 249.8, 232.4, 221.8], "hi": [388.9, 398.4, 410.3, 423.0, 435.4, 447.8, 449.6, 457.7, 461.9, 469.6, 467.5]}, "CZ": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [169.1, 169.7, 170.9, 172.8, 175.9, 179.9, 184.2, 189.0, 190.3, 186.6, 185.3, 183.2, 176.8, 180.5], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "fm": [179.7, 179.3, 178.9, 178.0, 176.8, 177.6, 175.9, 175.0, 175.0, 174.5, 174.8], "lo": [173.5, 168.6, 164.6, 160.6, 155.1, 153.4, 149.1, 139.7, 139.2, 135.8, 134.4], "hi": [186.3, 190.4, 193.9, 195.3, 199.4, 201.8, 204.8, 212.4, 213.1, 214.0, 215.5]}, "RO": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [285.8, 288.6, 287.3, 290.2, 289.9, 287.9, 294.8, 295.5, 296.1, 290.8, 269.8, 272.1, 267.9, 273.2], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "fm": [265.4, 263.1, 261.5, 259.4, 258.0, 256.7, 254.4, 253.7, 249.7, 246.0, 242.0], "lo": [260.7, 252.0, 249.1, 245.2, 243.0, 239.4, 235.4, 233.4, 233.3, 227.1, 222.4], "hi": [269.9, 274.2, 274.3, 274.4, 274.1, 274.4, 272.8, 273.8, 266.8, 265.3, 262.4]}, "DE": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [1750.3, 1760.7, 1774.4, 1790.0, 1804.5, 1851.3, 1871.3, 1885.2, 1909.3, 1853.9, 1837.7, 1899.6, 1914.5, 1898.8], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "fm": [1884.5, 1882.7, 1878.8, 1869.0, 1861.0, 1856.7, 1848.7, 1845.2, 1839.9, 1839.4, 1843.4], "lo": [1855.8, 1833.0, 1813.1, 1794.7, 1768.6, 1754.1, 1728.5, 1708.5, 1699.0, 1684.5, 1680.1], "hi": [1915.9, 1934.4, 1946.3, 1948.3, 1950.6, 1963.8, 1971.4, 1981.8, 1982.9, 1998.0, 2006.1]}, "FR": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [1107.6, 1107.5, 1105.4, 1130.2, 1131.9, 1138.7, 1150.1, 1160.2, 1165.6, 1158.3, 1194.7, 1224.5, 1231.0, 1242.2], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "fm": [1249.8, 1252.0, 1253.9, 1254.4, 1255.2, 1251.9, 1256.1, 1252.2, 1252.5, 1249.4, 1250.2], "lo": [1227.9, 1222.5, 1204.9, 1190.1, 1167.7, 1149.6, 1140.3, 1121.8, 1103.0, 1078.9, 1062.5], "hi": [1269.0, 1281.8, 1302.1, 1317.7, 1337.9, 1348.5, 1359.7, 1374.7, 1392.2, 1405.7, 1415.7]}, "NO": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [108.1, 109.9, 110.4, 110.9, 111.1, 111.0, 111.5, 113.5, 114.9, 114.0, 117.3, 121.2, 122.7, 122.6], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "fm": [121.4, 121.9, 122.4, 123.2, 123.7, 124.1, 124.8, 125.2, 125.4, 125.5, 125.9], "lo": [120.5, 119.5, 119.1, 119.0, 119.0, 118.3, 118.4, 118.3, 117.9, 117.3, 117.0], "hi": [122.2, 124.2, 126.0, 127.3, 128.6, 130.1, 131.1, 132.3, 132.8, 133.6, 135.2]}, "CH": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [186.0, 187.8, 189.3, 192.1, 194.6, 197.0, 198.6, 200.8, 202.9, 201.8, 203.1, 206.8, 209.7, 209.9], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035], "fm": [208.2, 208.3, 208.3, 208.4, 208.1, 208.1, 207.8, 208.0, 207.9, 207.7, 207.8], "lo": [206.1, 204.5, 203.1, 202.2, 200.7, 199.5, 197.6, 196.6, 196.5, 194.2, 192.8], "hi": [210.4, 212.1, 213.6, 214.6, 215.2, 216.5, 217.7, 219.6, 219.6, 221.3, 222.7]}}};</script>
+<script>
+const STEPS=[["Jobs","Employed + vacancies"],["Vacancies","Beveridge curve"],
+  ["Service","Years per career"],["Total demand","Forecast 2035"]];
+const C={slate:'#475569',mustard:'#D97706',sage:'#4ADE80',terra:'#B91C1C',acc:'#166534',ink:'#292524',mut:'#78716C',line:'#E7E5E4'};
+Chart.defaults.color=C.mut;Chart.defaults.font.family="-apple-system,Segoe UI,Roboto,Arial,sans-serif";Chart.defaults.borderColor=C.line;
+let state={country:'ALL',slide:0},charts={};
+const sel=document.getElementById('country');
+Object.entries(DATA.countries).forEach(([k,v])=>{const o=document.createElement('option');o.value=k;o.textContent=v;sel.appendChild(o);});
+sel.value=state.country;sel.onchange=()=>{state.country=sel.value;renderAll();};
+const track=document.getElementById('track');
+STEPS.forEach((s,i)=>{if(i>0){const l=document.createElement('span');l.className='link';l.dataset.link=i;track.appendChild(l);}
+  const el=document.createElement('div');el.className='step';el.dataset.step=i;
+  el.innerHTML=`<span class="dot">${i+1}</span><span>${s[0]}</span>`;el.onclick=()=>go(i);track.appendChild(el);});
+function go(i){state.slide=Math.max(0,Math.min(3,i));
+  document.querySelectorAll('.slide').forEach(s=>s.classList.toggle('active',+s.dataset.i===state.slide));
+  document.querySelectorAll('.step').forEach((s,idx)=>{s.classList.toggle('active',idx===state.slide);s.classList.toggle('done',idx<state.slide);});
+  document.querySelectorAll('.link').forEach(l=>l.classList.toggle('done',+l.dataset.link<=state.slide));
+  document.getElementById('prev').disabled=state.slide===0;
+  document.getElementById('next').textContent=state.slide===3?'Finish':'Next ›';
+  document.getElementById('counter').textContent=`Step ${state.slide+1} of 4 — ${STEPS[state.slide][1]}`;renderAll();}
+document.getElementById('prev').onclick=()=>go(state.slide-1);
+document.getElementById('next').onclick=()=>go(state.slide+1);
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')go(state.slide+1);if(e.key==='ArrowLeft')go(state.slide-1);});
+function destroy(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+const axis=(t)=>({title:{display:!!t,text:t,color:C.mut},grid:{color:C.line}});
+function kpi(v,l){return `<div class="kpi"><div class="v">${v}</div><div class="l">${l}</div></div>`;}
+function lineOF(id,d,unit,title){
+  destroy(id);const labels=d.oy.concat(d.fy);
+  const obs=d.ov.concat(Array(d.fy.length).fill(null));
+  const fcast=Array(d.oy.length-1).fill(null).concat([d.ov[d.ov.length-1]]).concat(d.fm||d.fv);
+  const sets=[{label:'Observed',data:obs,borderColor:C.slate,backgroundColor:C.slate,tension:.25,pointRadius:0,borderWidth:2.5},
+    {label:'Forecast',data:fcast,borderColor:C.acc,backgroundColor:C.acc,borderDash:[5,3],tension:.25,pointRadius:0,borderWidth:2.5}];
+  if(d.lo){const pad=(a)=>Array(d.oy.length).fill(null).concat(a);
+    sets.unshift({label:'_hi',data:pad(d.hi),borderColor:'transparent',backgroundColor:'rgba(22,101,52,.10)',pointRadius:0,fill:false});
+    sets.unshift({label:'80% band',data:pad(d.lo),borderColor:'transparent',backgroundColor:'rgba(22,101,52,.10)',pointRadius:0,fill:'+1'});}
+  charts[id]=new Chart(document.getElementById(id),{type:'line',data:{labels,datasets:sets},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      scales:{y:{...axis(unit)},x:axis()},
+      plugins:{title:{display:true,text:title,color:C.ink,font:{size:15}},
+        legend:{position:'bottom',labels:{filter:i=>!i.text.startsWith('_')}},
+        tooltip:{filter:i=>!i.dataset.label.startsWith('_'),callbacks:{label:c=>`${c.dataset.label}: ${c.raw} ${unit.includes('person')?'M PY':'M'}`}}}}});
+}
+function drawJobs(){const d=DATA.jobs[state.country];
+  lineOF('jobs',d,'jobs (millions of people)',`Number of jobs — ${DATA.countries[state.country]}`);
+  document.getElementById('jobsKpis').innerHTML=kpi(d.ov[d.ov.length-1]+'M','Jobs 2024')+
+    kpi(d.fv[d.fv.length-1]+'M','Jobs 2035')+kpi(((d.fv[d.fv.length-1]/d.ov[d.ov.length-1]-1)*100).toFixed(1)+'%','Change to 2035');}
+function drawBev(){destroy('bev');const pts=DATA.bev[state.country];
+  charts.bev=new Chart(document.getElementById('bev'),{type:'scatter',
+    data:{datasets:[{label:'Year',data:pts,backgroundColor:C.mustard,borderColor:C.acc,pointRadius:5,pointHoverRadius:7}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{x:{...axis('unemployment rate %'),ticks:{callback:v=>v+'%'}},y:{...axis('vacancy rate %'),ticks:{callback:v=>v+'%'}}},
+      plugins:{title:{display:true,text:`Beveridge curve — ${DATA.countries[state.country]}`,color:C.ink,font:{size:15}},legend:{display:false},
+        tooltip:{callbacks:{label:c=>`${c.raw.year}: unemp ${c.raw.x}% · vacancy ${c.raw.y}%`}}}}});
+  const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y);
+  document.getElementById('bevKpis').innerHTML=kpi(Math.min(...xs)+'–'+Math.max(...xs)+'%','Unemployment range')+
+    kpi(Math.min(...ys)+'–'+Math.max(...ys)+'%','Vacancy-rate range');}
+function drawService(){destroy('service');const s=DATA.service;
+  charts.service=new Chart(document.getElementById('service'),{type:'bar',
+    data:{labels:s.countries,datasets:[{label:'Men',data:s.M,backgroundColor:C.slate,borderRadius:3},
+      {label:'Women',data:s.F,backgroundColor:C.mustard,borderRadius:3}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{y:{...axis('required years of service'),beginAtZero:true},x:{grid:{display:false}}},
+      plugins:{title:{display:true,text:'Required length of service for a full pension',color:C.ink,font:{size:15}},
+        legend:{position:'bottom'},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw} years`}}}}});
+  const mi=Math.min(...s.M,...s.F),ma=Math.max(...s.M,...s.F);
+  document.getElementById('svcKpis').innerHTML=kpi(ma+'y','Longest required career')+kpi(mi+'y','Shortest')+
+    kpi((s.M.reduce((a,b)=>a+b,0)/s.M.length).toFixed(0)+'y','Men, 8-country avg');}
+function drawDemand(){const d=DATA.demand[state.country];
+  lineOF('demand',d,'demand (million person-years)',`Potential labour demand — ${DATA.countries[state.country]}`);
+  document.getElementById('demKpis').innerHTML=kpi(d.ov[d.ov.length-1]+'M','Demand 2024 (M PY)')+
+    kpi(d.fm[d.fm.length-1]+'M','Demand 2035 (M PY)')+kpi(((d.fm[d.fm.length-1]/d.ov[d.ov.length-1]-1)*100).toFixed(1)+'%','Change to 2035');}
+function renderAll(){
+  if(state.slide===0)drawJobs();else if(state.slide===1)drawBev();
+  else if(state.slide===2)drawService();else if(state.slide===3)drawDemand();}
+let timer=null;
+function setPlay(on){const b=document.getElementById('play');
+  if(on){b.textContent='⏸ Pause';b.classList.remove('ghost');timer=setInterval(()=>go(state.slide>=3?0:state.slide+1),7000);}
+  else{b.textContent='▶ Present';b.classList.add('ghost');clearInterval(timer);timer=null;}}
+document.getElementById('play').onclick=()=>setPlay(!timer);
+go(0);
+</script>
+</body></html>
