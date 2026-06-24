@@ -320,13 +320,14 @@ flag <code>d</code></b> (definition differs); and (3) vacancies are just <b>~1.8
 labour demand by only ~{jobs_impact:.1f}%. We forecast them through an anchored Beveridge curve, which keeps the link to
 unemployment for scenarios while sitting at this accuracy ceiling.</div>
 
-<h2>Accuracy of the composed outputs (Levels 1–4)</h2>
+<h2>Accuracy of the composed outputs (Levels 1–5)</h2>
 <p class="sub">The drivers above are the inputs. The actual <b>level outputs</b> have their own
 accuracy — backtested by assembling each from history-only forecasts and comparing to observed values.
 They differ: supply is a <i>product</i> (errors combine), demand is dominated by accurate employment, the
 balance is a <i>difference</i> of two large numbers (relative error amplified), and the Level-4 poor-health
-burden leans directly on the noisy healthy-life-years measure, so it is the least accurate of the stocks.</p>
-<div class="cards" style="grid-template-columns:repeat(4,1fr)">
+burden leans directly on the noisy healthy-life-years measure. The Level-5 retirement dividend is the least
+predictable of all — a threshold on the noisy HLY makes it volatile.</p>
+<div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
 <div class="vc" style="border-top:3px solid #15803D"><div class="h">Level 2 — Demand</div>
 <div class="v" style="font-size:24px;font-weight:700;color:#15803D">{la.get("demand_acc","?")}</div>
 <div class="d">accuracy · {la.get("demand_mape","?")}% MAPE · bias {"+" if la.get("demand_bias",0)>0 else ""}{la.get("demand_bias","?")}% · employment-driven</div></div>
@@ -336,6 +337,9 @@ burden leans directly on the noisy healthy-life-years measure, so it is the leas
 <div class="vc" style="border-top:3px solid #D97706"><div class="h">Level 4 — Poor-health burden</div>
 <div class="v" style="font-size:24px;font-weight:700;color:#D97706">{la.get("burden_acc","?")}</div>
 <div class="d">accuracy · {la.get("burden_mape","?")}% MAPE · bias {"+" if la.get("burden_bias",0)>0 else ""}{la.get("burden_bias","?")}% · inherits HLY (self-perceived) noise</div></div>
+<div class="vc" style="border-top:3px solid #B91C1C"><div class="h">Level 5 — Retire dividend</div>
+<div class="v" style="font-size:24px;font-weight:700;color:#B91C1C">~{la.get("dividend_mape","?")}% MAPE</div>
+<div class="d">threshold-sensitive — clip on noisy HLY makes it volatile &amp; least predictable</div></div>
 <div class="vc" style="border-top:3px solid #B91C1C"><div class="h">Level 3 — Balance</div>
 <div class="v" style="font-size:24px;font-weight:700;color:#B91C1C">±{la.get("balance_mae_m","?")}M</div>
 <div class="d">~{la.get("balance_rel","?")}% rel. · difference of ~4,500M stocks → amplified</div></div>
@@ -349,6 +353,12 @@ tested relationship to the <b>NACE-Q health &amp; social-work sector</b> is stat
 (within-country elasticity ≈ 0, R² ≈ 0), so we do <b>not</b> predict the sector's cost from it — that sector
 tracks the economy (~2.4%/yr). Reported descriptively, no causal claim. See the
 <a href="level4_cost_report.html">Level 4 report</a>.</div>
+<div class="note"><b>Level 5 — read the dividend as direction, not a forecast.</b> The healthy-retirement dividend
+(pop × max(0, HLY − retirement age)) backtests at ~{la.get("dividend_mape","?")}% — by far the least accurate
+stock, because a <b>threshold on the noisy, self-perceived HLY</b> makes it jump when countries cross the
+retirement line. Trust the <i>sign and ranking</i> (who has healthy retirement years vs not), not the level. Its
+link to leisure/education/culture consumption is also negligible within-country (elasticity ≈ 0) — consumption
+tracks income. See the <a href="level5_dividend_report.html">Level 5 report</a>.</div>
 {vac_test_html}
 <h2>Error by forecast horizon</h2>
 <p class="sub">How accuracy decays with how far ahead we forecast (1–4 years out), for the composed levels.</p>

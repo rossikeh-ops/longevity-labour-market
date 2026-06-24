@@ -461,6 +461,15 @@
    "3": 14.9,
    "4": 20.7
   },
+  "dividend_acc": -0.574,
+  "dividend_mape": 157.4,
+  "dividend_bias": 102.4,
+  "dividend_by_h": {
+   "1": 150.0,
+   "2": 153.9,
+   "3": 205.6,
+   "4": 103.2
+  },
   "supply_mape": 3.6,
   "demand_mape": 2.2,
   "supply_bias": 0.3,

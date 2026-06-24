@@ -136,10 +136,11 @@ for col, c, s in SHOW:
 # (errors combine); Balance is a difference of two large numbers (relative error amplified).
 ret = pd.read_csv(ROOT / "data" / "retirement_params.csv")
 svc = {(r.country, r.sex): r.required_service_years for r in ret.itertuples()}
+retage_d = {(r.country, r.sex): r.statutory_retirement_age for r in ret.itertuples()}
 sobs = pd.read_csv(OUT / "supply_observed.csv")
-eS, eD, eB, baseB, eC = [], [], [], [], []
-bsS, bsD, bsC = [], [], []        # signed relative error (bias)
-hS, hD, hB, hC = {}, {}, {}, {}   # error by horizon
+eS, eD, eB, baseB, eC, eV = [], [], [], [], [], []
+bsS, bsD, bsC, bsV = [], [], [], []   # signed relative error (bias)
+hS, hD, hB, hC, hV = {}, {}, {}, {}, {}   # error by horizon
 for c in COUNTRIES:
     oc = sobs[sobs.country == c].groupby("year").agg(
         S=("supply_realized", "sum"), D=("demand", "sum"), B=("balance_realized", "sum"))
@@ -147,6 +148,10 @@ for c in COUNTRIES:
     _pc = panel[panel.country == c].assign(
         burden=lambda d: d.pop_total * (d.le_birth - d.hly_birth))
     ocC = _pc.dropna(subset=["burden"]).groupby("year")["burden"].sum()
+    # Level 5 — healthy-retirement dividend = pop x max(0, HLY - retire age)
+    _pv = _pc.assign(div=lambda d: d.pop_total * np.clip(
+        d.hly_birth - d.apply(lambda r: retage_d.get((c, r["sex"]), np.nan), axis=1), 0, None))
+    ocV = _pv.dropna(subset=["div"]).groupby("year")["div"].sum()
     for origin in [2020, 2021, 2022, 2023]:
         tgt = [y for y in range(origin + 1, 2025)]
         if not tgt:
@@ -171,6 +176,9 @@ for c in COUNTRIES:
         # Level 4 — poor-health burden = pop x (LE - HLY), from history-only drivers
         Cp = (fcm("F", "pop_total") * (fcm("F", "le_birth") - fcm("F", "hly_birth"))
               + fcm("M", "pop_total") * (fcm("M", "le_birth") - fcm("M", "hly_birth")))
+        # Level 5 — healthy-retirement dividend (history-only)
+        Vp = (fcm("F", "pop_total") * np.clip(fcm("F", "hly_birth") - retage_d[(c, "F")], 0, None)
+              + fcm("M", "pop_total") * np.clip(fcm("M", "hly_birth") - retage_d[(c, "M")], 0, None))
         for i, y in enumerate(tgt):
             if y in oc.index:
                 So, Do, Bo = oc.loc[y, "S"], oc.loc[y, "D"], oc.loc[y, "B"]
@@ -185,12 +193,20 @@ for c in COUNTRIES:
                     Co = ocC.loc[y]
                     eC.append(abs(Cp[i] - Co) / Co); bsC.append((Cp[i] - Co) / Co)
                     hC.setdefault(h, []).append(abs(Cp[i] - Co) / Co)
+                if y in ocV.index and ocV.loc[y] > 0:
+                    Vo = ocV.loc[y]
+                    eV.append(abs(Vp[i] - Vo) / Vo); bsV.append((Vp[i] - Vo) / Vo)
+                    hV.setdefault(h, []).append(abs(Vp[i] - Vo) / Vo)
 mS, mD, mC = float(np.mean(eS)), float(np.mean(eD)), float(np.mean(eC))
+mV = float(np.mean(eV)) if eV else float("nan")
 level_acc = {
     "supply_acc": round(1 - mS, 3), "demand_acc": round(1 - mD, 3),
     "burden_acc": round(1 - mC, 3), "burden_mape": round(mC * 100, 1),
     "burden_bias": round(float(np.mean(bsC)) * 100, 1),
     "burden_by_h": {h: round(float(np.mean(v)) * 100, 1) for h, v in sorted(hC.items())},
+    "dividend_acc": round(1 - mV, 3), "dividend_mape": round(mV * 100, 1),
+    "dividend_bias": round(float(np.mean(bsV)) * 100, 1) if bsV else None,
+    "dividend_by_h": {h: round(float(np.mean(v)) * 100, 1) for h, v in sorted(hV.items())},
     "supply_mape": round(mS * 100, 1), "demand_mape": round(mD * 100, 1),
     "supply_bias": round(float(np.mean(bsS)) * 100, 1),
     "demand_bias": round(float(np.mean(bsD)) * 100, 1),

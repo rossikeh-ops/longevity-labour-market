@@ -80,13 +80,14 @@ flag <code>d</code></b> (definition differs); and (3) vacancies are just <b>~1.8
 labour demand by only ~0.5%. We forecast them through an anchored Beveridge curve, which keeps the link to
 unemployment for scenarios while sitting at this accuracy ceiling.</div>
 
-<h2>Accuracy of the composed outputs (Levels 1–4)</h2>
+<h2>Accuracy of the composed outputs (Levels 1–5)</h2>
 <p class="sub">The drivers above are the inputs. The actual <b>level outputs</b> have their own
 accuracy — backtested by assembling each from history-only forecasts and comparing to observed values.
 They differ: supply is a <i>product</i> (errors combine), demand is dominated by accurate employment, the
 balance is a <i>difference</i> of two large numbers (relative error amplified), and the Level-4 poor-health
-burden leans directly on the noisy healthy-life-years measure, so it is the least accurate of the stocks.</p>
-<div class="cards" style="grid-template-columns:repeat(4,1fr)">
+burden leans directly on the noisy healthy-life-years measure. The Level-5 retirement dividend is the least
+predictable of all — a threshold on the noisy HLY makes it volatile.</p>
+<div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
 <div class="vc" style="border-top:3px solid #15803D"><div class="h">Level 2 — Demand</div>
 <div class="v" style="font-size:24px;font-weight:700;color:#15803D">0.978</div>
 <div class="d">accuracy · 2.2% MAPE · bias -0.6% · employment-driven</div></div>
@@ -96,6 +97,9 @@ burden leans directly on the noisy healthy-life-years measure, so it is the leas
 <div class="vc" style="border-top:3px solid #D97706"><div class="h">Level 4 — Poor-health burden</div>
 <div class="v" style="font-size:24px;font-weight:700;color:#D97706">0.871</div>
 <div class="d">accuracy · 12.9% MAPE · bias -1.9% · inherits HLY (self-perceived) noise</div></div>
+<div class="vc" style="border-top:3px solid #B91C1C"><div class="h">Level 5 — Retire dividend</div>
+<div class="v" style="font-size:24px;font-weight:700;color:#B91C1C">~157.4% MAPE</div>
+<div class="d">threshold-sensitive — clip on noisy HLY makes it volatile &amp; least predictable</div></div>
 <div class="vc" style="border-top:3px solid #B91C1C"><div class="h">Level 3 — Balance</div>
 <div class="v" style="font-size:24px;font-weight:700;color:#B91C1C">±21M</div>
 <div class="d">~23% rel. · difference of ~4,500M stocks → amplified</div></div>
@@ -109,6 +113,12 @@ tested relationship to the <b>NACE-Q health &amp; social-work sector</b> is stat
 (within-country elasticity ≈ 0, R² ≈ 0), so we do <b>not</b> predict the sector's cost from it — that sector
 tracks the economy (~2.4%/yr). Reported descriptively, no causal claim. See the
 <a href="level4_cost_report.html">Level 4 report</a>.</div>
+<div class="note"><b>Level 5 — read the dividend as direction, not a forecast.</b> The healthy-retirement dividend
+(pop × max(0, HLY − retirement age)) backtests at ~157.4% — by far the least accurate
+stock, because a <b>threshold on the noisy, self-perceived HLY</b> makes it jump when countries cross the
+retirement line. Trust the <i>sign and ranking</i> (who has healthy retirement years vs not), not the level. Its
+link to leisure/education/culture consumption is also negligible within-country (elasticity ≈ 0) — consumption
+tracks income. See the <a href="level5_dividend_report.html">Level 5 report</a>.</div>
 
 <h2>Vacancies: how far can prediction go? (5-angle study + reverse test)</h2>
 <p class="sub">Job vacancies are the hardest driver. A 5-agent study (seasonal/quarterly models,
@@ -210,7 +220,7 @@ retirement rules from MISSOC / OECD Pensions at a Glance.</div>
 <p class="sub">The metrics behind the charts and verdicts. Source: validation_metrics.json (src/validate.py).</p>
 <details class="data"><summary>Backtest accuracy by driver (rolling-origin, held-out last 4 years) <span style="color:var(--mut);font-weight:400">· 5 rows</span></summary><div class="dscroll"><table id="dtab-0"><thead><tr><th>driver</th><th>accuracy</th><th>MAPE %</th><th>naive %</th><th>skill</th><th>RMSE</th><th>bias %</th><th>cover80 %</th><th>n</th></tr></thead><tbody><tr><td>Life expectancy (LE)</td><td>0.988</td><td>1.2</td><td>1.4</td><td>0.116</td><td>1.4</td><td>-0.800</td><td>91</td><td>160</td></tr><tr><td>Working-life duration</td><td>0.982</td><td>1.8</td><td>1.9</td><td>0.051</td><td>0.869</td><td>-1.8</td><td>94</td><td>160</td></tr><tr><td>Employment rate</td><td>0.981</td><td>1.9</td><td>1.9</td><td>0</td><td>0.018</td><td>-0.500</td><td>92</td><td>160</td></tr><tr><td>Healthy share (HLY/LE)</td><td>0.969</td><td>3.1</td><td>2.9</td><td>-0.083</td><td>0.031</td><td>1.4</td><td>82</td><td>160</td></tr><tr><td>Job vacancies</td><td>0.756</td><td>24.4</td><td>24.4</td><td>0</td><td>149,569.3</td><td>15.6</td><td>84</td><td>160</td></tr></tbody></table></div></details>
 <details class="data"><summary>Forecast accuracy by country (mean across drivers) <span style="color:var(--mut);font-weight:400">· 8 rows</span></summary><div class="dscroll"><table id="dtab-1"><thead><tr><th>country</th><th>accuracy (mean of drivers)</th></tr></thead><tbody><tr><td>BG</td><td>0.970</td></tr><tr><td>FR</td><td>0.957</td></tr><tr><td>NO</td><td>0.955</td></tr><tr><td>CH</td><td>0.947</td></tr><tr><td>PL</td><td>0.938</td></tr><tr><td>RO</td><td>0.933</td></tr><tr><td>DE</td><td>0.932</td></tr><tr><td>CZ</td><td>0.848</td></tr></tbody></table></div></details>
-<details class="data"><summary>Composed-level accuracy (supply / demand / balance) <span style="color:var(--mut);font-weight:400">· 12 rows</span></summary><div class="dscroll"><table id="dtab-2"><thead><tr><th>level metric</th><th>value</th></tr></thead><tbody><tr><td>supply_acc</td><td>0.964</td></tr><tr><td>demand_acc</td><td>0.978</td></tr><tr><td>burden_acc</td><td>0.871</td></tr><tr><td>burden_mape</td><td>12.9</td></tr><tr><td>burden_bias</td><td>-1.9</td></tr><tr><td>supply_mape</td><td>3.6</td></tr><tr><td>demand_mape</td><td>2.2</td></tr><tr><td>supply_bias</td><td>0.300</td></tr><tr><td>demand_bias</td><td>-0.600</td></tr><tr><td>balance_mae_m</td><td>21</td></tr><tr><td>balance_base_m</td><td>91</td></tr><tr><td>balance_rel</td><td>23</td></tr></tbody></table></div></details>
+<details class="data"><summary>Composed-level accuracy (supply / demand / balance) <span style="color:var(--mut);font-weight:400">· 15 rows</span></summary><div class="dscroll"><table id="dtab-2"><thead><tr><th>level metric</th><th>value</th></tr></thead><tbody><tr><td>supply_acc</td><td>0.964</td></tr><tr><td>demand_acc</td><td>0.978</td></tr><tr><td>burden_acc</td><td>0.871</td></tr><tr><td>burden_mape</td><td>12.9</td></tr><tr><td>burden_bias</td><td>-1.9</td></tr><tr><td>dividend_acc</td><td>-0.574</td></tr><tr><td>dividend_mape</td><td>157.4</td></tr><tr><td>dividend_bias</td><td>102.4</td></tr><tr><td>supply_mape</td><td>3.6</td></tr><tr><td>demand_mape</td><td>2.2</td></tr><tr><td>supply_bias</td><td>0.300</td></tr><tr><td>demand_bias</td><td>-0.600</td></tr><tr><td>balance_mae_m</td><td>21</td></tr><tr><td>balance_base_m</td><td>91</td></tr><tr><td>balance_rel</td><td>23</td></tr></tbody></table></div></details>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script>(function(){var SHEETS=[{"id": "dtab-0", "name": "Backtest accuracy by driver "}, {"id": "dtab-1", "name": "Forecast accuracy by country"}, {"id": "dtab-2", "name": "Composed-level accuracy (sup"}];function run(){if(!window.XLSX){alert('Excel export library is still loading — please try again.');return;}var wb=XLSX.utils.book_new();SHEETS.forEach(function(s){var t=document.getElementById(s.id);if(t){var ws=XLSX.utils.table_to_sheet(t);XLSX.utils.book_append_sheet(wb,ws,s.name);}});XLSX.writeFile(wb,'model_validation_data.xlsx');}document.querySelectorAll('.dlbtn').forEach(function(b){b.addEventListener('click',run);});})();</script>
 <p class="sub" style="margin-top:24px;font-size:12px">Generated from outputs/validation_metrics.json · src/validate.py · rolling-origin backtest, 500 Monte-Carlo sims.</p>
