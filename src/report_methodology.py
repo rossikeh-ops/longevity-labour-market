@@ -146,7 +146,8 @@ APPENDIX = data_section(
     [("Eurostat datasets & external sources feeding the engine", _sources)],
     heading="Data behind this report",
     note="Every series the model consumes. Per-country × sex × year values are in the "
-         "Level 1–3 reports' own data appendices.")
+         "Level 1–3 reports' own data appendices.",
+    filename="methodology_sources")
 
 CSS = """
 :root{--bg:#FAFAF9;--card:#FFFFFF;--ink:#292524;--mut:#78716C;--line:#E7E5E4;--acc:#166534;}

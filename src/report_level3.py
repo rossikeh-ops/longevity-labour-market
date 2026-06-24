@@ -43,7 +43,8 @@ APPENDIX = data_section(
     [("Observed balance, 2011–2024 (million human-working-years)", _obs_d),
      ("Forecast supply / demand / balance, 2025–2033 (million HWY · 80% band)", _fc_d)],
     note="The full per-country × sex × year series behind the charts and map above. "
-         "Source: supply_observed.csv, balance_forecast.csv.")
+         "Source: supply_observed.csv, balance_forecast.csv.",
+    filename="level3_balance_data")
 
 countries = list((bf[bf.year == 2033].groupby("country").balance.sum() / M)
                  .sort_values().index)        # most deficit -> most surplus

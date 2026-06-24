@@ -73,7 +73,8 @@ APPENDIX = data_section(
     [("Backtest accuracy by driver (rolling-origin, held-out last 4 years)", _drv),
      ("Forecast accuracy by country (mean across drivers)", _pc),
      ("Composed-level accuracy (supply / demand / balance)", _lvl)],
-    note="The metrics behind the charts and verdicts. Source: validation_metrics.json (src/validate.py).")
+    note="The metrics behind the charts and verdicts. Source: validation_metrics.json (src/validate.py).",
+    filename="model_validation_data")
 
 # reverse test — Beveridge vacancy model vs old direct ensemble
 vt = val.get("vacancy_model_test")

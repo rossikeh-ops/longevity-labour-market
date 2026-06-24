@@ -45,7 +45,8 @@ APPENDIX = data_section(
     [("Observed demand, 2011–2024 (jobs in millions, demand in million career PY)", _obs_d),
      ("Forecast demand, 2025–2033 (million PY · 80% band)", _fc_d)],
     note="The full per-country × sex × year series behind the charts above. "
-         "Source: supply_observed.csv, demand_forecast.csv.")
+         "Source: supply_observed.csv, demand_forecast.csv.",
+    filename="level2_demand_data")
 
 countries = ["DE", "FR", "PL", "RO", "CZ", "CH", "BG", "NO"]
 series = {}

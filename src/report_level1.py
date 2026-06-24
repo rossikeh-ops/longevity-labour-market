@@ -41,7 +41,8 @@ APPENDIX = data_section(
     [("Observed labour supply, 2011–2024 (million career person-years)", _obs_d),
      ("Forecast labour supply, 2025–2033 (million PY · 80% band)", _fc_d)],
     note="The full per-country × sex × year series behind the charts above. "
-         "Source: supply_observed.csv, supply_forecast.csv.")
+         "Source: supply_observed.csv, supply_forecast.csv.",
+    filename="level1_supply_data")
 
 countries = list((sf[sf.year == 2033].groupby("country").supply_realized.sum() / M)
                  .pipe(lambda s: (s / (obs[obs.year == 2024].groupby("country").supply_realized.sum() / M) - 1))
