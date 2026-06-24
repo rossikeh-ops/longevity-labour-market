@@ -61,18 +61,18 @@ for i, c in enumerate(countries):
     s = series[c]; v = s["b2035"]
     yc = i * rh + rh / 2 + 4                # row vertical centre (baseline)
     w = abs(v) / maxabs * half
-    col = "#34d399" if v >= 0 else "#f87171"
+    col = "#15803D" if v >= 0 else "#B91C1C"
     x = cx if v >= 0 else cx - w
     lab_x = (cx + w + 8) if v >= 0 else (cx - w - 8)
     anchor = "start" if v >= 0 else "end"
     bars.append(
-        f'<text x="{NAMEX}" y="{yc:.1f}" fill="#e8edf7" font-size="13" dominant-baseline="middle">{s["name"]}</text>'
+        f'<text x="{NAMEX}" y="{yc:.1f}" fill="#292524" font-size="13" dominant-baseline="middle">{s["name"]}</text>'
         f'<rect x="{x:.1f}" y="{i*rh+9}" width="{w:.1f}" height="16" rx="3" fill="{col}" opacity="0.85"/>'
         f'<text x="{lab_x:.1f}" y="{yc:.1f}" fill="{col}" font-size="12" '
         f'text-anchor="{anchor}" dominant-baseline="middle">{"+" if v>0 else ""}{v}M</text>')
-bars.append(f'<line x1="{cx}" y1="4" x2="{cx}" y2="{nrows*rh+2}" stroke="#94a3b8" stroke-width="1"/>')
-bars.append(f'<text x="{cx+8}" y="{nrows*rh+20}" fill="#34d399" font-size="11">surplus →</text>')
-bars.append(f'<text x="{cx-8}" y="{nrows*rh+20}" fill="#f87171" font-size="11" text-anchor="end">← shortage</text>')
+bars.append(f'<line x1="{cx}" y1="4" x2="{cx}" y2="{nrows*rh+2}" stroke="#78716C" stroke-width="1"/>')
+bars.append(f'<text x="{cx+8}" y="{nrows*rh+20}" fill="#15803D" font-size="11">surplus →</text>')
+bars.append(f'<text x="{cx-8}" y="{nrows*rh+20}" fill="#B91C1C" font-size="11" text-anchor="end">← shortage</text>')
 diverge_svg = (f'<svg viewBox="0 0 {W1} {nrows*rh+28}" width="100%" '
                f'xmlns="http://www.w3.org/2000/svg">{"".join(bars)}</svg>')
 
@@ -92,10 +92,10 @@ def traj_svg(s):
     Y = lambda v: H - PBm - (v - y0) / (y1 - y0) * (H - PTm - PBm)
     g = []
     for yr in range(x0, x1 + 1, 4):
-        g.append(f'<text x="{X(yr):.1f}" y="{H-9}" fill="#94a3b8" font-size="10" text-anchor="middle">{yr}</text>')
+        g.append(f'<text x="{X(yr):.1f}" y="{H-9}" fill="#78716C" font-size="10" text-anchor="middle">{yr}</text>')
     yz = Y(0)
-    g.append(f'<line x1="{PLm}" y1="{yz:.1f}" x2="{W-PRm}" y2="{yz:.1f}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3 2" opacity="0.7"/>')
-    g.append(f'<text x="{PLm-6}" y="{yz+3:.1f}" fill="#94a3b8" font-size="10" text-anchor="end">0</text>')
+    g.append(f'<line x1="{PLm}" y1="{yz:.1f}" x2="{W-PRm}" y2="{yz:.1f}" stroke="#78716C" stroke-width="1" stroke-dasharray="3 2" opacity="0.7"/>')
+    g.append(f'<text x="{PLm-6}" y="{yz+3:.1f}" fill="#78716C" font-size="10" text-anchor="end">0</text>')
     band = " ".join(f"{X(x):.1f},{Y(hi[i]):.1f}" for i, x in enumerate(fy)) + " " + \
            " ".join(f"{X(x):.1f},{Y(lo[i]):.1f}" for i, x in reversed(list(enumerate(fy))))
     obsp = " ".join(f"{X(x):.1f},{Y(ov[i]):.1f}" for i, x in enumerate(oy))
@@ -107,10 +107,10 @@ def traj_svg(s):
             f'<span class="r">{s["region"]}</span></div>'
             f'<span class="pill {cls}">{sign}{s["b2035"]}M by 2035</span></div>'
             f'<svg viewBox="0 0 {W} {H}" width="100%" xmlns="http://www.w3.org/2000/svg">{"".join(g)}'
-            f'<polygon points="{band}" fill="rgba(251,191,36,0.16)"/>'
-            f'<polyline points="{obsp}" fill="none" stroke="#7dd3fc" stroke-width="2"/>'
-            f'<polyline points="{joinp}" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="2 2"/>'
-            f'<polyline points="{fcp}" fill="none" stroke="#fbbf24" stroke-width="2"/>'
+            f'<polygon points="{band}" fill="rgba(217,119,6,0.15)"/>'
+            f'<polyline points="{obsp}" fill="none" stroke="#475569" stroke-width="2"/>'
+            f'<polyline points="{joinp}" fill="none" stroke="#D97706" stroke-width="1.5" stroke-dasharray="2 2"/>'
+            f'<polyline points="{fcp}" fill="none" stroke="#D97706" stroke-width="2"/>'
             f'</svg></div>')
 
 
@@ -153,27 +153,27 @@ map_html = build_map_section(
 
 charts_html = "".join(traj_svg(series[c]) for c in countries)
 rows_html = "".join(
-    f'<tr><td>{series[c]["name"]}</td><td style="color:#94a3b8">{series[c]["region"]}</td>'
+    f'<tr><td>{series[c]["name"]}</td><td style="color:#78716C">{series[c]["region"]}</td>'
     f'<td>{series[c]["b2024"]:+}</td><td>{series[c]["b2035"]:+}</td>'
-    f'<td style="color:#94a3b8">{round(series[c]["lo"][-1]):+} … {round(series[c]["hi"][-1]):+}</td>'
+    f'<td style="color:#78716C">{round(series[c]["lo"][-1]):+} … {round(series[c]["hi"][-1]):+}</td>'
     f'<td style="text-align:right"><span class="pill {"neg" if series[c]["b2035"]<0 else "pos"}">'
     f'{"shortage" if series[c]["b2035"]<0 else "surplus"}</span></td></tr>' for c in countries)
 
 CSS = """
-:root{--bg:#0f1420;--card:#171e2e;--ink:#e8edf7;--mut:#94a3b8;--line:#2a3445;
---obs:#7dd3fc;--fc:#fbbf24;--band:rgba(251,191,36,.16);--up:#34d399;--down:#f87171;}
+:root{--bg:#FAFAF9;--card:#FFFFFF;--ink:#292524;--mut:#78716C;--line:#E7E5E4;
+--obs:#475569;--fc:#D97706;--band:rgba(217,119,6,.15);--up:#15803D;--down:#B91C1C;}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);
 font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:32px}
 .wrap{max-width:1080px;margin:0 auto}
 h1{font-size:26px;margin:0 0 4px}h2{font-size:18px;margin:34px 0 12px;
 border-bottom:1px solid var(--line);padding-bottom:6px}
 .sub{color:var(--mut);margin:0 0 8px}
-.formula{background:#101a2e;border:1px solid #5b9dff;border-left:5px solid #5b9dff;
+.formula{background:#F0FDF4;border:1px solid #166534;border-left:5px solid #166534;
 border-radius:12px;padding:16px 22px;margin:18px 0;font-size:21px;font-weight:600;
 text-align:center;line-height:1.45;color:var(--ink)}
-.formula b{color:#5b9dff}.formula .u{display:block;font-size:13px;color:var(--mut);font-weight:400;margin-top:5px}
-code{background:#0e1830;border:1px solid #2a3445;border-radius:5px;padding:1px 6px;
-color:#7dd3fc;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace}
+.formula b{color:#166534}.formula .u{display:block;font-size:13px;color:var(--mut);font-weight:400;margin-top:5px}
+code{background:#F5F5F4;border:1px solid #E7E5E4;border-radius:5px;padding:1px 6px;
+color:#475569;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace}
 .hero{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--up);
 border-radius:12px;padding:18px 20px;margin:20px 0}
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0}
@@ -185,8 +185,8 @@ border-radius:12px;padding:18px 20px;margin:20px 0}
 .chart .hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
 .chart .t{font-weight:600}.chart .r{color:var(--mut);font-size:11px}
 .pill{font-size:12px;font-weight:700;padding:2px 8px;border-radius:20px}
-.pos{color:var(--up);background:rgba(52,211,153,.12)}
-.neg{color:var(--down);background:rgba(248,113,113,.12)}
+.pos{color:var(--up);background:rgba(21,128,61,.12)}
+.neg{color:var(--down);background:rgba(185,28,28,.10)}
 table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line)}
 th:first-child,td:first-child{text-align:left}th{color:var(--mut);font-weight:600}

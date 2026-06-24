@@ -23,39 +23,40 @@ def build_map_section(data: dict, *, container: str = "geomap",
     cid = container
     css = f"""
 #{cid} .gm-wrap{{display:flex;gap:16px;flex-wrap:wrap;align-items:stretch}}
-#{cid} .gm-map{{background:var(--card,#171e2e);border:1px solid var(--line,#2a3445);
+#{cid} .gm-map{{background:var(--card,#FFFFFF);border:1px solid var(--line,#E7E5E4);
   border-radius:12px;padding:8px;flex:1 1 560px;min-width:320px;position:relative}}
 #{cid} .gm-side{{flex:0 0 250px;display:flex;flex-direction:column;gap:12px}}
-#{cid} .gm-ctl{{background:var(--card,#171e2e);border:1px solid var(--line,#2a3445);
+#{cid} .gm-ctl{{background:var(--card,#FFFFFF);border:1px solid var(--line,#E7E5E4);
   border-radius:12px;padding:14px}}
-#{cid} .gm-lab{{display:block;font-size:11px;color:var(--mut,#94a3b8);margin:0 0 6px;
+#{cid} .gm-lab{{display:block;font-size:11px;color:var(--mut,#78716C);margin:0 0 6px;
   text-transform:uppercase;letter-spacing:.6px}}
-#{cid} select{{width:100%;background:#0e1830;color:var(--ink,#e8edf7);
-  border:1px solid var(--line,#2a3445);border-radius:8px;padding:8px 9px;font-size:14px}}
+#{cid} select{{width:100%;background:#F5F5F4;color:var(--ink,#292524);
+  border:1px solid var(--line,#E7E5E4);border-radius:8px;padding:8px 9px;font-size:14px}}
 #{cid} .gm-seg{{display:flex;gap:5px;margin-top:4px}}
-#{cid} .gm-seg button{{flex:1;background:#0e1830;color:var(--mut,#94a3b8);
-  border:1px solid var(--line,#2a3445);border-radius:8px;padding:7px 0;font-size:13px;cursor:pointer}}
-#{cid} .gm-seg button.on{{background:var(--acc,#5b9dff);color:#06203a;
-  border-color:var(--acc,#5b9dff);font-weight:600}}
-#{cid} .gm-scale{{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11px;color:var(--mut,#94a3b8)}}
+#{cid} .gm-seg button{{flex:1;background:#F5F5F4;color:var(--mut,#78716C);
+  border:1px solid var(--line,#E7E5E4);border-radius:8px;padding:7px 0;font-size:13px;cursor:pointer}}
+#{cid} .gm-seg button.on{{background:var(--acc,#166534);color:#FFFFFF;
+  border-color:var(--acc,#166534);font-weight:600}}
+#{cid} .gm-scale{{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11px;color:var(--mut,#78716C)}}
 #{cid} .gm-bar{{height:11px;flex:1;border-radius:3px}}
-#{cid} .gm-meta{{font-size:11px;color:var(--mut,#94a3b8);margin-top:8px}}
-#{cid} .gm-rank{{background:var(--card,#171e2e);border:1px solid var(--line,#2a3445);
+#{cid} .gm-meta{{font-size:11px;color:var(--mut,#78716C);margin-top:8px}}
+#{cid} .gm-rank{{background:var(--card,#FFFFFF);border:1px solid var(--line,#E7E5E4);
   border-radius:12px;padding:12px 14px}}
-#{cid} .gm-rank h4{{margin:0 0 9px;font-size:11px;color:var(--mut,#94a3b8);
+#{cid} .gm-rank h4{{margin:0 0 9px;font-size:11px;color:var(--mut,#78716C);
   font-weight:600;text-transform:uppercase;letter-spacing:.6px}}
 #{cid} .gm-row{{display:flex;align-items:center;gap:7px;margin:4px 0;font-size:12px}}
-#{cid} .gm-row .nm{{width:74px;color:var(--ink,#e8edf7)}}
+#{cid} .gm-row .nm{{width:74px;color:var(--ink,#292524)}}
 #{cid} .gm-row .tk{{height:13px;border-radius:3px;min-width:2px}}
-#{cid} .gm-row .vl{{color:var(--mut,#94a3b8);font-variant-numeric:tabular-nums}}
-#{cid} .gm-c{{stroke:#0c1322;stroke-width:.6px;cursor:pointer}}
-#{cid} .gm-c.other{{fill:#222c40;stroke:#1a2233}}
+#{cid} .gm-row .vl{{color:var(--mut,#78716C);font-variant-numeric:tabular-nums}}
+#{cid} .gm-c{{stroke:#FFFFFF;stroke-width:.6px;cursor:pointer}}
+#{cid} .gm-c.other{{fill:#E7E5E4;stroke:#E7E5E4}}
 #{cid} .gm-c:hover{{opacity:.82}}
-#{cid} .gm-clab{{font-size:10px;fill:#06203a;font-weight:700;pointer-events:none;text-anchor:middle}}
-#{cid} .gm-tip{{position:absolute;pointer-events:none;background:#06121f;
-  border:1px solid var(--acc,#5b9dff);border-radius:8px;padding:8px 11px;font-size:12px;
-  color:var(--ink,#e8edf7);opacity:0;max-width:210px;box-shadow:0 6px 20px rgba(0,0,0,.4)}}
-#{cid} .gm-tip b{{color:var(--acc,#5b9dff)}}
+#{cid} .gm-clab{{font-size:10px;fill:#292524;font-weight:700;pointer-events:none;text-anchor:middle;
+  paint-order:stroke;stroke:#FFFFFF;stroke-width:2.5px;stroke-linejoin:round}}
+#{cid} .gm-tip{{position:absolute;pointer-events:none;background:#FFFFFF;
+  border:1px solid var(--acc,#166534);border-radius:8px;padding:8px 11px;font-size:12px;
+  color:var(--ink,#292524);opacity:0;max-width:210px;box-shadow:0 6px 20px rgba(0,0,0,.4)}}
+#{cid} .gm-tip b{{color:var(--acc,#166534)}}
 """
     intro_html = f'<p class="sub">{intro}</p>' if intro else ""
     body = f"""<h2>{title}</h2>{intro_html}
@@ -124,16 +125,16 @@ fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(r=>
     const arr=vlist().filter(d=>d.v!=null).map(d=>d.v),lo=d3.min(arr),hi=d3.max(arr);
     // diverging metrics (e.g. the balance: surplus vs shortage) use a red→green
     // scale centred on zero; everything else a sequential YlGnBu scale.
-    const div=!!m.diverging, PAL=div?d3.interpolateRdYlGn:d3.interpolateYlGnBu;
+    const div=!!m.diverging, PAL=div?d3.interpolateRgbBasis(["#B91C1C","#FEF3C7","#166534"]):d3.interpolateRgbBasis(["#FEF3C7","#4ADE80","#166534"]);
     const mag=Math.max(Math.abs(lo),Math.abs(hi))||1;
     const seq=d3.scaleSequential(PAL).domain([lo,hi]);
     const color=v=>div?PAL(0.5+0.5*v/mag):seq(v);
     g.selectAll("path.gm-c")
-      .attr("fill",d=>{{const v=(m.values[ISO[d.properties.name]]||{{}})[state.sex];return v==null?"#42506b":color(v);}});
+      .attr("fill",d=>{{const v=(m.values[ISO[d.properties.name]]||{{}})[state.sex];return v==null?"#E7E5E4":color(v);}});
     $(".gm-bar").style.background=`linear-gradient(90deg,${{d3.range(0,1.01,.1).map(t=>PAL(t)).join(",")}})`;
     $(".gm-lo").textContent=fmt(lo,m.fmt);$(".gm-hi").textContent=fmt(hi,m.fmt);
     const yrs=Object.values(m.years||{{}});
-    $(".gm-meta").innerHTML=`Unit: <b style="color:var(--ink,#e8edf7)">${{m.unit}}</b> · years ${{d3.min(yrs)}}–${{d3.max(yrs)}}`;
+    $(".gm-meta").innerHTML=`Unit: <b style="color:var(--ink,#292524)">${{m.unit}}</b> · years ${{d3.min(yrs)}}–${{d3.max(yrs)}}`;
     const sorted=vlist().filter(d=>d.v!=null).sort((a,b)=>b.v-a.v);
     const maxw=div?mag:(hi||1);
     const bw=d3.scaleLinear().domain([0,maxw]).range([0,140]);
@@ -148,7 +149,7 @@ fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(r=>
     const rows=["T","F","M"].filter(s=>rec[s]!=null)
       .map(s=>`${{({{T:"Total",F:"Women",M:"Men"}})[s]}}: <b>${{fmt(rec[s],m.fmt)}}</b>`).join("<br>");
     tip.html(`<b>${{DATA.countries[iso]}}</b> · ${{DATA.regime[iso]}}<br>
-      <span style="color:var(--mut,#94a3b8)">${{m.label}}</span><br>${{rows||"n/a"}}`).style("opacity",1);
+      <span style="color:var(--mut,#78716C)">${{m.label}}</span><br>${{rows||"n/a"}}`).style("opacity",1);
     const r=$(".gm-svg").getBoundingClientRect(),mr=$(".gm-map").getBoundingClientRect();
     tip.style("left",(ev.clientX-mr.left+14)+"px").style("top",(ev.clientY-mr.top+10)+"px");}}
   render();

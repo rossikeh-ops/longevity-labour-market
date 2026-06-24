@@ -37,7 +37,7 @@ for k in order:
                  "skill": m["skill"], "cover": round(m["coverage80"] * 100),
                  "verdict": lab, "cls": cls, "why": why})
 n_trust = sum(1 for r in rows if r["cls"] == "ok")
-COL = {"ok": "#34d399", "warn": "#fbbf24", "bad": "#f87171"}
+COL = {"ok": "#15803D", "warn": "#D97706", "bad": "#B91C1C"}
 la = val.get("level_acc", {})
 sv_path = OUT / "split_validation.json"
 sv = json.loads(sv_path.read_text(encoding="utf-8")) if sv_path.exists() else None
@@ -59,15 +59,15 @@ if vt and vt.get("new_beveridge") and vt.get("old_direct_ensemble"):
     o, nw, bf = vt["old_direct_ensemble"], vt["new_beveridge"], vt["beveridge_fit"]
 
     def _vrow(name, d, hl=False):
-        skc = "#34d399" if (d["skill"] or 0) >= 0 else "#f87171"
+        skc = "#15803D" if (d["skill"] or 0) >= 0 else "#B91C1C"
         st = "font-weight:700" if hl else ""
         bsign = "+" if d["bias_pct"] > 0 else ""
         med = f'{d.get("medape","?")}%' if d.get("medape") is not None else "—"
         return (f'<tr style="{st}"><td>{name}</td><td>{d["mape"]}%</td>'
-                f'<td style="color:#94a3b8">{med}</td>'
-                f'<td style="color:#94a3b8">{d["mape_naive"]}%</td>'
+                f'<td style="color:#78716C">{med}</td>'
+                f'<td style="color:#78716C">{d["mape_naive"]}%</td>'
                 f'<td style="color:{skc};text-align:right">{d["skill"]}</td>'
-                f'<td style="color:#94a3b8">{bsign}{d["bias_pct"]}%</td></tr>')
+                f'<td style="color:#78716C">{bsign}{d["bias_pct"]}%</td></tr>')
     vac_test_html = f"""
 <h2>Vacancies: how far can prediction go? (5-angle study + reverse test)</h2>
 <p class="sub">Job vacancies are the hardest driver. A 5-agent study (seasonal/quarterly models,
@@ -96,26 +96,26 @@ so this barely moves the balance, but the driver is now at its achievable accura
 split_html = ""
 if sv:
     dr = "".join(f'<tr><td>{d["label"]}</td><td style="font-weight:700">{d["accuracy"]:.3f}</td>'
-                 f'<td style="color:#94a3b8">{d["mape"]}%</td></tr>' for d in sv["drivers"].values())
+                 f'<td style="color:#78716C">{d["mape"]}%</td></tr>' for d in sv["drivers"].values())
     lv = sv["level"]
     yr = "".join(
-        f'<tr><td>{y}</td><td>{v["supply_pred"]}</td><td style="color:#94a3b8">{v["supply_obs"]}</td>'
-        f'<td>{v["demand_pred"]}</td><td style="color:#94a3b8">{v["demand_obs"]}</td>'
-        f'<td>{v["balance_pred"]:+}</td><td style="color:#94a3b8">{v["balance_obs"]:+}</td></tr>'
+        f'<tr><td>{y}</td><td>{v["supply_pred"]}</td><td style="color:#78716C">{v["supply_obs"]}</td>'
+        f'<td>{v["demand_pred"]}</td><td style="color:#78716C">{v["demand_obs"]}</td>'
+        f'<td>{v["balance_pred"]:+}</td><td style="color:#78716C">{v["balance_obs"]:+}</td></tr>'
         for y, v in sv["years"].items())
     split_html = f"""
 <h2>Hold-out stress test — train ≤2019, predict 2020–2024 (incl. COVID)</h2>
 <p class="sub">The strictest test: fit on Eurostat history up to 2019 only, then forecast the
 five held-out years (which contain the COVID shock) and compare to what actually happened.</p>
 <div class="cards">
-<div class="vc" style="border-top:3px solid #34d399"><div class="h">Level 2 — Demand</div>
-<div class="v" style="font-size:24px;font-weight:700;color:#34d399">{lv["demand_acc"]}</div>
+<div class="vc" style="border-top:3px solid #15803D"><div class="h">Level 2 — Demand</div>
+<div class="v" style="font-size:24px;font-weight:700;color:#15803D">{lv["demand_acc"]}</div>
 <div class="d">accuracy · {lv["demand_mape"]}% MAPE · robust across COVID</div></div>
-<div class="vc" style="border-top:3px solid #34d399"><div class="h">Level 1 — Supply</div>
-<div class="v" style="font-size:24px;font-weight:700;color:#34d399">{lv["supply_acc"]}</div>
+<div class="vc" style="border-top:3px solid #15803D"><div class="h">Level 1 — Supply</div>
+<div class="v" style="font-size:24px;font-weight:700;color:#15803D">{lv["supply_acc"]}</div>
 <div class="d">accuracy · {lv["supply_mape"]}% MAPE · robust across COVID</div></div>
-<div class="vc" style="border-top:3px solid #f87171"><div class="h">Level 3 — Balance</div>
-<div class="v" style="font-size:24px;font-weight:700;color:#f87171">±{lv["balance_mae_m"]}M</div>
+<div class="vc" style="border-top:3px solid #B91C1C"><div class="h">Level 3 — Balance</div>
+<div class="v" style="font-size:24px;font-weight:700;color:#B91C1C">±{lv["balance_mae_m"]}M</div>
 <div class="d">~{lv["balance_rel"]}% — not reliably predictable at 5-yr horizon through a shock</div></div>
 </div>
 <div class="grid2" style="margin-top:14px">
@@ -151,17 +151,17 @@ def trace_svg(s):
     Y = lambda v: H - PBm - (v - y0) / (y1 - y0) * (H - PTm - PBm)
     g = []
     for yr in range(x0, x1 + 1, 4):
-        g.append(f'<text x="{X(yr):.1f}" y="{H-8}" fill="#94a3b8" font-size="10" text-anchor="middle">{yr}</text>')
+        g.append(f'<text x="{X(yr):.1f}" y="{H-8}" fill="#78716C" font-size="10" text-anchor="middle">{yr}</text>')
     band = " ".join(f"{X(x):.1f},{Y(hi[i]):.1f}" for i, x in enumerate(ty)) + " " + \
            " ".join(f"{X(x):.1f},{Y(lo[i]):.1f}" for i, x in reversed(list(enumerate(ty))))
     hist = " ".join(f"{X(x):.1f},{Y(hv[i]):.1f}" for i, x in enumerate(hy))
     pp = " ".join(f"{X(x):.1f},{Y(pred[i]):.1f}" for i, x in enumerate(ty))
-    dots = "".join(f'<circle cx="{X(x):.1f}" cy="{Y(hv[hy.index(x)]):.1f}" r="3" fill="#7dd3fc"/>' for x in ty)
+    dots = "".join(f'<circle cx="{X(x):.1f}" cy="{Y(hv[hy.index(x)]):.1f}" r="3" fill="#475569"/>' for x in ty)
     return (f'<div class="chart"><div class="t">{s["label"]}</div>'
             f'<svg viewBox="0 0 {W} {H}" width="100%" xmlns="http://www.w3.org/2000/svg">{"".join(g)}'
-            f'<polygon points="{band}" fill="rgba(251,191,36,0.16)"/>'
-            f'<polyline points="{hist}" fill="none" stroke="#7dd3fc" stroke-width="1.6" opacity="0.9"/>'
-            f'<polyline points="{pp}" fill="none" stroke="#fbbf24" stroke-width="2"/>'
+            f'<polygon points="{band}" fill="rgba(217,119,6,0.15)"/>'
+            f'<polyline points="{hist}" fill="none" stroke="#475569" stroke-width="1.6" opacity="0.9"/>'
+            f'<polyline points="{pp}" fill="none" stroke="#D97706" stroke-width="2"/>'
             f'{dots}</svg></div>')
 
 
@@ -175,11 +175,11 @@ for i, r in enumerate(rows):
     y = i * rowh + 6
     w = min(r["mape"], maxM) / maxM * bw
     nx = 200 + min(r["naive"], maxM) / maxM * bw
-    bars.append(f'<text x="0" y="{y+15}" fill="#94a3b8" font-size="12">{r["label"]}</text>'
+    bars.append(f'<text x="0" y="{y+15}" fill="#78716C" font-size="12">{r["label"]}</text>'
                 f'<rect x="200" y="{y+4}" width="{w:.1f}" height="18" rx="4" fill="{COL[r["cls"]]}" opacity="0.85"/>'
-                f'<line x1="{nx:.1f}" y1="{y+2}" x2="{nx:.1f}" y2="{y+24}" stroke="#e8edf7" stroke-width="1.2" stroke-dasharray="2 2"/>'
-                f'<text x="{205+w:.1f}" y="{y+17}" fill="#e8edf7" font-size="12">{r["mape"]}%</text>')
-bars.append(f'<text x="200" y="{len(rows)*rowh+8}" fill="#94a3b8" font-size="11">'
+                f'<line x1="{nx:.1f}" y1="{y+2}" x2="{nx:.1f}" y2="{y+24}" stroke="#292524" stroke-width="1.2" stroke-dasharray="2 2"/>'
+                f'<text x="{205+w:.1f}" y="{y+17}" fill="#292524" font-size="12">{r["mape"]}%</text>')
+bars.append(f'<text x="200" y="{len(rows)*rowh+8}" fill="#78716C" font-size="11">'
             f'bar = model error · dashed tick = naive baseline · (vacancies capped at 30%)</text>')
 mape_svg = (f'<svg viewBox="0 0 1000 {len(rows)*rowh+18}" width="100%" '
             f'xmlns="http://www.w3.org/2000/svg">{"".join(bars)}</svg>')
@@ -187,14 +187,14 @@ mape_svg = (f'<svg viewBox="0 0 1000 {len(rows)*rowh+18}" width="100%" '
 # ---------- static table + cards ----------
 trow = []
 for r in rows:
-    sk = (f'<span style="color:#34d399">+{r["skill"]}</span>' if r["skill"] > 0
-          else f'<span style="color:#f87171">{r["skill"]}</span>')
-    acol = "#34d399" if r["acc"] >= 0.95 else ("#fbbf24" if r["acc"] >= 0.85 else "#f87171")
+    sk = (f'<span style="color:#15803D">+{r["skill"]}</span>' if r["skill"] > 0
+          else f'<span style="color:#B91C1C">{r["skill"]}</span>')
+    acol = "#15803D" if r["acc"] >= 0.95 else ("#D97706" if r["acc"] >= 0.85 else "#B91C1C")
     bsign = "+" if r["bias"] > 0 else ""
     trow.append(f'<tr><td>{r["label"]}</td>'
                 f'<td style="font-weight:700;color:{acol}">{r["acc"]:.3f}</td>'
-                f'<td>{r["mape"]}%</td><td style="color:#94a3b8">{r["rmse"]:g}</td>'
-                f'<td style="color:#94a3b8">{bsign}{r["bias"]}%</td>'
+                f'<td>{r["mape"]}%</td><td style="color:#78716C">{r["rmse"]:g}</td>'
+                f'<td style="color:#78716C">{bsign}{r["bias"]}%</td>'
                 f'<td style="text-align:right">{sk}</td><td>{r["cover"]}%</td>'
                 f'<td style="text-align:right"><span class="tag {r["cls"]}">{r["verdict"]}</span></td></tr>')
 table_html = "".join(trow)
@@ -204,10 +204,10 @@ cards_html = "".join(
     f'<div class="d">{r["why"]}</div></div>' for r in rows)
 
 CSS = """
-:root{--bg:#0f1420;--card:#171e2e;--ink:#e8edf7;--mut:#94a3b8;--line:#2a3445;
---obs:#7dd3fc;--fc:#fbbf24;--band:rgba(251,191,36,.16);
---ok:#34d399;--warn:#fbbf24;--bad:#f87171;--okbg:rgba(52,211,153,.12);
---warnbg:rgba(251,191,36,.12);--badbg:rgba(248,113,113,.12);}
+:root{--bg:#FAFAF9;--card:#FFFFFF;--ink:#292524;--mut:#78716C;--line:#E7E5E4;
+--obs:#475569;--fc:#D97706;--band:rgba(217,119,6,.15);
+--ok:#15803D;--warn:#D97706;--bad:#B91C1C;--okbg:rgba(21,128,61,.12);
+--warnbg:rgba(217,119,6,.12);--badbg:rgba(185,28,28,.10);}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);
 font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:32px}
 .wrap{max-width:1040px;margin:0 auto}
@@ -233,8 +233,8 @@ th:first-child,td:first-child{text-align:left}th{color:var(--mut);font-weight:60
 .vc .h{font-weight:600;margin-bottom:4px}.vc .d{color:var(--mut);font-size:13px}
 .note{color:var(--mut);font-size:13.5px;background:var(--card);border:1px solid var(--line);
 border-radius:10px;padding:15px;margin-top:10px}.note b{color:var(--ink)}
-code{background:#0e1830;border:1px solid #2a3445;border-radius:5px;padding:1px 6px;
-color:#7dd3fc;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace}
+code{background:#F5F5F4;border:1px solid #E7E5E4;border-radius:5px;padding:1px 6px;
+color:#475569;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace}
 .lgd{display:flex;gap:16px;color:var(--mut);font-size:12px;margin:4px 0 0;flex-wrap:wrap}
 .sw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 """
@@ -271,14 +271,14 @@ comparing to observed values. They differ: supply is a <i>product</i> (errors co
 dominated by accurate employment, and the balance is a <i>difference</i> of two large numbers (so its
 relative error is amplified).</p>
 <div class="cards">
-<div class="vc" style="border-top:3px solid #34d399"><div class="h">Level 2 — Demand</div>
-<div class="v" style="font-size:24px;font-weight:700;color:#34d399">{la.get("demand_acc","?")}</div>
+<div class="vc" style="border-top:3px solid #15803D"><div class="h">Level 2 — Demand</div>
+<div class="v" style="font-size:24px;font-weight:700;color:#15803D">{la.get("demand_acc","?")}</div>
 <div class="d">accuracy · {la.get("demand_mape","?")}% MAPE · bias {"+" if la.get("demand_bias",0)>0 else ""}{la.get("demand_bias","?")}% · most accurate (employment-driven)</div></div>
-<div class="vc" style="border-top:3px solid #fbbf24"><div class="h">Level 1 — Supply</div>
-<div class="v" style="font-size:24px;font-weight:700;color:#fbbf24">{la.get("supply_acc","?")}</div>
+<div class="vc" style="border-top:3px solid #D97706"><div class="h">Level 1 — Supply</div>
+<div class="v" style="font-size:24px;font-weight:700;color:#D97706">{la.get("supply_acc","?")}</div>
 <div class="d">accuracy · {la.get("supply_mape","?")}% MAPE · bias {"+" if la.get("supply_bias",0)>0 else ""}{la.get("supply_bias","?")}% · health-share noise propagates</div></div>
-<div class="vc" style="border-top:3px solid #fbbf24"><div class="h">Level 3 — Balance</div>
-<div class="v" style="font-size:24px;font-weight:700;color:#fbbf24">±{la.get("balance_mae_m","?")}M</div>
+<div class="vc" style="border-top:3px solid #D97706"><div class="h">Level 3 — Balance</div>
+<div class="v" style="font-size:24px;font-weight:700;color:#D97706">±{la.get("balance_mae_m","?")}M</div>
 <div class="d">~{la.get("balance_rel","?")}% rel. · difference of ~4,500M stocks → amplified</div></div>
 </div>
 <div class="note">Read the balance error in <b>absolute</b> terms: ±{la.get("balance_mae_m","?")}M career
