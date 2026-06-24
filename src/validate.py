@@ -36,6 +36,11 @@ IND = {
 }
 TEST_H = 4           # hold out up to last 4 years
 N_SIM = 500
+# Job vacancies are a near-random-walk (5-agent study): the trend ensemble members
+# over-extrapolate and lose to naive. Forecast this driver with the mean-reverting
+# members only (naive + AR1), which tie the naive ceiling — matching the anchored
+# model Level 3 actually uses.
+DRIVER_MEMBERS = {"vacancy_count": ("naive", "ar1")}
 
 
 def backtest_series(years, vals, **fkw):
@@ -82,9 +87,10 @@ for col, label in IND.items():
     per_country = {}
     for c in COUNTRIES:
         crows = []
+        _mem = DRIVER_MEMBERS.get(col)
         for s in ["F", "M"]:
             y, v = history(panel, c, s, col)
-            crows += backtest_series(y, v)
+            crows += backtest_series(y, v, **({"members": _mem} if _mem else {}))
         if crows:
             per_country[c] = round((1 - mape(crows, "pred")), 3)   # accuracy 0-1
         allrows += crows
