@@ -99,19 +99,35 @@ text-decoration:none;font-size:14px;font-weight:600}.links a:hover{border-color:
 netcol = "var(--up)" if net >= 0 else "var(--down)"
 HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Conclusion — balancing longevity &amp; the labour market by 2035</title>
+<title>Introduction — balancing longevity &amp; the labour market by 2035</title>
 <style>{CSS}</style></head><body><div class="wrap">
-<h1>Conclusion — can Europe balance its labour market by 2035?</h1>
-<p class="sub">The synthesis: what the person-year engine projects for 8 countries, and the levers that
-close the gap. Supply = healthy working-age people × working life; demand = jobs × required service;
-balance = the difference, in human-working-years.</p>
+<h1>Introduction — can Europe balance its labour market by 2035?</h1>
+<p class="sub">Europe is ageing: populations are growing older and, across much of the East, shrinking. As
+that happens, can each economy still supply the labour its jobs require? This study answers that by turning
+demographic averages into <b>human-working-years</b> — a stock comparable with jobs — for 8 countries, by sex,
+to 2035.</p>
 
-<div class="hero"><b>Short answer: roughly, in aggregate — but not where it's needed.</b> Total supply and
-demand both stay near {sup35:,}M and {dem35:,}M human-working-years to 2035 (a net balance of
-<b style="color:{netcol}">{net:+,}M</b>). That near-equilibrium hides a sharp <b>East–West divide</b>:
-the West/EFTA runs a shortage of <b style="color:var(--down)">{west_def:+,}M</b> while the East holds a
-surplus of <b style="color:var(--up)">{east_sur:+,}M</b>. The balancing problem is <b>geographic</b>, not
-a Europe-wide shortfall.</div>
+<div class="hero"><b>The challenge.</b> Headcounts and life-expectancy averages can't be weighed against jobs,
+so we build a <b>person-year engine</b>: <b>supply</b> = healthy working-age people × expected working life;
+<b>demand</b> = jobs × required length of service; <b>balance</b> = the difference, in human-working-years. The
+question is whether that balance holds — and if not, where it breaks and what moves it.</div>
+
+<h2>How we measure it</h2>
+<p class="sub">Each driver is forecast on its full history by a small ensemble of transparent models
+(deliberately <b>no neural networks</b>) with Monte-Carlo uncertainty, then combined through the identities
+below. Population uses Eurostat's own projection, calibrated to observed 2024.</p>
+<div class="lever">
+<div class="lv" style="--c:var(--up)"><h3>1 · Supply</h3><p>Healthy working-age people × expected working life — the longevity dividend in person-years.</p></div>
+<div class="lv" style="--c:var(--mustard)"><h3>2 · Demand</h3><p>(Employed + vacancies) × required length of service — the career-years jobs require.</p></div>
+<div class="lv" style="--c:var(--slate)"><h3>3 · Balance</h3><p>Supply − demand, by country × sex, to 2035 with honest bands — the headline.</p></div>
+</div>
+
+<h2>The headline, previewed</h2>
+<div class="hero" style="border-left-color:{netcol}"><b>Roughly balanced in aggregate — but not where it's
+needed.</b> Total supply and demand both stay near {sup35:,}M and {dem35:,}M human-working-years (a net balance
+of <b style="color:{netcol}">{net:+,}M</b>), hiding a sharp <b>East–West divide</b>: a West/EFTA shortage of
+<b style="color:var(--down)">{west_def:+,}M</b> against an East surplus of
+<b style="color:var(--up)">{east_sur:+,}M</b>.</div>
 
 <div class="kpis">
 <div class="kpi"><div class="v" style="color:{netcol}">{net:+,}M</div><div class="l">Net balance 2035 (human-working-years)</div></div>
@@ -119,7 +135,7 @@ a Europe-wide shortfall.</div>
 <div class="kpi"><div class="v" style="color:var(--up)">{east_sur:+,}M</div><div class="l">East surplus — largest in {NAME[best]}</div></div>
 </div>
 
-<h2>What the forecasts say</h2>
+<h2>What we find</h2>
 <div class="cards">
 <div class="find"><div class="t" style="color:var(--acc)">The headline</div>
 <h3>A balanced total, an unbalanced map</h3>
@@ -139,9 +155,9 @@ the imbalance comes from where the working-age people are, not from an explosion
 <b>structural East-surplus / West-shortage signal with wide bands</b> — validated by a leakage-safe backtest.</p></div>
 </div>
 
-<h2>Three levers to close the gap</h2>
-<p class="sub">The same arithmetic that creates the imbalance points to what moves it. Each lever maps to a term
-in the supply–demand identity.</p>
+<h2>Three levers that could balance the market</h2>
+<p class="sub">Whatever the gap turns out to be, only three families of policy move it — each maps to a term in
+the supply–demand identity. This study quantifies how much each lever would have to do.</p>
 {INFOGRAPHIC}
 <div class="lever">
 <div class="lv" style="--c:var(--up)"><h3>Increase supply</h3><p>Raise participation (esp. women &amp; older
@@ -152,7 +168,7 @@ hours each job needs — the slow, structural lever that reduces required labour
 service-length policy align skills and careers with need — and convert a geographic surplus into usable supply.</p></div>
 </div>
 
-<h2>Honest limitations</h2>
+<h2>What to keep in mind</h2>
 <div class="note">
 • Forecasts run to <b>2035</b> — a policy baseline, shorter than a full pension/ageing horizon.<br>
 • <b>Supply is a potential ceiling</b> (net of health and working-life length, before skills mismatch and frictions).<br>
@@ -160,7 +176,7 @@ service-length policy align skills and careers with need — and convert a geogr
 • Population is Eurostat's own projection (<code>proj_23np</code>), calibrated to 2024; migration is the biggest swing factor.<br>
 • Levels 4–5 (health-cost and retirement-dividend) are descriptive relationships, not causal mechanisms.</div>
 
-<h2>Go deeper</h2>
+<h2>Explore the analysis</h2>
 <div class="links">
 <a href="supply_story.html">🎞️ Supply story</a>
 <a href="demand_story.html">🎬 Demand story</a>
@@ -170,8 +186,8 @@ service-length policy align skills and careers with need — and convert a geogr
 <a href="model_validation_report.html">🔍 Model trust</a>
 <a href="methodology_report.html">🧭 Methodology</a>
 </div>
-<p class="foot"><a href="../index.html">← Back to overview</a> · Generated from outputs/balance_forecast.csv · src/report_conclusion.py</p>
+<p class="foot"><a href="../index.html">← Back to overview</a> · Generated from outputs/balance_forecast.csv · src/report_intro.py</p>
 </div></body></html>"""
 
-(OUT / "conclusion.html").write_text(HTML, encoding="utf-8")
-print(f"wrote outputs/conclusion.html  net {net:+}M (West {west_def:+}M, East {east_sur:+}M)")
+(OUT / "introduction.html").write_text(HTML, encoding="utf-8")
+print(f"wrote outputs/introduction.html  net {net:+}M (West {west_def:+}M, East {east_sur:+}M)")
