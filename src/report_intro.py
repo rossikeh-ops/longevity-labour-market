@@ -184,8 +184,8 @@ service-length policy align skills and careers with need — and convert a geogr
 
 <h2>Explore the analysis</h2>
 <div class="links">
-<a href="supply_story.html">🎞️ Supply story</a>
-<a href="demand_story.html">🎬 Demand story</a>
+<a href="supply_story.html">👥 Supply story</a>
+<a href="demand_story.html">💼 Demand story</a>
 <a href="balance_story.html">⚖️ Balance story</a>
 <a href="cost_story.html">🏥 Cost story</a>
 <a href="dividend_story.html">🌅 Dividend story</a>
