@@ -24,12 +24,12 @@ SHEETJS = "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"
 def appendix_css() -> str:
     return (
         "a.dlink{display:inline-block;margin:2px 0 16px;font-size:13px;font-weight:600;"
-        "color:var(--acc);text-decoration:none;border:1px solid var(--line);"
-        "border-radius:20px;padding:6px 15px;background:var(--card)}"
-        "a.dlink:hover{border-color:var(--acc)}"
+        "color:var(--acc,#166534);text-decoration:none;border:1px solid var(--line,#E7E5E4);"
+        "border-radius:20px;padding:6px 15px;background:var(--card,#FFFFFF)}"
+        "a.dlink:hover{border-color:var(--acc,#166534)}"
         "button.dlbtn{display:inline-block;margin:2px 0 14px;font-size:13px;font-weight:600;"
-        "color:#fff;background:var(--acc);border:1px solid var(--acc);border-radius:20px;"
-        "padding:7px 16px;cursor:pointer}"
+        "color:#fff;background:var(--acc,#166534);border:1px solid var(--acc,#166534);"
+        "border-radius:20px;padding:7px 16px;cursor:pointer}"
         "button.dlbtn:hover{filter:brightness(1.08)}"
         "details.data{margin:12px 0;border:1px solid var(--line);border-radius:12px;"
         "background:var(--card);padding:0 16px}"
@@ -44,7 +44,8 @@ def appendix_css() -> str:
 
 
 def data_link(label: str = "Data behind this report") -> str:
-    return f'<a class="dlink" href="#{ANCHOR}">\U0001F4CB {label} &darr;</a>'
+    return (f'<a class="dlink" href="#{ANCHOR}">\U0001F4CB {label} &darr;</a> '
+            f'<button type="button" class="dlbtn">⬇ Excel (.xlsx)</button>')
 
 
 def _fmt(v) -> str:
@@ -107,12 +108,12 @@ def data_section(frames, heading: str = "Data behind this report",
     parts.append(
         "<script>(function(){"
         f"var SHEETS={json.dumps(sheets)};"
-        "var btn=document.getElementById('dl-xlsx');if(!btn)return;"
-        "btn.addEventListener('click',function(){"
+        "function run(){"
         "if(!window.XLSX){alert('Excel export library is still loading — please try again.');return;}"
         "var wb=XLSX.utils.book_new();"
         "SHEETS.forEach(function(s){var t=document.getElementById(s.id);"
         "if(t){var ws=XLSX.utils.table_to_sheet(t);XLSX.utils.book_append_sheet(wb,ws,s.name);}});"
-        f"XLSX.writeFile(wb,'{filename}.xlsx');"
-        "});})();</script>")
+        f"XLSX.writeFile(wb,'{filename}.xlsx');}}"
+        "document.querySelectorAll('.dlbtn').forEach(function(b){b.addEventListener('click',run);});"
+        "})();</script>")
     return "\n".join(parts)
