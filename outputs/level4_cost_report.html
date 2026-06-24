@@ -46,7 +46,138 @@ And testing it against the <b>NACE-Q</b> (human health &amp; social work) sector
 <div class="kpi"><div class="v">2.4%/yr</div><div class="l">NACE-Q value-added real growth (economy-driven)</div></div>
 <div class="kpi"><div class="v">0.013</div><div class="l">Within-country burden→cost elasticity (≈ 0)</div></div>
 </div>
-
+<h2>Geographic overview — poor-health burden &amp; its drivers</h2><p class="sub">Choropleth of the 8 countries. Default = 2033 poor-health burden (person-years lived in poor health); switch to years-per-person (LE−HLY) or the underlying life-expectancy / healthy-life-years drivers. Toggle sex; hover a country.</p>
+<div id="geomap4"><style>
+#geomap4 .gm-wrap{display:flex;gap:16px;flex-wrap:wrap;align-items:stretch}
+#geomap4 .gm-map{background:var(--card,#FFFFFF);border:1px solid var(--line,#E7E5E4);
+  border-radius:12px;padding:8px;flex:1 1 560px;min-width:320px;position:relative}
+#geomap4 .gm-side{flex:0 0 250px;display:flex;flex-direction:column;gap:12px}
+#geomap4 .gm-ctl{background:var(--card,#FFFFFF);border:1px solid var(--line,#E7E5E4);
+  border-radius:12px;padding:14px}
+#geomap4 .gm-lab{display:block;font-size:11px;color:var(--mut,#78716C);margin:0 0 6px;
+  text-transform:uppercase;letter-spacing:.6px}
+#geomap4 select{width:100%;background:#F5F5F4;color:var(--ink,#292524);
+  border:1px solid var(--line,#E7E5E4);border-radius:8px;padding:8px 9px;font-size:14px}
+#geomap4 .gm-seg{display:flex;gap:5px;margin-top:4px}
+#geomap4 .gm-seg button{flex:1;background:#F5F5F4;color:var(--mut,#78716C);
+  border:1px solid var(--line,#E7E5E4);border-radius:8px;padding:7px 0;font-size:13px;cursor:pointer}
+#geomap4 .gm-seg button.on{background:var(--acc,#166534);color:#FFFFFF;
+  border-color:var(--acc,#166534);font-weight:600}
+#geomap4 .gm-scale{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11px;color:var(--mut,#78716C)}
+#geomap4 .gm-bar{height:11px;flex:1;border-radius:3px}
+#geomap4 .gm-meta{font-size:11px;color:var(--mut,#78716C);margin-top:8px}
+#geomap4 .gm-rank{background:var(--card,#FFFFFF);border:1px solid var(--line,#E7E5E4);
+  border-radius:12px;padding:12px 14px}
+#geomap4 .gm-rank h4{margin:0 0 9px;font-size:11px;color:var(--mut,#78716C);
+  font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+#geomap4 .gm-row{display:flex;align-items:center;gap:7px;margin:4px 0;font-size:12px}
+#geomap4 .gm-row .nm{width:74px;color:var(--ink,#292524)}
+#geomap4 .gm-row .tk{height:13px;border-radius:3px;min-width:2px}
+#geomap4 .gm-row .vl{color:var(--mut,#78716C);font-variant-numeric:tabular-nums}
+#geomap4 .gm-c{stroke:#FFFFFF;stroke-width:.6px;cursor:pointer}
+#geomap4 .gm-c.other{fill:#E7E5E4;stroke:#E7E5E4}
+#geomap4 .gm-c:hover{opacity:.82}
+#geomap4 .gm-clab{font-size:10px;fill:#292524;font-weight:700;pointer-events:none;text-anchor:middle;
+  paint-order:stroke;stroke:#FFFFFF;stroke-width:2.5px;stroke-linejoin:round}
+#geomap4 .gm-tip{position:absolute;pointer-events:none;background:#FFFFFF;
+  border:1px solid var(--acc,#166534);border-radius:8px;padding:8px 11px;font-size:12px;
+  color:var(--ink,#292524);opacity:0;max-width:210px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+#geomap4 .gm-tip b{color:var(--acc,#166534)}
+</style>
+<div class="gm-wrap">
+  <div class="gm-map"><svg class="gm-svg" viewBox="0 0 720 520" width="100%" style="display:block"></svg>
+    <div class="gm-tip"></div></div>
+  <div class="gm-side">
+    <div class="gm-ctl">
+      <label class="gm-lab">Metric</label><select class="gm-metric"></select>
+      <label class="gm-lab" style="margin-top:12px">Sex</label>
+      <div class="gm-seg"><button data-s="T" class="on">Total</button>
+        <button data-s="F">Women</button><button data-s="M">Men</button></div>
+      <div class="gm-scale"><span class="gm-lo"></span><div class="gm-bar"></div><span class="gm-hi"></span></div>
+      <div class="gm-meta"></div>
+    </div>
+    <div class="gm-rank"><h4>Ranking</h4><div class="gm-list"></div></div>
+  </div>
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+<script>(function(){
+const CFG={"data": {"countries": {"BG": "Bulgaria", "PL": "Poland", "CZ": "Czechia", "RO": "Romania", "DE": "Germany", "FR": "France", "NO": "Norway", "CH": "Switzerland"}, "regime": {"BG": "Post-socialist EU", "PL": "Post-socialist EU", "CZ": "Post-socialist EU", "RO": "Post-socialist EU", "DE": "Western EU", "FR": "Western EU", "NO": "EFTA", "CH": "EFTA"}, "metrics": {"burden_2033": {"label": "Poor-health burden 2033 (person-years)", "unit": "person-years", "total": "sum", "fmt": "millions", "values": {"DE": {"T": 1487986013, "F": 834863817, "M": 653122196}, "FR": {"T": 1377971132, "F": 804970855, "M": 573000277}, "PL": {"T": 538696612, "F": 320908953, "M": 217787659}, "CH": {"T": 259060140, "F": 146192616, "M": 112867524}, "RO": {"T": 255153806, "F": 161656465, "M": 93497341}, "CZ": {"T": 191755890, "F": 109722523, "M": 82033368}, "NO": {"T": 103030022, "F": 62118579, "M": 40911443}, "BG": {"T": 49346649, "F": 30519946, "M": 18826703}}, "years": {"DE": 2033, "FR": 2033, "PL": 2033, "CH": 2033, "RO": 2033, "CZ": 2033, "NO": 2033, "BG": 2033}}, "poor_pp": {"label": "Years in poor health per person (LE\u2212HLY), 2024", "unit": "years", "total": "wmean", "fmt": "plain", "values": {"DE": {"F": 20.9, "M": 16.8, "T": 18.9}, "FR": {"F": 22.1, "M": 16.7, "T": 19.5}, "PL": {"F": 16.0, "M": 11.6, "T": 13.9}, "CH": {"F": 29.4, "M": 23.0, "T": 26.2}, "RO": {"F": 14.4, "M": 8.8, "T": 11.7}, "CZ": {"F": 19.8, "M": 15.4, "T": 17.6}, "NO": {"F": 22.5, "M": 14.6, "T": 18.5}, "BG": {"F": 8.1, "M": 5.4, "T": 6.8}}, "years": {"DE": 2024, "FR": 2024, "PL": 2024, "CH": 2024, "RO": 2024, "CZ": 2024, "NO": 2024, "BG": 2024}}, "supply_birth": {"label": "Potential labour supply (healthy person-years)", "unit": "person-years", "total": "sum", "fmt": "millions", "values": {"BG": {"F": 239031706.2, "M": 206926226.4, "T": 445957932.6}, "PL": {"F": 1252172933.8, "M": 1119017367.2, "T": 2371190301.0}, "CZ": {"F": 351262124.0, "M": 329639037.0, "T": 680901161.0}, "RO": {"F": 645569975.4, "M": 593367680.0, "T": 1238937655.4}, "DE": {"F": 2647611536.4, "M": 2556155915.1, "T": 5203767451.5}, "FR": {"F": 2252439070.7, "M": 2115133692.0, "T": 4367572762.7}, "NO": {"F": 171604415.5, "M": 187313106.0, "T": 358917521.5}, "CH": {"F": 254856019.0, "M": 264421000.8, "T": 519277019.8}}, "years": {"BG": 2024, "PL": 2024, "CZ": 2024, "RO": 2024, "DE": 2024, "FR": 2024, "NO": 2024, "CH": 2024}}, "hly_birth": {"label": "Healthy life years at birth", "unit": "years", "total": "wmean", "fmt": "plain", "values": {"BG": {"F": 71.4, "M": 66.8, "T": 69.19}, "PL": {"F": 66.2, "M": 63.2, "T": 64.75}, "CZ": {"F": 63.2, "M": 61.7, "T": 62.46}, "RO": {"F": 65.9, "M": 64.0, "T": 64.98}, "DE": {"F": 62.6, "M": 62.1, "T": 62.35}, "FR": {"F": 63.7, "M": 63.5, "T": 63.6}, "NO": {"F": 62.3, "M": 67.0, "T": 64.67}, "CH": {"F": 56.5, "M": 59.4, "T": 57.94}}, "years": {"BG": 2024, "PL": 2024, "CZ": 2024, "RO": 2024, "DE": 2024, "FR": 2024, "NO": 2024, "CH": 2024}}, "le_birth": {"label": "Life expectancy at birth", "unit": "years", "total": "wmean", "fmt": "plain", "values": {"BG": {"F": 79.5, "M": 72.2, "T": 75.99}, "PL": {"F": 82.2, "M": 74.8, "T": 78.62}, "CZ": {"F": 83.0, "M": 77.1, "T": 80.11}, "RO": {"F": 80.3, "M": 72.8, "T": 76.65}, "DE": {"F": 83.5, "M": 78.9, "T": 81.23}, "FR": {"F": 85.8, "M": 80.2, "T": 83.08}, "NO": {"F": 84.8, "M": 81.6, "T": 83.19}, "CH": {"F": 85.9, "M": 82.4, "T": 84.16}}, "years": {"BG": 2024, "PL": 2024, "CZ": 2024, "RO": 2024, "DE": 2024, "FR": 2024, "NO": 2024, "CH": 2024}}, "pop_total": {"label": "Population (1 Jan)", "unit": "persons", "total": "sum", "fmt": "millions", "values": {"BG": {"F": 3342220.0, "M": 3095140.0, "T": 6437360.0}, "PL": {"F": 18855180.0, "M": 17642315.0, "T": 36497495.0}, "CZ": {"F": 5554921.0, "M": 5354579.0, "T": 10909500.0}, "RO": {"F": 9752617.0, "M": 9290534.0, "T": 19043151.0}, "DE": {"F": 42335439.0, "M": 41241701.0, "T": 83577140.0}, "FR": {"F": 35448530.0, "M": 33434070.0, "T": 68882600.0}, "NO": {"F": 2775143.0, "M": 2819197.0, "T": 5594340.0}, "CH": {"F": 4550640.0, "M": 4500389.0, "T": 9051029.0}}, "years": {"BG": 2025, "PL": 2025, "CZ": 2025, "RO": 2025, "DE": 2025, "FR": 2025, "NO": 2025, "CH": 2025}}, "employed_ths": {"label": "Employment 15-64", "unit": "thousands", "total": "sum", "fmt": "plain", "values": {"BG": {"F": 1321.4, "M": 1487.9, "T": 2809.3}, "PL": {"F": 7753.1, "M": 8994.9, "T": 16748.0}, "CZ": {"F": 2361.1, "M": 2702.2, "T": 5063.3}, "RO": {"F": 3243.2, "M": 4371.4, "T": 7614.6}, "DE": {"F": 19202.4, "M": 21394.5, "T": 40596.9}, "FR": {"F": 14051.6, "M": 14681.1, "T": 28732.7}, "NO": {"F": 1323.5, "M": 1444.2, "T": 2767.7}, "CH": {"F": 2213.4, "M": 2459.7, "T": 4673.1}}, "years": {"BG": 2025, "PL": 2025, "CZ": 2025, "RO": 2025, "DE": 2025, "FR": 2025, "NO": 2025, "CH": 2025}}, "vacancy_rate": {"label": "Job vacancy rate", "unit": "%", "total": "wmean", "fmt": "plain", "values": {"BG": {"F": 0.85, "M": 0.85, "T": 0.85}, "PL": {"F": 0.78, "M": 0.78, "T": 0.78}, "CZ": {"F": 1.95, "M": 1.95, "T": 1.95}, "RO": {"F": 0.6, "M": 0.6, "T": 0.6}, "DE": {"F": 2.62, "M": 2.62, "T": 2.62}, "FR": {"F": 2.4, "M": 2.4, "T": 2.4}, "NO": {"F": 2.83, "M": 2.83, "T": 2.83}, "CH": {"F": 1.62, "M": 1.62, "T": 1.62}}, "years": {"BG": 2025, "PL": 2025, "CZ": 2025, "RO": 2025, "DE": 2025, "FR": 2025, "NO": 2025, "CH": 2025}}}}, "container": "geomap4", "default": "burden_2033"};
+const ISO={Bulgaria:"BG",Poland:"PL",Czechia:"CZ","Czech Republic":"CZ",Romania:"RO",
+  Germany:"DE",France:"FR",Norway:"NO",Switzerland:"CH"};
+const DATA=CFG.data, root=document.getElementById(CFG.container);
+let state={metric:CFG.default, sex:"T"};
+const $=s=>root.querySelector(s);
+function fmt(v,f){ if(v==null||isNaN(v))return"n/a";
+  if(f==="millions"){ const a=Math.abs(v),s=v<0?"-":"";
+    if(a>=1e9)return s+(a/1e9).toFixed(2)+" bn"; if(a>=1e6)return s+(a/1e6).toFixed(2)+" M";
+    return d3.format(",")(Math.round(v)); } return d3.format(",.2~f")(v); }
+fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(r=>r.json()).then(topo=>{
+  const sel=d3.select($(".gm-metric"));
+  Object.entries(DATA.metrics).forEach(([k,m])=>sel.append("option").attr("value",k).text(m.label));
+  sel.property("value",state.metric);
+  const feats=topojson.feature(topo,topo.objects.countries).features;
+  // keep only European polygons (drops France's overseas territories, Svalbard…)
+  const euroOnly=f=>{ if(f.geometry.type!=="MultiPolygon") return f;
+    const polys=f.geometry.coordinates.filter(poly=>{
+      const c=d3.geoCentroid({type:"Polygon",coordinates:poly});
+      return c[0]>-25&&c[0]<45&&c[1]>34&&c[1]<73;});
+    return {...f,geometry:{type:"MultiPolygon",coordinates:polys.length?polys:f.geometry.coordinates}};};
+  const eight=feats.filter(f=>Object.keys(DATA.countries).includes(ISO[f.properties.name])).map(euroOnly);
+  const svg=d3.select($(".gm-svg"));
+  const proj=d3.geoConicConformal().rotate([-10,0]).parallels([43,62])
+    .fitExtent([[28,20],[692,470]],{type:"FeatureCollection",features:eight});
+  const path=d3.geoPath(proj);
+  const inEU=f=>{try{const[[w,s],[e,n]]=d3.geoBounds(f);
+    return n>33&&s<73&&w<55&&e>-32&&(e-w)<90;}catch(_){return false;}};
+  svg.append("g").selectAll("path").data(feats.filter(inEU)).join("path").attr("class","gm-c other").attr("d",path);
+  const g=svg.append("g");
+  g.selectAll("path").data(eight).join("path").attr("class","gm-c")
+    .attr("data-iso",d=>ISO[d.properties.name]).attr("d",path)
+    .on("mousemove",hover).on("mouseleave",()=>d3.select($(".gm-tip")).style("opacity",0));
+  svg.append("g").selectAll("text").data(eight).join("text").attr("class","gm-clab")
+    .attr("x",d=>path.centroid(d)[0]).attr("y",d=>path.centroid(d)[1]+3).text(d=>ISO[d.properties.name]);
+  sel.on("change",function(){state.metric=this.value;render();});
+  d3.selectAll(root.querySelectorAll(".gm-seg button")).on("click",function(){
+    root.querySelectorAll(".gm-seg button").forEach(b=>b.classList.remove("on"));
+    this.classList.add("on");state.sex=this.dataset.s;render();});
+  function vlist(){const m=DATA.metrics[state.metric];
+    return Object.keys(DATA.countries).map(iso=>({iso,v:(m.values[iso]||{})[state.sex]??null}));}
+  function render(){
+    const m=DATA.metrics[state.metric];
+    const arr=vlist().filter(d=>d.v!=null).map(d=>d.v),lo=d3.min(arr),hi=d3.max(arr);
+    // diverging metrics (e.g. the balance: surplus vs shortage) use a red→green
+    // scale centred on zero; everything else a sequential YlGnBu scale.
+    const div=!!m.diverging, PAL=div?d3.interpolateRgbBasis(["#B91C1C","#FEF3C7","#166534"]):d3.interpolateRgbBasis(["#FEF3C7","#4ADE80","#166534"]);
+    const mag=Math.max(Math.abs(lo),Math.abs(hi))||1;
+    const seq=d3.scaleSequential(PAL).domain([lo,hi]);
+    const color=v=>div?PAL(0.5+0.5*v/mag):seq(v);
+    g.selectAll("path.gm-c")
+      .attr("fill",d=>{const v=(m.values[ISO[d.properties.name]]||{})[state.sex];return v==null?"#E7E5E4":color(v);});
+    $(".gm-bar").style.background=`linear-gradient(90deg,${d3.range(0,1.01,.1).map(t=>PAL(t)).join(",")})`;
+    $(".gm-lo").textContent=fmt(lo,m.fmt);$(".gm-hi").textContent=fmt(hi,m.fmt);
+    const yrs=Object.values(m.years||{});
+    $(".gm-meta").innerHTML=`Unit: <b style="color:var(--ink,#292524)">${m.unit}</b> · years ${d3.min(yrs)}–${d3.max(yrs)}`;
+    const sorted=vlist().filter(d=>d.v!=null).sort((a,b)=>b.v-a.v);
+    const maxw=div?mag:(hi||1);
+    const bw=d3.scaleLinear().domain([0,maxw]).range([0,140]);
+    const list=d3.select($(".gm-list")).html("");
+    sorted.forEach(d=>{const row=list.append("div").attr("class","gm-row");
+      row.append("span").attr("class","nm").text(DATA.countries[d.iso]);
+      row.append("span").attr("class","tk").style("width",bw(Math.abs(d.v))+"px").style("background",color(d.v));
+      row.append("span").attr("class","vl").text(fmt(d.v,m.fmt));});
+  }
+  function hover(ev,d){const iso=ISO[d.properties.name],m=DATA.metrics[state.metric],rec=m.values[iso]||{};
+    const tip=d3.select($(".gm-tip"));
+    const rows=["T","F","M"].filter(s=>rec[s]!=null)
+      .map(s=>`${({T:"Total",F:"Women",M:"Men"})[s]}: <b>${fmt(rec[s],m.fmt)}</b>`).join("<br>");
+    tip.html(`<b>${DATA.countries[iso]}</b> · ${DATA.regime[iso]}<br>
+      <span style="color:var(--mut,#78716C)">${m.label}</span><br>${rows||"n/a"}`).style("opacity",1);
+    const r=$(".gm-svg").getBoundingClientRect(),mr=$(".gm-map").getBoundingClientRect();
+    tip.style("left",(ev.clientX-mr.left+14)+"px").style("top",(ev.clientY-mr.top+10)+"px");}
+  render();
+});
+})();</script>
 <h2>Poor-health burden by country, to 2033</h2>
 <div class="lgd"><span><span class="sw" style="background:var(--obs)"></span>Observed</span>
 <span><span class="sw" style="background:var(--fc)"></span>Forecast</span>

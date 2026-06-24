@@ -13,6 +13,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from data_appendix import appendix_css, data_link, data_section  # noqa: E402
+from map_section import build_map_section  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "outputs"
@@ -59,6 +60,54 @@ for c in countries:
     qva = float(p["nace_q_va"].iloc[0]) / 1000  # €bn
     if poor > 0 and qva > 0:
         scrows.append((c, poor, qva))
+
+# ---------- interactive choropleth (default: poor-health burden) ----------
+md = json.loads((OUT / "map_data.json").read_text(encoding="utf-8"))
+o24 = obs[obs.year == 2024]
+f33 = fc[fc.year == 2033].set_index("country")
+
+
+def _burden_metric():
+    d = {"label": "Poor-health burden 2033 (person-years)", "unit": "person-years",
+         "total": "sum", "fmt": "millions", "values": {}, "years": {}}
+    for c in countries:
+        tot = float(f33.loc[c, "poor_py"])
+        s24 = o24[o24.country == c].groupby("sex")["poor_py"].sum()
+        vals = {"T": round(tot)}
+        if s24.sum() > 0:
+            sh = s24 / s24.sum()
+            vals["F"] = round(tot * float(sh.get("F", 0)))
+            vals["M"] = round(tot * float(sh.get("M", 0)))
+        d["values"][c] = vals
+        d["years"][c] = 2033
+    return d
+
+
+def _pp_metric():
+    d = {"label": "Years in poor health per person (LE−HLY), 2024", "unit": "years",
+         "total": "wmean", "fmt": "plain", "values": {}, "years": {}}
+    for c in countries:
+        r = o24[o24.country == c]
+        vals = {}
+        for s in ("F", "M"):
+            rr = r[r.sex == s]
+            if len(rr):
+                vals[s] = round(float(rr["poor_pp"].iloc[0]), 1)
+        if len(r):
+            vals["T"] = round(float((r["poor_pp"] * r["pop_total"]).sum() / r["pop_total"].sum()), 1)
+        d["values"][c] = vals
+        d["years"][c] = 2024
+    return d
+
+
+map_data = {"countries": md["countries"], "regime": md["regime"], "metrics": {
+    "burden_2033": _burden_metric(), "poor_pp": _pp_metric(), **md["metrics"]}}
+map_html = build_map_section(
+    map_data, container="geomap4", default_metric="burden_2033",
+    title="Geographic overview — poor-health burden &amp; its drivers",
+    intro="Choropleth of the 8 countries. Default = 2033 poor-health burden "
+          "(person-years lived in poor health); switch to years-per-person (LE−HLY) "
+          "or the underlying life-expectancy / healthy-life-years drivers. Toggle sex; hover a country.")
 
 # ---------- charts ----------
 W, H, PLm, PRm, PTm, PBm = 470, 200, 50, 12, 12, 26
@@ -187,7 +236,7 @@ And testing it against the <b>NACE-Q</b> (human health &amp; social work) sector
 <div class="kpi"><div class="v">{rel['q_real_growth_pct']}%/yr</div><div class="l">NACE-Q value-added real growth (economy-driven)</div></div>
 <div class="kpi"><div class="v">{rel['elasticity_within_diff']}</div><div class="l">Within-country burden→cost elasticity (≈ 0)</div></div>
 </div>
-
+{map_html}
 <h2>Poor-health burden by country, to 2033</h2>
 <div class="lgd"><span><span class="sw" style="background:var(--obs)"></span>Observed</span>
 <span><span class="sw" style="background:var(--fc)"></span>Forecast</span>
