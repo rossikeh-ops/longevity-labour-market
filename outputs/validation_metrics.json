@@ -455,10 +455,10 @@
   "supply_mape": 3.6,
   "demand_mape": 2.2,
   "supply_bias": 0.4,
-  "demand_bias": -0.8,
+  "demand_bias": -0.6,
   "balance_mae_m": 22,
   "balance_base_m": 91,
-  "balance_rel": 25,
+  "balance_rel": 24,
   "supply_by_h": {
    "1": 2.5,
    "2": 3.9,
@@ -466,32 +466,34 @@
    "4": 4.0
   },
   "demand_by_h": {
-   "1": 1.8,
+   "1": 1.6,
    "2": 2.1,
-   "3": 2.7,
-   "4": 3.1
+   "3": 2.8,
+   "4": 3.4
   },
   "balance_by_h": {
-   "1": 15,
-   "2": 25,
+   "1": 13,
+   "2": 24,
    "3": 32,
-   "4": 26
+   "4": 27
   }
  },
  "vacancy_model_test": {
   "old_direct_ensemble": {
    "n": 80,
    "mape": 30.91,
+   "medape": 23.08,
    "mape_naive": 24.39,
    "skill": -0.268,
    "bias_pct": 24.0
   },
   "new_beveridge": {
    "n": 80,
-   "mape": 40.02,
+   "mape": 24.33,
+   "medape": 15.78,
    "mape_naive": 24.39,
-   "skill": -0.641,
-   "bias_pct": 20.2
+   "skill": 0.002,
+   "bias_pct": 17.8
   },
   "beveridge_fit": {
    "slope": -0.1816,

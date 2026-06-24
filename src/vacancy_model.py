@@ -37,6 +37,19 @@ class Beveridge:
         r = a + self.slope * np.asarray(unemp_rate, dtype=float)
         return np.clip(r, self.lo, self.hi)
 
+    def predict_anchored(self, unemp_pct, last_unemp, last_rate, h, country=None, damp=0.6):
+        """Vacancy rate (%) ANCHORED at the last observed rate, with a damped
+        Beveridge response to deviations of unemployment from its last observed
+        value. Anchoring removes the level bias of the pooled curve (vacancies are
+        near-random-walk); the slope keeps the model scenario-able (vacancies still
+        fall when unemployment rises). `h` = horizon step(s) 1,2,… broadcast over the
+        last axis of `unemp_pct`; `damp`<1 fades the response as the unemployment
+        forecast becomes unreliable, so it degrades gracefully to a flat-rate forecast."""
+        dev = np.asarray(unemp_pct, float) - float(last_unemp)
+        damp_h = float(damp) ** (np.asarray(h, float) - 1.0)
+        r = float(last_rate) + damp_h * self.slope * dev
+        return np.clip(r, self.lo, self.hi)
+
     def reconstruct_count(self, rate_pct, total_employment, country=None):
         """Vacancy COUNT from a vacancy rate (%) and total employment, via the JVR
         identity V = O·r/(1-r), with occupied posts O calibrated per country."""

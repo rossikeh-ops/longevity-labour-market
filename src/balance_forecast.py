@@ -35,8 +35,22 @@ N = 1000
 panel["healthy_share"] = panel["hly_birth"] / panel["le_birth"]
 panel["emp_rate"] = panel["employed_ths"] * 1000.0 / panel["pop_15_64"]
 svc = {(r.country, r.sex): r.required_service_years for r in ret.itertuples()}
-bev = fit_beveridge(panel)                    # pooled Beveridge: vacancy_rate ~ unemp_rate
+bev = fit_beveridge(panel)                    # pooled Beveridge slope: vacancy_rate ~ unemp_rate
 print(f"Beveridge fit: {bev}")
+
+# Last observed total vacancy rate and employment-weighted unemployment, per country —
+# the anchor for the vacancy-rate forecast (a 5-agent study showed the count is a noisy
+# random walk; anchoring at the last rate halves MAPE and removes the pooled-curve bias).
+last_vr, last_u = {}, {}
+for _c in COUNTRIES:
+    _s = panel[panel.country == _c]
+    _vr = _s.dropna(subset=["vacancy_rate"])
+    last_vr[_c] = float(_vr.loc[_vr.year == _vr.year.max(), "vacancy_rate"].iloc[0])
+    _u = _s.dropna(subset=["unemp_rate", "employed_ths"])
+    _r = _u[_u.year == _u.year.max()]
+    _ef = _r[_r.sex == "F"]["employed_ths"].iloc[0]; _em = _r[_r.sex == "M"]["employed_ths"].iloc[0]
+    _uf = _r[_r.sex == "F"]["unemp_rate"].iloc[0]; _um = _r[_r.sex == "M"]["unemp_rate"].iloc[0]
+    last_u[_c] = float((_uf * _ef + _um * _em) / (_ef + _em))
 proj_w = proj.pivot_table(index=["country", "sex", "year"], columns="scenario",
                           values="pop_15_64_proj").reset_index()
 
@@ -85,7 +99,8 @@ for c in COUNTRIES:
     urM = fc(c, "M", "unemp_rate", nonneg=True)
     denom = np.where((empF + empM) == 0, 1, empF + empM)
     ur_tot = (urF * empF + urM * empM) / denom            # employment-weighted total unemployment
-    rate_pct = bev.predict(ur_tot, c)                     # vacancy rate (%), Beveridge curve
+    h_steps = np.arange(1, len(TGT) + 1)
+    rate_pct = bev.predict_anchored(ur_tot, last_u[c], last_vr[c], h_steps, c, damp=0.6)
     vac = bev.reconstruct_count(rate_pct, empF + empM, c)  # total vacancy COUNT (Step-5 inversion)
     jobsF = empF + vac * empF / denom
     jobsM = empM + vac * empM / denom

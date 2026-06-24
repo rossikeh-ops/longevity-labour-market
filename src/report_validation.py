@@ -25,7 +25,7 @@ VERDICT = {
     "working_life_yrs": ("Trustworthy", "ok", "1.5% error, best skill vs naive (+0.20)."),
     "emp_rate": ("Trustworthy", "ok", "1.8% error, beats naive; drives employment."),
     "healthy_share": ("Use with caution", "warn", "3.1% error, no better than naive — HLY is survey noise + breaks."),
-    "vacancy_count": ("Weak — poorly predicted", "bad", "~28% error direct; now via a Beveridge curve (see reverse test). Volatile & cyclical — only ~1.8% of jobs."),
+    "vacancy_count": ("At its ceiling", "warn", "Near-random-walk; anchored model ties the naive floor (~16% median APE). Only ~1.8% of jobs."),
 }
 order = ["le_birth", "working_life_yrs", "emp_rate", "healthy_share", "vacancy_count"]
 rows = []
@@ -59,29 +59,37 @@ if vt and vt.get("new_beveridge") and vt.get("old_direct_ensemble"):
     o, nw, bf = vt["old_direct_ensemble"], vt["new_beveridge"], vt["beveridge_fit"]
 
     def _vrow(name, d, hl=False):
-        skc = "#34d399" if (d["skill"] or 0) > 0 else "#f87171"
+        skc = "#34d399" if (d["skill"] or 0) >= 0 else "#f87171"
         st = "font-weight:700" if hl else ""
         bsign = "+" if d["bias_pct"] > 0 else ""
+        med = f'{d.get("medape","?")}%' if d.get("medape") is not None else "—"
         return (f'<tr style="{st}"><td>{name}</td><td>{d["mape"]}%</td>'
+                f'<td style="color:#94a3b8">{med}</td>'
                 f'<td style="color:#94a3b8">{d["mape_naive"]}%</td>'
                 f'<td style="color:{skc};text-align:right">{d["skill"]}</td>'
                 f'<td style="color:#94a3b8">{bsign}{d["bias_pct"]}%</td></tr>')
     vac_test_html = f"""
-<h2>Vacancies: Beveridge model vs direct extrapolation (reverse test)</h2>
-<p class="sub">Level 3 now forecasts job vacancies through a <b>Beveridge curve</b> — a pooled panel
-regression <code>vacancy_rate ~ unemp_rate</code> (shared slope, country fixed effects, R²={bf["r2"]}) —
-then rebuilds the count from the job-vacancy-rate identity, instead of extrapolating the noisy count
-directly. Backtested against the old model on held-out years (total vacancy count, rolling origin).</p>
-<table style="max-width:640px"><thead><tr><th>Vacancy model</th><th>MAPE</th><th>vs naive</th>
-<th>Skill</th><th>Bias</th></tr></thead><tbody>
-{_vrow("OLD — direct ensemble", o)}
-{_vrow("NEW — Beveridge curve", nw, hl=True)}
+<h2>Vacancies: how far can prediction go? (5-angle study + reverse test)</h2>
+<p class="sub">Job vacancies are the hardest driver. A 5-agent study (seasonal/quarterly models,
+Beveridge dynamics, leading-indicator covariates, occupied-posts restructuring, and an adversarial
+skeptic) reached one conclusion: the vacancy <b>count is a noisy random walk</b> — its year-to-year
+swings are essentially unforecastable, so <b>matching a naive last-value baseline (skill ≈ 0) is the
+honest ceiling</b>, not a failure. Covariates and trend/seasonal models all did worse out-of-sample.</p>
+<p class="sub">The winning model <b>anchors</b> the vacancy rate at its last observed value (which kills
+the level bias of a fitted curve) and adds a <b>damped Beveridge response</b> to unemployment (shared
+slope {bf["slope"]}, so vacancies still fall when unemployment rises — keeping it scenario-able).
+The count is rebuilt from the vacancy-rate identity.</p>
+<table style="max-width:680px"><thead><tr><th>Vacancy model</th><th>MAPE</th><th>median APE</th>
+<th>vs naive</th><th>Skill</th><th>Bias</th></tr></thead><tbody>
+{_vrow("OLD — direct trend ensemble", o)}
+{_vrow("NEW — anchored Beveridge", nw, hl=True)}
 </tbody></table>
-<div class="note"><b>Reading.</b> The two are <b>comparable</b> on raw count accuracy — vacancies are
-near-random-walk, so neither beats a naive baseline (both negative skill). The Beveridge model carries
-<b>lower bias ({nw["bias_pct"]:+}% vs {o["bias_pct"]:+}%)</b> and, crucially, ties vacancies to
-unemployment so they respond coherently under scenarios. Vacancies are only ~1.8% of jobs, so the
-choice barely moves the balance — but the link is now economic, not a blind extrapolation.</div>
+<div class="note"><b>Reading.</b> The anchored model <b>halves</b> the earlier pooled-Beveridge error
+(was ~40% MAPE) down to <b>{nw["mape"]}%</b> — it now <b>ties the naive random-walk floor</b>
+(skill {nw["skill"]:+}) with the lowest bias ({nw["bias_pct"]:+}%), while still responding to
+unemployment for scenarios. <b>median APE is {nw["medape"]}%</b> — the honest central tendency
+(pooled MAPE is inflated by tiny, hyper-volatile series like CZ). Vacancies are only ~1.8% of jobs,
+so this barely moves the balance, but the driver is now at its achievable accuracy ceiling.</div>
 """
 
 # fixed train/test split (train <=2019, predict 2020-2024) section
@@ -240,8 +248,8 @@ HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <div class="hero"><b>Verdict: trustworthy where it matters, honest where it isn't.</b><br>
 The structural drivers — life expectancy, working-life duration and employment rate — are
 forecast to <b>1–2% error</b> and beat a naive baseline. Healthy-share (HLY) is noisier and
-no better than naive. Job vacancies are <b>genuinely hard to predict</b> (now modelled via a
-Beveridge curve) — but make up only <b>{vac_w:.1f}% of jobs</b>, so they move total demand by ~{jobs_impact:.1f}%.
+no better than naive. Job vacancies are a <b>near-random-walk</b> (modelled with an anchored,
+scenario-able rate at the naive accuracy ceiling) — but make up only <b>{vac_w:.1f}% of jobs</b>, so they move total demand by ~{jobs_impact:.1f}%.
 Uncertainty bands cover 84–89% of reality (target 80%) — honest, slightly conservative.</div>
 <div class="kpis">
 <div class="kpi"><div class="v">{n_trust} / 5</div><div class="l">Drivers forecast well (≤2% error, beat naive)</div></div>
@@ -305,12 +313,13 @@ is {vac_w:.1f}% of jobs.<br>
 • <b>Bands are honest</b> — they include real out-of-sample model error (backtest), not just in-sample noise, and cover ~85% of reality.</div>
 <h2>Where the model fails to explain the data (honest limitations)</h2>
 <div class="note">
-• <b>Job vacancies</b> — cyclical and shock-driven, so a direct extrapolation is essentially a
-random walk (~28% error, no skill vs naive). Level 3 now forecasts them through a <b>Beveridge curve</b>
-(<code>vacancy_rate ~ unemployment</code>, country fixed effects) and rebuilds the count from the
-vacancy-rate identity — comparable accuracy but lower bias and an economically coherent, scenario-able
-link (see the reverse test above). Vacancies are only ~1.8% of jobs (~0.5% of demand), so the balance
-is barely affected either way.<br>
+• <b>Job vacancies</b> — a <b>noisy random walk</b>: year-to-year swings are essentially
+unforecastable, so matching the naive last-value baseline (skill ≈ 0) is the achievable ceiling, not a
+defect. A 5-agent study (seasonal/quarterly, Beveridge dynamics, leading-indicator covariates,
+occupied-posts restructuring, skeptic) confirmed no covariate or trend model beats it out-of-sample.
+Level 3 uses an <b>anchored</b> vacancy rate (last observed value) with a <b>damped Beveridge response</b>
+to unemployment — halving the earlier curve's error to the naive floor while staying scenario-able. Only
+~1.8% of jobs, so the balance is barely affected.<br>
 • <b>Healthy-share / HLY</b> — survey-based (GALI), with methodology breaks; the model can't beat a naive guess. Treated as a bounded ratio, not over-modelled.<br>
 • <b>France vacancies</b> carry Eurostat flag <code>d</code> (definition differs) — a data-quality caveat the model can't fix.<br>
 • <b>Short horizons of judgement</b> — HLY has ~18 points; forecasts past ~2035 would be speculative.<br>

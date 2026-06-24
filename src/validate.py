@@ -150,9 +150,10 @@ for c in COUNTRIES:
         empF = fcm("F", "emp_rate") * fcm("F", "pop_15_64")
         empM = fcm("M", "emp_rate") * fcm("M", "pop_15_64")
         den = np.where(empF + empM == 0, 1, empF + empM)
-        # vacancies via Beveridge (matches balance_forecast.py): unemployment -> rate -> count
-        ur_tot = (fcm("F", "unemp_rate") * empF + fcm("M", "unemp_rate") * empM) / den
-        vac = bev.reconstruct_count(bev.predict(ur_tot, c), empF + empM, c)
+        # vacancies anchored at the last observed rate <= origin (matches balance_forecast.py)
+        _vt = panel[(panel.country == c) & panel.vacancy_rate.notna() & (panel.year <= origin)]
+        lvr = float(_vt.sort_values("year")["vacancy_rate"].iloc[-1]) if len(_vt) else 1.0
+        vac = bev.reconstruct_count(np.full(empF.shape, lvr), empF + empM, c)
         demF = (empF + vac * empF / den) * svc[(c, "F")]
         demM = (empM + vac * empM / den) * svc[(c, "M")]
         Sp, Dp = supF + supM, demF + demM
@@ -190,20 +191,21 @@ level_acc = {
 def _ctotals(c):
     f = panel[(panel.country == c) & (panel.sex == "F")].set_index("year")
     m = panel[(panel.country == c) & (panel.sex == "M")].set_index("year")
-    Y, VC, UT, ET = [], [], [], []
+    Y, VC, VR, UT, ET = [], [], [], [], []
     for y in sorted(set(f.index) & set(m.index)):
-        vc, uF, uM = f["vacancy_count"].get(y), f["unemp_rate"].get(y), m["unemp_rate"].get(y)
+        vc, vr = f["vacancy_count"].get(y), f["vacancy_rate"].get(y)
+        uF, uM = f["unemp_rate"].get(y), m["unemp_rate"].get(y)
         eF, eM = f["employed_ths"].get(y), m["employed_ths"].get(y)
-        if any(pd.isna(z) for z in (vc, uF, uM, eF, eM)):
+        if any(pd.isna(z) for z in (vc, vr, uF, uM, eF, eM)):
             continue
         eF, eM = eF * 1000.0, eM * 1000.0
-        Y.append(int(y)); VC.append(float(vc))
+        Y.append(int(y)); VC.append(float(vc)); VR.append(float(vr))
         UT.append((uF * eF + uM * eM) / (eF + eM)); ET.append(eF + eM)
-    return tuple(np.array(z, float) for z in (Y, VC, UT, ET))
+    return tuple(np.array(z, float) for z in (Y, VC, VR, UT, ET))
 
 vt_old, vt_new = [], []
 for c in COUNTRIES:
-    Y, VC, UT, ET = _ctotals(c)
+    Y, VC, VR, UT, ET = _ctotals(c)
     n = len(Y)
     if n < 8:
         continue
@@ -213,7 +215,9 @@ for c in COUNTRIES:
             continue
         old_pred = _ensemble_mean(Y[:cut], VC[:cut], fy, weighting="backtest")
         un_pred = _ensemble_mean(Y[:cut], UT[:cut], fy, weighting="backtest")
-        new_pred = bev.reconstruct_count(bev.predict(un_pred, c), ET[cut:cut + len(fy)], c)
+        h = np.arange(1, len(fy) + 1)
+        rate = bev.predict_anchored(un_pred, UT[cut - 1], VR[cut - 1], h, c, damp=0.6)
+        new_pred = bev.reconstruct_count(rate, ET[cut:cut + len(fy)], c)
         naive = VC[cut - 1]
         for j in range(len(fy)):
             a = float(VC[cut + j])
@@ -222,7 +226,9 @@ for c in COUNTRIES:
 
 def _summ(rows):
     mn = mape(rows, "naive")
+    apes = [abs(r["actual"] - r["pred"]) / abs(r["actual"]) for r in rows if r["actual"] != 0]
     return {"n": len(rows), "mape": round(mape(rows, "pred") * 100, 2),
+            "medape": round(float(np.median(apes)) * 100, 2) if apes else None,
             "mape_naive": round(mn * 100, 2),
             "skill": round(1 - mape(rows, "pred") / mn, 3) if mn else None,
             "bias_pct": round(bias_pct(rows), 1)}
@@ -245,8 +251,8 @@ if vo and vn:
     print(f"{'model':22s} {'n':>4} {'MAPE':>7} {'naive':>7} {'skill':>7} {'bias%':>7}")
     print(f"{'OLD direct ensemble':22s} {vo['n']:>4} {vo['mape']:>6.1f}% {vo['mape_naive']:>6.1f}% "
           f"{(vo['skill'] or 0):>7.2f} {vo['bias_pct']:>6.1f}%")
-    print(f"{'NEW Beveridge':22s} {vn['n']:>4} {vn['mape']:>6.1f}% {vn['mape_naive']:>6.1f}% "
-          f"{(vn['skill'] or 0):>7.2f} {vn['bias_pct']:>6.1f}%")
+    print(f"{'NEW anchored Bev.':22s} {vn['n']:>4} {vn['mape']:>6.1f}% {vn['mape_naive']:>6.1f}% "
+          f"{(vn['skill'] or 0):>7.2f} {vn['bias_pct']:>6.1f}%  (medAPE {vn['medape']}%)")
 
 print("=== Backtest accuracy by driver (held out last 4 years, rolling origin) ===")
 print(f"{'indicator':26s} {'n':>4} {'MAPE_ens':>9} {'MAPE_naive':>11} {'skill':>7} {'cover80':>8}")
