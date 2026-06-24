@@ -102,6 +102,8 @@ justify-content:center;font-size:20px;font-weight:800;color:#06203a}
 .lvl .body{flex:1}.lvl h3{margin:0 0 3px;font-size:16px}.lvl .body p{margin:3px 0;font-size:14px}
 .lvl .io{color:var(--mut);font-size:13px;margin-top:7px;line-height:1.5}
 .lvl .io b{color:var(--ink)}.lvl .io code{font-size:12px}
+h2 .hnum{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;
+border-radius:8px;font-size:16px;font-weight:800;color:#06203a;margin-right:10px;vertical-align:-6px}
 """
 
 HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -137,7 +139,7 @@ Surfaces the East-surplus / West-shortage divide.</p>
 <div class="io"><b>Balance = Supply − Demand</b> &nbsp;(human-working-years)</div></div></div>
 </div>
 
-<h2>1 · Ensemble forecast engine</h2>
+<h2><span class="hnum" style="background:#2dd4bf">1</span>Ensemble forecast engine</h2>
 <p>For each time series (for every country × sex, over its full history) we do not rely on a
 single model — we average <b>4 simple models</b>. Damped Holt and the naive anchor guard against
 over-extrapolation: socio-economic rates saturate, they do not grow linearly forever.</p>
@@ -153,13 +155,13 @@ combined into healthy person-years.</p>
 <div class="formula"><b>Supply</b> = healthy working-age people × expected working life
 <span class="u">person-years</span></div>
 
-<h2>2 · Building labour demand</h2>
+<h2><span class="hnum" style="background:#fbbf24">2</span>Building labour demand</h2>
 <p>From the forecast components we build demand using the formula from the case brief. Population is
 <b>not</b> extrapolated naively — we take Eurostat's official projection <code>proj_23np</code>,
 calibrated to the observed 2024 value.</p>
 <div class="fig">{svg2}</div>
 
-<h2>3 · Building labour supply</h2>
+<h2><span class="hnum" style="background:#34d399">3</span>Building labour supply</h2>
 <p>The same logic as demand, but with two health–demographic multipliers. Both multipliers —
 the <b>healthy-years share (HLY ÷ LE)</b> and <b>expected working life</b> — are forecast with the
 <b>same 4-model ensemble</b> from the first diagram. The result is in <b>person-years</b>, exactly
