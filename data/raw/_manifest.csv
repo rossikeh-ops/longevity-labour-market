@@ -12,3 +12,4 @@ jvs_a_r21,2,2026-06-22,nace_r2_1=B-T; unit=AVG_A; sizeclas=TOTAL|GE10,144,"BG,CH
 jvs_q_r21,2,2026-06-22,"nace_r2_1=B-T; sizeclas=TOTAL; s_adj=NSA; indic_em=JVR,JOBVAC",303,"BG,CH,CZ,DE,FR,NO,PL,RO",,annual_mean,jvs_q_r21__2026-06-22.parquet,ok
 lfsa_egan,2,2026-06-22,"{'sex': ['F', 'M'], 'age': ['Y15-64'], 'unit': ['THS_PER'], 'citizen': ['TOTAL']}",496,"BG,CH,CZ,DE,FR,NO,PL,RO",,THS_PER,lfsa_egan__2026-06-22.parquet,ok
 lfsi_dwl_a,2,2026-06-22,"{'sex': ['F', 'M'], 'unit': ['YR']}",416,"BG,CH,CZ,DE,FR,NO,PL,RO",,YR,lfsi_dwl_a__2026-06-22.parquet,ok
+nama_10_gdp,6,2026-06-25,"{'na_item': ['B1GQ'], 'unit': ['CLV15_MEUR']}",408,"BG,CH,CZ,DE,FR,NO,PL,RO",,CLV15_MEUR,nama_10_gdp__2026-06-25.parquet,ok

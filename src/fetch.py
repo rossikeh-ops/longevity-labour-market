@@ -72,6 +72,12 @@ REGISTRY = {
     "nama_10_co3_p3": dict(level=5, filter={"coicop": ["CP09", "CP10", "CP11"],
                            "unit": ["CLV15_MEUR"]}, indic_dim="coicop",
                            unit_pref="CLV15_MEUR"),
+    # ---- Level 6: macroeconomy (real GDP for growth accounting) ----
+    # Real GDP, chain-linked volumes (2015), million euro. Whole-economy total,
+    # not sex-disaggregated (sex="T"). Labour productivity = this / employment.
+    "nama_10_gdp": dict(level=6, filter={"na_item": ["B1GQ"],
+                        "unit": ["CLV15_MEUR"]}, indic_dim="na_item",
+                        unit_pref="CLV15_MEUR"),
 }
 
 

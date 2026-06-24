@@ -1,0 +1,12 @@
+{
+ "cross_year": 2024,
+ "cross_corr": -0.873,
+ "cross_elasticity": -10.275,
+ "fe_elasticity": -0.243,
+ "fe_r2": 0.004,
+ "within_elasticity": -0.067,
+ "within_r2": 0.003,
+ "prod_real_growth_pct": 1.6,
+ "n_within": 149,
+ "verdict": "Self-perceived healthy-life years show no positive cross-country link with labour productivity (if anything negative, a GALI self-reporting artifact); within countries the link is statistically nil. The longevity dividend reaches the macroeconomy through the LABOUR channel, not a measurable productivity boost."
+}
