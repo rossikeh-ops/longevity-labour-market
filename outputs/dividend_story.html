@@ -1,0 +1,150 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Healthy Retirement Dividend — a guided story</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+:root{--bg:#FAFAF9;--card:#FFFFFF;--ink:#292524;--mut:#78716C;--line:#E7E5E4;--acc:#166534;
+--slate:#475569;--mustard:#D97706;--sage:#4ADE80;--terra:#B91C1C;}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+display:flex;flex-direction:column;min-height:100vh}
+header{padding:18px 28px 8px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+header h1{font-size:19px;margin:0;font-weight:650}header .who{color:var(--mut);font-size:13px}.spacer{flex:1}
+select{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px}
+.track{display:flex;align-items:center;gap:0;padding:6px 28px 12px;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:9px;cursor:pointer;color:var(--mut);font-size:13px;font-weight:600}
+.step .dot{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:var(--card);
+display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--mut);transition:.2s}
+.step.active .dot,.step.done .dot{border-color:var(--acc);background:var(--acc);color:#fff}.step.active{color:var(--ink)}
+.link{flex:0 0 46px;height:3px;background:var(--line);margin:0 6px;border-radius:2px}.link.done{background:var(--acc)}
+main{flex:1;padding:6px 28px 20px;max-width:1080px;margin:0 auto;width:100%}
+.slide{display:none;animation:fade .35s ease}.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kick{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--acc);font-weight:700}
+.slide h2{font-size:24px;margin:4px 0 6px}.slide p.lead{color:var(--mut);margin:0 0 14px;max-width:760px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:12px 0}
+.chwrap{position:relative;height:430px}
+.kpis{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;min-width:150px}
+.kpi .v{font-size:22px;font-weight:700}.kpi .l{color:var(--mut);font-size:12px;margin-top:2px}
+.note{color:var(--mut);font-size:13px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:10px}code{color:var(--acc)}
+footer{display:flex;align-items:center;justify-content:space-between;padding:14px 28px 26px;max-width:1080px;margin:0 auto;width:100%}
+button.nav{background:var(--acc);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer}
+button.nav:disabled{background:var(--line);color:var(--mut);cursor:default}button.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+a{color:var(--acc)}
+</style></head><body>
+<header>
+  <h1>Healthy Retirement Dividend — a guided story</h1>
+  <span class="who">8 European countries · to 2033</span><span class="spacer"></span>
+  <label class="who" for="country">Country&nbsp;</label><select id="country"></select>
+</header>
+<nav class="track" id="track"></nav>
+<main>
+  <section class="slide" data-i="0">
+    <div class="kick">Step 1 · After retirement</div><h2>Is retirement actually healthy?</h2>
+    <p class="lead"><b>Healthy years after retirement = HLY − statutory retirement age.</b> Green = healthy years
+    to enjoy; red = self-reported health declines <i>before</i> the retirement age is even reached.</p>
+    <div class="panel"><div class="chwrap"><canvas id="hrbar"></canvas></div></div>
+    <div class="kpis" id="hrKpis"></div>
+    <div class="note">HLY is self-perceived (Eurostat GALI) — Switzerland's −6.6y reflects low self-reported health, not short lives.</div></section>
+  <section class="slide" data-i="1">
+    <div class="kick">Step 2 · The dividend</div><h2>The healthy-retirement dividend</h2>
+    <p class="lead"><b>Dividend = Population × the positive healthy years after retirement.</b> It grows as
+    healthy-life years rise and push more of the population across the retirement threshold.</p>
+    <div class="panel"><div class="chwrap"><canvas id="dividend"></canvas></div></div>
+    <div class="kpis" id="dKpis"></div></section>
+  <section class="slide" data-i="2">
+    <div class="kick">Step 3 · Consumption?</div><h2>Does it fund leisure, education &amp; culture?</h2>
+    <p class="lead">Across countries, the dividend and <b>COICOP CP09/10/11</b> spending co-move — but that's
+    largely <b>country size</b>. Each point is a country.</p>
+    <div class="panel"><div class="chwrap"><canvas id="scatter"></canvas></div></div>
+    <div class="kpis" id="sKpis"></div></section>
+  <section class="slide" data-i="3">
+    <div class="kick">Step 4 · Honest answer</div><h2>Within a country, no link</h2>
+    <p class="lead">Year-on-year, changes in the dividend explain none of the change in leisure/education
+    consumption — it tracks household income, not the demographic dividend.</p>
+    <div class="panel"><div class="chwrap"><canvas id="diff"></canvas></div></div>
+    <div class="kpis" id="aKpis"></div>
+    <div class="note">Descriptive, no causal claim. The dividend is a meaningful demographic quantity but not a usable predictor of consumption.</div></section>
+</main>
+<footer>
+  <button class="nav ghost" id="prev">‹ Back</button>
+  <div style="display:flex;align-items:center;gap:14px"><button class="nav ghost" id="play">▶ Present</button>
+  <span class="who" id="counter"></span></div>
+  <button class="nav" id="next">Next ›</button>
+</footer>
+<script>const DATA = {"countries": {"ALL": "All 8 countries", "BG": "Bulgaria", "PL": "Poland", "CZ": "Czechia", "RO": "Romania", "DE": "Germany", "FR": "France", "NO": "Norway", "CH": "Switzerland"}, "hrbar": {"names": ["Switzerland", "Germany", "Czechia", "France", "Romania", "Norway", "Poland", "Bulgaria"], "val": [-6.6, -4.0, -2.0, -0.4, 1.3, 1.9, 2.3, 5.6]}, "dividend": {"ALL": {"oy": [2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [22.7, 166.4, 120.9, 115.4, 129.0, 91.7, 100.7, 144.0, 137.5, 114.0, 117.8, 180.1, 189.2, 171.1, 160.0, 190.7, 198.8, 282.6, 166.6, 132.2, 198.6], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [224.2, 251.6, 282.6, 316.0, 344.3, 372.7, 391.5, 424.3, 438.5], "lo": [92.2, 80.5, 73.6, 72.6, 63.8, 52.5, 47.5, 35.6, 33.4], "hi": [423.1, 534.1, 629.4, 718.4, 798.3, 879.5, 923.9, 1027.6, 1047.9]}, "BG": {"oy": [2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [42.2, 53.0, 12.3, 12.6, 17.5, 12.9, 12.0, 15.2, 13.2, 9.1, 17.9, 13.1, 17.8, 20.4, 18.1, 8.8, 21.5, 33.3, 36.1], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [30.8, 31.4, 30.8, 30.9, 31.7, 31.8, 34.6, 34.9, 34.6], "lo": [16.6, 14.0, 11.8, 11.7, 9.9, 5.5, 6.1, 3.3, 2.0], "hi": [44.9, 50.9, 51.2, 50.4, 55.0, 60.7, 68.5, 69.3, 67.4]}, "PL": {"oy": [2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [136.0, 57.1, 29.5, 59.1, 49.3, 45.1, 62.8, 55.0, 53.0, 53.0, 62.7, 90.1, 68.6, 84.3, 80.3, 84.2, 88.0, 78.1, 83.5, 117.3], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [103.7, 102.3, 103.5, 106.7, 107.0, 107.1, 113.4, 116.4, 114.6], "lo": [69.3, 61.7, 58.8, 58.1, 52.6, 46.8, 41.4, 32.3, 31.4], "hi": [137.7, 144.1, 146.9, 155.6, 158.0, 167.2, 183.7, 203.5, 195.4]}, "CZ": {"oy": [2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.7, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [0.3, 0.3, 0.5, 1.3, 1.7, 2.3, 3.1, 3.4, 4.4], "lo": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "hi": [0.0, 0.1, 1.3, 5.0, 6.2, 8.4, 11.3, 12.3, 14.9]}, "RO": {"oy": [2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [0.0, 4.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 33.3], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [27.5, 31.4, 32.4, 30.9, 33.3, 38.3, 42.9, 48.2, 50.2], "lo": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "hi": [68.5, 77.0, 82.6, 80.8, 87.9, 102.1, 108.6, 124.8, 130.6]}, "DE": {"oy": [2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 48.4, 40.4, 15.5, 0.0, 32.4, 19.8, 7.2, 0.0, 0.0, 0.0], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [17.6, 32.0, 55.2, 78.4, 99.9, 133.3, 134.3, 156.8, 167.7], "lo": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "hi": [73.1, 135.1, 201.8, 273.4, 326.7, 405.6, 405.1, 470.3, 481.8]}, "FR": {"oy": [2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [9.6, 19.4, 13.1, 13.1, 16.5, 0.0, 0.0, 0.0, 0.0, 10.1, 6.8, 20.6, 3.4, 31.0, 17.3, 20.8, 45.3, 150.5, 42.1, 3.5, 0.0], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [26.5, 34.8, 38.8, 44.4, 44.7, 32.7, 34.0, 35.5, 36.8], "lo": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "hi": [69.0, 91.7, 103.5, 109.3, 112.7, 79.9, 85.0, 83.9, 91.7]}, "NO": {"oy": [2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [13.0, 11.0, 8.5, 16.8, 32.0, 27.1, 34.3, 60.5, 41.9, 35.6, 42.2, 39.3, 37.4, 42.9, 40.6, 36.8, 31.5, 28.1, 24.8, 11.9, 11.9], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [17.8, 19.5, 21.4, 23.3, 25.8, 27.0, 29.1, 29.0, 30.2], "lo": [6.3, 4.8, 3.0, 2.8, 1.3, 0.2, 0.0, 0.0, 0.0], "hi": [29.9, 35.3, 42.2, 43.9, 51.9, 55.5, 61.6, 63.4, 65.9]}, "CH": {"oy": [2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [2.9, 4.9, 2.7, 3.8, 7.8, 28.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [0.0, 0.0, 0.0, 0.0, 0.2, 0.2, 0.2, 0.1, 0.0], "lo": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "hi": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}}, "scatter": [{"c": "BG", "name": "Bulgaria", "year": 2022, "div": 21.5, "leis": 10.7}, {"c": "PL", "name": "Poland", "year": 2023, "div": 83.5, "leis": 36.3}, {"c": "CZ", "name": "Czechia", "year": 2014, "div": 2.7, "leis": 14.0}, {"c": "RO", "name": "Romania", "year": 2008, "div": 4.2, "leis": 6.7}, {"c": "DE", "name": "Germany", "year": 2021, "div": 7.2, "leis": 223.6}, {"c": "FR", "name": "France", "year": 2022, "div": 42.1, "leis": 207.2}, {"c": "NO", "name": "Norway", "year": 2023, "div": 11.9, "leis": 29.2}, {"c": "CH", "name": "Switzerland", "year": 2012, "div": 28.6, "leis": 55.5}], "diff": [{"x": 22.76, "y": -0.54}, {"x": -145.64, "y": 0.64}, {"x": 2.39, "y": -10.59}, {"x": 32.6, "y": 9.19}, {"x": -30.95, "y": 7.71}, {"x": -6.59, "y": 7.19}, {"x": 23.22, "y": -6.58}, {"x": -14.07, "y": 7.84}, {"x": -37.59, "y": 4.05}, {"x": 68.12, "y": 1.14}, {"x": -31.28, "y": 1.71}, {"x": 30.86, "y": 1.18}, {"x": 13.31, "y": 5.95}, {"x": -12.02, "y": -21.34}, {"x": -71.69, "y": 18.58}, {"x": 89.32, "y": 8.54}, {"x": 50.13, "y": 1.85}, {"x": -60.6, "y": 1.73}, {"x": 36.82, "y": -0.88}, {"x": 70.83, "y": -0.55}, {"x": 130.15, "y": -0.18}, {"x": -18.02, "y": 3.19}, {"x": -95.99, "y": 2.59}, {"x": 73.83, "y": 3.56}, {"x": -49.18, "y": -23.62}, {"x": -101.69, "y": 0.56}, {"x": 70.14, "y": 3.55}, {"x": -39.77, "y": 4.25}, {"x": 0.62, "y": 3.86}, {"x": 22.88, "y": 0.0}, {"x": -48.69, "y": -0.4}, {"x": -39.68, "y": 1.56}, {"x": 110.34, "y": 1.09}, {"x": -178.86, "y": 1.75}, {"x": 220.03, "y": 3.03}, {"x": -58.44, "y": 2.47}, {"x": 18.6, "y": 3.46}, {"x": 77.58, "y": -23.78}, {"x": 120.13, "y": 10.46}, {"x": -127.33, "y": 18.55}, {"x": -16.79, "y": 3.65}, {"x": -25.48, "y": 6.8}, {"x": 67.92, "y": 3.77}, {"x": 64.07, "y": 1.61}, {"x": -16.48, "y": -1.92}, {"x": 23.38, "y": 0.56}, {"x": 56.93, "y": 2.87}, {"x": -36.79, "y": 1.59}, {"x": -16.17, "y": 2.64}, {"x": 16.86, "y": 2.9}, {"x": -7.06, "y": 2.86}, {"x": -5.09, "y": 2.91}, {"x": 13.82, "y": 2.27}, {"x": -5.58, "y": 2.27}, {"x": -9.66, "y": 1.56}, {"x": -15.67, "y": -14.35}, {"x": -11.24, "y": 5.27}, {"x": -12.6, "y": 14.99}, {"x": -73.59, "y": 0.92}, {"x": -86.68, "y": 3.92}, {"x": -65.95, "y": 6.74}, {"x": 69.34, "y": 6.47}, {"x": -18.15, "y": 3.53}, {"x": -8.9, "y": 5.56}, {"x": 33.14, "y": 4.89}, {"x": -13.34, "y": 4.99}, {"x": -3.64, "y": -0.51}, {"x": -0.11, "y": 4.08}, {"x": 16.96, "y": 10.04}, {"x": 36.2, "y": 4.33}, {"x": -27.3, "y": 8.11}, {"x": 20.59, "y": 7.55}, {"x": -4.78, "y": 1.88}, {"x": 4.72, "y": -21.13}, {"x": 4.4, "y": 12.92}, {"x": -11.97, "y": 7.25}, {"x": 6.73, "y": 5.28}], "rel": {"elasticity_levels_fe": 0.038, "r2_levels_fe": 0.984, "elasticity_within_diff": -0.008, "r2_within_diff": 0.005, "corr_within_diff": -0.068, "leisure_real_growth_pct": 2.2, "n_levels": 85, "n_diff": 77}};</script>
+<script>
+const STEPS=[["After retirement","Healthy years"],["The dividend","Person-years"],["Consumption?","Cross-country"],["Honest answer","Within-country"]];
+const C={slate:'#475569',mustard:'#D97706',sage:'#4ADE80',terra:'#B91C1C',acc:'#166534',ink:'#292524',mut:'#78716C',line:'#E7E5E4'};
+Chart.defaults.color=C.mut;Chart.defaults.font.family="-apple-system,Segoe UI,Roboto,Arial,sans-serif";Chart.defaults.borderColor=C.line;
+let state={country:'ALL',slide:0},charts={};
+const sel=document.getElementById('country');
+Object.entries(DATA.countries).forEach(([k,v])=>{const o=document.createElement('option');o.value=k;o.textContent=v;sel.appendChild(o);});
+sel.value=state.country;sel.onchange=()=>{state.country=sel.value;renderAll();};
+const track=document.getElementById('track');
+STEPS.forEach((s,i)=>{if(i>0){const l=document.createElement('span');l.className='link';l.dataset.link=i;track.appendChild(l);}
+  const el=document.createElement('div');el.className='step';el.dataset.step=i;
+  el.innerHTML=`<span class="dot">${i+1}</span><span>${s[0]}</span>`;el.onclick=()=>go(i);track.appendChild(el);});
+function go(i){state.slide=Math.max(0,Math.min(3,i));
+  document.querySelectorAll('.slide').forEach(s=>s.classList.toggle('active',+s.dataset.i===state.slide));
+  document.querySelectorAll('.step').forEach((s,idx)=>{s.classList.toggle('active',idx===state.slide);s.classList.toggle('done',idx<state.slide);});
+  document.querySelectorAll('.link').forEach(l=>l.classList.toggle('done',+l.dataset.link<=state.slide));
+  document.getElementById('prev').disabled=state.slide===0;
+  document.getElementById('next').textContent=state.slide===3?'Finish':'Next ›';
+  document.getElementById('counter').textContent=`Step ${state.slide+1} of 4 — ${STEPS[state.slide][1]}`;renderAll();}
+document.getElementById('prev').onclick=()=>go(state.slide-1);document.getElementById('next').onclick=()=>go(state.slide+1);
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')go(state.slide+1);if(e.key==='ArrowLeft')go(state.slide-1);});
+function destroy(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+const axis=(t)=>({title:{display:!!t,text:t,color:C.mut},grid:{color:C.line}});
+function kpi(v,l){return `<div class="kpi"><div class="v">${v}</div><div class="l">${l}</div></div>`;}
+function drawHR(){destroy('hrbar');const h=DATA.hrbar;
+  charts.hrbar=new Chart(document.getElementById('hrbar'),{type:'bar',data:{labels:h.names,
+    datasets:[{label:'Healthy years after retirement',data:h.val,
+      backgroundColor:h.val.map(v=>v>=0?C.sage:C.terra),borderColor:h.val.map(v=>v>=0?C.acc:C.terra),borderWidth:1.2,borderRadius:3}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      scales:{x:{...axis('healthy years after retirement (HLY − retire age)')},y:{grid:{display:false}}},
+      plugins:{title:{display:true,text:'Healthy years after retirement, by country (2024)',color:C.ink,font:{size:15}},legend:{display:false},
+        tooltip:{callbacks:{label:c=>`${c.raw>=0?'+':''}${c.raw} yrs ${c.raw>=0?'healthy retirement':'(health declines first)'}`}}}}});
+  document.getElementById('hrKpis').innerHTML=kpi('+'+h.val[h.val.length-1]+'y',h.names[h.names.length-1]+' (healthiest)')+kpi(h.val[0]+'y',h.names[0]+' (declines first)');}
+function drawDividend(){destroy('dividend');const d=DATA.dividend[state.country];const labels=d.oy.concat(d.fy);
+  const obs=d.ov.concat(Array(d.fy.length).fill(null));
+  const fcast=Array(d.oy.length-1).fill(null).concat([d.ov[d.ov.length-1]]).concat(d.fm);
+  const pad=a=>Array(d.oy.length).fill(null).concat(a);
+  charts.dividend=new Chart(document.getElementById('dividend'),{type:'line',data:{labels,datasets:[
+    {label:'80% band',data:pad(d.lo),borderColor:'transparent',backgroundColor:'rgba(22,101,52,.10)',pointRadius:0,fill:'+1'},
+    {label:'_hi',data:pad(d.hi),borderColor:'transparent',backgroundColor:'rgba(22,101,52,.10)',pointRadius:0,fill:false},
+    {label:'Observed',data:obs,borderColor:C.slate,backgroundColor:C.slate,tension:.25,pointRadius:0,borderWidth:2.5},
+    {label:'Forecast',data:fcast,borderColor:C.acc,backgroundColor:C.acc,borderDash:[5,3],tension:.25,pointRadius:0,borderWidth:2.5}]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      scales:{y:{...axis('dividend (million person-years)')},x:axis()},
+      plugins:{title:{display:true,text:`Healthy-retirement dividend — ${DATA.countries[state.country]}`,color:C.ink,font:{size:15}},
+        legend:{position:'bottom',labels:{filter:i=>!i.text.startsWith('_')}},
+        tooltip:{filter:i=>!i.dataset.label.startsWith('_'),callbacks:{label:c=>`${c.dataset.label}: ${c.raw} M PY`}}}}});
+  const chg=d.ov[d.ov.length-1]>0?((d.fm[d.fm.length-1]/d.ov[d.ov.length-1]-1)*100).toFixed(0)+'%':'—';
+  document.getElementById('dKpis').innerHTML=kpi(d.ov[d.ov.length-1]+'M','Dividend 2024')+kpi(d.fm[d.fm.length-1]+'M','Dividend 2033')+kpi(chg,'Change');}
+function drawScatter(){destroy('scatter');const s=DATA.scatter;
+  charts.scatter=new Chart(document.getElementById('scatter'),{type:'scatter',
+    data:{datasets:[{label:'Country',data:s.map(p=>({x:p.div,y:p.leis,name:p.name,year:p.year})),backgroundColor:C.mustard,borderColor:C.acc,pointRadius:7,pointHoverRadius:9}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{x:{...axis('healthy-retirement dividend (million person-years)'),type:'logarithmic'},y:{...axis('leisure/education/culture (€bn)'),type:'logarithmic'}},
+      plugins:{title:{display:true,text:'Cross-country: dividend vs leisure/education consumption (latest positive-dividend year)',color:C.ink,font:{size:14}},legend:{display:false},
+        tooltip:{callbacks:{label:c=>`${c.raw.name} (${c.raw.year}): ${c.raw.x}M PY · €${c.raw.y}bn`}}}}});
+  document.getElementById('sKpis').innerHTML=kpi(DATA.rel.elasticity_levels_fe,'Cross-country elasticity (FE)')+kpi('R² '+DATA.rel.r2_levels_fe,'…but mostly country size');}
+function drawDiff(){destroy('diff');
+  charts.diff=new Chart(document.getElementById('diff'),{type:'scatter',
+    data:{datasets:[{label:'Year-on-year',data:DATA.diff,backgroundColor:'rgba(71,85,105,.55)',borderColor:C.slate,pointRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{x:{...axis('Δ dividend (% / yr)')},y:{...axis('Δ leisure/education consumption (% / yr)')}},
+      plugins:{title:{display:true,text:'Within-country, year-on-year — no relationship',color:C.ink,font:{size:15}},legend:{display:false},
+        tooltip:{callbacks:{label:c=>`Δdividend ${c.raw.x}% · Δleisure ${c.raw.y}%`}}}}});
+  document.getElementById('aKpis').innerHTML=kpi(DATA.rel.elasticity_within_diff,'Within elasticity (≈ 0)')+kpi('R² '+DATA.rel.r2_within_diff,'no explanatory power')+kpi(DATA.rel.leisure_real_growth_pct+'%/yr','Consumption grows with income');}
+function renderAll(){if(state.slide===0)drawHR();else if(state.slide===1)drawDividend();else if(state.slide===2)drawScatter();else drawDiff();}
+let timer=null;
+function setPlay(on){const b=document.getElementById('play');
+  if(on){b.textContent='⏸ Pause';b.classList.remove('ghost');timer=setInterval(()=>go(state.slide>=3?0:state.slide+1),7000);}
+  else{b.textContent='▶ Present';b.classList.add('ghost');clearInterval(timer);timer=null;}}
+document.getElementById('play').onclick=()=>setPlay(!timer);
+go(0);
+</script>
+</body></html>
