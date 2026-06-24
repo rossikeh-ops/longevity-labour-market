@@ -137,12 +137,16 @@ for col, c, s in SHOW:
 ret = pd.read_csv(ROOT / "data" / "retirement_params.csv")
 svc = {(r.country, r.sex): r.required_service_years for r in ret.itertuples()}
 sobs = pd.read_csv(OUT / "supply_observed.csv")
-eS, eD, eB, baseB = [], [], [], []
-bsS, bsD = [], []                 # signed relative error (bias)
-hS, hD, hB = {}, {}, {}           # error by horizon
+eS, eD, eB, baseB, eC = [], [], [], [], []
+bsS, bsD, bsC = [], [], []        # signed relative error (bias)
+hS, hD, hB, hC = {}, {}, {}, {}   # error by horizon
 for c in COUNTRIES:
     oc = sobs[sobs.country == c].groupby("year").agg(
         S=("supply_realized", "sum"), D=("demand", "sum"), B=("balance_realized", "sum"))
+    # Level 4 — observed poor-health burden = pop x (LE - HLY), summed over sex
+    _pc = panel[panel.country == c].assign(
+        burden=lambda d: d.pop_total * (d.le_birth - d.hly_birth))
+    ocC = _pc.dropna(subset=["burden"]).groupby("year")["burden"].sum()
     for origin in [2020, 2021, 2022, 2023]:
         tgt = [y for y in range(origin + 1, 2025)]
         if not tgt:
@@ -164,6 +168,9 @@ for c in COUNTRIES:
         demM = (empM + vac * empM / den) * svc[(c, "M")]
         Sp, Dp = supF + supM, demF + demM
         Bp = Sp - Dp
+        # Level 4 — poor-health burden = pop x (LE - HLY), from history-only drivers
+        Cp = (fcm("F", "pop_total") * (fcm("F", "le_birth") - fcm("F", "hly_birth"))
+              + fcm("M", "pop_total") * (fcm("M", "le_birth") - fcm("M", "hly_birth")))
         for i, y in enumerate(tgt):
             if y in oc.index:
                 So, Do, Bo = oc.loc[y, "S"], oc.loc[y, "D"], oc.loc[y, "B"]
@@ -174,9 +181,16 @@ for c in COUNTRIES:
                 hS.setdefault(h, []).append(abs(Sp[i] - So) / So)
                 hD.setdefault(h, []).append(abs(Dp[i] - Do) / Do)
                 hB.setdefault(h, []).append(abs(Bp[i] - Bo) / 1e6)
-mS, mD = float(np.mean(eS)), float(np.mean(eD))
+                if y in ocC.index and ocC.loc[y] > 0:
+                    Co = ocC.loc[y]
+                    eC.append(abs(Cp[i] - Co) / Co); bsC.append((Cp[i] - Co) / Co)
+                    hC.setdefault(h, []).append(abs(Cp[i] - Co) / Co)
+mS, mD, mC = float(np.mean(eS)), float(np.mean(eD)), float(np.mean(eC))
 level_acc = {
     "supply_acc": round(1 - mS, 3), "demand_acc": round(1 - mD, 3),
+    "burden_acc": round(1 - mC, 3), "burden_mape": round(mC * 100, 1),
+    "burden_bias": round(float(np.mean(bsC)) * 100, 1),
+    "burden_by_h": {h: round(float(np.mean(v)) * 100, 1) for h, v in sorted(hC.items())},
     "supply_mape": round(mS * 100, 1), "demand_mape": round(mD * 100, 1),
     "supply_bias": round(float(np.mean(bsS)) * 100, 1),
     "demand_bias": round(float(np.mean(bsD)) * 100, 1),

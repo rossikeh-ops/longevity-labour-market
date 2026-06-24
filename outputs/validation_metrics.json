@@ -452,6 +452,15 @@
  "level_acc": {
   "supply_acc": 0.964,
   "demand_acc": 0.978,
+  "burden_acc": 0.871,
+  "burden_mape": 12.9,
+  "burden_bias": -1.9,
+  "burden_by_h": {
+   "1": 9.6,
+   "2": 13.2,
+   "3": 14.9,
+   "4": 20.7
+  },
   "supply_mape": 3.6,
   "demand_mape": 2.2,
   "supply_bias": 0.3,

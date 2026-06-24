@@ -158,9 +158,11 @@ not a point number. A mild +3–6% over-prediction reflects training only on pre
 
 # error-by-horizon table (composed levels)
 hz = sorted(set(map(int, la.get("supply_by_h", {}).keys())))
+_bh = la.get("burden_by_h", {})
 hz_rows = "".join(
     f'<tr><td>{h} yr</td><td>{la["supply_by_h"].get(str(h),la["supply_by_h"].get(h,"?"))}%</td>'
     f'<td>{la["demand_by_h"].get(str(h),la["demand_by_h"].get(h,"?"))}%</td>'
+    f'<td>{_bh.get(str(h),_bh.get(h,"?"))}%</td>'
     f'<td>±{la["balance_by_h"].get(str(h),la["balance_by_h"].get(h,"?"))}M</td></tr>' for h in hz)
 
 # ---------- static SVG: showcase observed-vs-predicted traces ----------
@@ -318,31 +320,40 @@ flag <code>d</code></b> (definition differs); and (3) vacancies are just <b>~1.8
 labour demand by only ~{jobs_impact:.1f}%. We forecast them through an anchored Beveridge curve, which keeps the link to
 unemployment for scenarios while sitting at this accuracy ceiling.</div>
 
-<h2>Accuracy of the composed outputs (Levels 1–3)</h2>
+<h2>Accuracy of the composed outputs (Levels 1–4)</h2>
 <p class="sub">The drivers above are the inputs. The actual <b>level outputs</b> have their own
-accuracy — backtested by assembling supply/demand/balance from history-only forecasts and
-comparing to observed values. They differ: supply is a <i>product</i> (errors combine), demand is
-dominated by accurate employment, and the balance is a <i>difference</i> of two large numbers (so its
-relative error is amplified).</p>
-<div class="cards">
+accuracy — backtested by assembling each from history-only forecasts and comparing to observed values.
+They differ: supply is a <i>product</i> (errors combine), demand is dominated by accurate employment, the
+balance is a <i>difference</i> of two large numbers (relative error amplified), and the Level-4 poor-health
+burden leans directly on the noisy healthy-life-years measure, so it is the least accurate of the stocks.</p>
+<div class="cards" style="grid-template-columns:repeat(4,1fr)">
 <div class="vc" style="border-top:3px solid #15803D"><div class="h">Level 2 — Demand</div>
 <div class="v" style="font-size:24px;font-weight:700;color:#15803D">{la.get("demand_acc","?")}</div>
-<div class="d">accuracy · {la.get("demand_mape","?")}% MAPE · bias {"+" if la.get("demand_bias",0)>0 else ""}{la.get("demand_bias","?")}% · most accurate (employment-driven)</div></div>
+<div class="d">accuracy · {la.get("demand_mape","?")}% MAPE · bias {"+" if la.get("demand_bias",0)>0 else ""}{la.get("demand_bias","?")}% · employment-driven</div></div>
 <div class="vc" style="border-top:3px solid #D97706"><div class="h">Level 1 — Supply</div>
 <div class="v" style="font-size:24px;font-weight:700;color:#D97706">{la.get("supply_acc","?")}</div>
-<div class="d">accuracy · {la.get("supply_mape","?")}% MAPE · bias {"+" if la.get("supply_bias",0)>0 else ""}{la.get("supply_bias","?")}% · health-share noise propagates</div></div>
-<div class="vc" style="border-top:3px solid #D97706"><div class="h">Level 3 — Balance</div>
-<div class="v" style="font-size:24px;font-weight:700;color:#D97706">±{la.get("balance_mae_m","?")}M</div>
+<div class="d">accuracy · {la.get("supply_mape","?")}% MAPE · bias {"+" if la.get("supply_bias",0)>0 else ""}{la.get("supply_bias","?")}% · health-share noise</div></div>
+<div class="vc" style="border-top:3px solid #D97706"><div class="h">Level 4 — Poor-health burden</div>
+<div class="v" style="font-size:24px;font-weight:700;color:#D97706">{la.get("burden_acc","?")}</div>
+<div class="d">accuracy · {la.get("burden_mape","?")}% MAPE · bias {"+" if la.get("burden_bias",0)>0 else ""}{la.get("burden_bias","?")}% · inherits HLY (self-perceived) noise</div></div>
+<div class="vc" style="border-top:3px solid #B91C1C"><div class="h">Level 3 — Balance</div>
+<div class="v" style="font-size:24px;font-weight:700;color:#B91C1C">±{la.get("balance_mae_m","?")}M</div>
 <div class="d">~{la.get("balance_rel","?")}% rel. · difference of ~4,500M stocks → amplified</div></div>
 </div>
 <div class="note">Read the balance error in <b>absolute</b> terms: ±{la.get("balance_mae_m","?")}M career
 person-years on a typical |balance| of ~{la.get("balance_base_m","?")}M. It is the least accurate
 <i>relatively</i> by construction. Backtest origins 2020–2023, all 8 countries.</div>
+<div class="note"><b>Level 4 — the cost link is honest, not predictive.</b> The poor-health <i>burden</i>
+(pop × (LE − HLY)) backtests at ~{la.get("burden_mape","?")}% — trustworthy as a demographic quantity. But its
+tested relationship to the <b>NACE-Q health &amp; social-work sector</b> is statistically negligible
+(within-country elasticity ≈ 0, R² ≈ 0), so we do <b>not</b> predict the sector's cost from it — that sector
+tracks the economy (~2.4%/yr). Reported descriptively, no causal claim. See the
+<a href="level4_cost_report.html">Level 4 report</a>.</div>
 {vac_test_html}
 <h2>Error by forecast horizon</h2>
 <p class="sub">How accuracy decays with how far ahead we forecast (1–4 years out), for the composed levels.</p>
-<table style="max-width:520px"><thead><tr><th>Years ahead</th><th>Supply MAPE</th><th>Demand MAPE</th>
-<th>Balance error</th></tr></thead><tbody>{hz_rows}</tbody></table>
+<table style="max-width:620px"><thead><tr><th>Years ahead</th><th>Supply MAPE</th><th>Demand MAPE</th>
+<th>Burden MAPE</th><th>Balance error</th></tr></thead><tbody>{hz_rows}</tbody></table>
 
 <h2>Accuracy by country</h2>
 <p class="sub">Average forecast accuracy (1 − MAPE) across the five drivers, per country.</p>
