@@ -12,10 +12,46 @@ h1{font-size:27px;margin:0 0 4px}h2{font-size:19px;margin:34px 0 10px}
 p{margin:12px 0}b{color:var(--ink)}code{color:var(--acc)}
 ol{color:var(--ink)}li{margin:4px 0}
 a{color:var(--acc)}.foot{color:var(--mut);font-size:13px;margin-top:30px}
+.levels{display:flex;flex-direction:column;gap:12px;margin:18px 0}
+.lvl{display:flex;gap:16px;background:var(--card);border:1px solid var(--line);
+border-radius:12px;padding:16px 18px}
+.lvl .num{flex:0 0 44px;height:44px;border-radius:10px;display:flex;align-items:center;
+justify-content:center;font-size:20px;font-weight:800;color:#06203a}
+.lvl .body{flex:1}.lvl h3{margin:0 0 3px;font-size:16px}.lvl .body p{margin:3px 0;font-size:14px}
+.lvl .io{color:var(--mut);font-size:13px;margin-top:7px;line-height:1.5}
+.lvl .io b{color:var(--ink)}.lvl .io code{font-size:12px}
 </style></head><body><div class="wrap">
 <h1>Methodology — how the model works</h1>
 <p class="sub">A transparent ensemble of simple statistical models + Monte-Carlo — deliberately
 <b>no neural networks</b> (short series, defensibility required). Three diagrams describe the whole model.</p>
+
+<h2>The pipeline — Levels 0 → 3</h2>
+<p class="sub">Where each step sits and what it produces. Levels 1–2 run every driver through the
+ensemble engine (§1), then combine via the identities below; Level 3 subtracts the two.</p>
+<div class="levels">
+<div class="lvl"><div class="num" style="background:#5b9dff">0</div><div class="body">
+<h3>Data foundation</h3>
+<p>Pull every Eurostat series, clean &amp; impute gaps, and assemble one tidy panel —
+8 countries × sex × year, full coverage, reproducible.</p>
+<div class="io">Sources <code>hlth_hlye</code> · <code>demo_pjan</code>/<code>demo_pjangroup</code> ·
+<code>lfsa_egan</code> · <code>jvs_q_r21</code> · <code>lfsi_dwl_a</code> · <code>une_rt_a</code> ·
+<code>proj_23np</code> &nbsp;→&nbsp; <b>panel.parquet</b></div></div></div>
+<div class="lvl"><div class="num" style="background:#2dd4bf">1</div><div class="body">
+<h3>Labour supply</h3>
+<p>Forecast life expectancy, healthy-life share (HLY/LE), working-life duration and working-age
+population to 2035, then combine into healthy person-years.</p>
+<div class="io"><b>Supply = healthy working-age people × expected working life</b> &nbsp;(person-years)</div></div></div>
+<div class="lvl"><div class="num" style="background:#fbbf24">2</div><div class="body">
+<h3>Labour demand</h3>
+<p>Forecast employment (rate × population) and job vacancies (anchored Beveridge curve) → jobs;
+scale by the required length of service for a full pension.</p>
+<div class="io"><b>Demand = (employed + vacancies) × required service</b> &nbsp;(person-years)</div></div></div>
+<div class="lvl"><div class="num" style="background:#34d399">3</div><div class="body">
+<h3>Balance — the headline</h3>
+<p>Subtract the two stocks, by country × sex, to 2035, with Monte-Carlo uncertainty bands.
+Surfaces the East-surplus / West-shortage divide.</p>
+<div class="io"><b>Balance = Supply − Demand</b> &nbsp;(human-working-years)</div></div></div>
+</div>
 
 <h2>1 · Ensemble forecast engine</h2>
 <p>For each time series (for every country × sex, over its full history) we do not rely on a
