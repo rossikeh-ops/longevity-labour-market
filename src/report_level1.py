@@ -1,7 +1,7 @@
 """
 Level 1 — Labour Supply report. Static SVG, no client-side JS.
 Potential supply = health-adjusted working-age people × expected working life,
-in human-working-years; observed 2011-2024 + forecast to 2035.
+in human-working-years; observed 2011-2024 + forecast to 2033.
 Reads outputs/{supply_observed,supply_forecast}.csv -> outputs/level1_supply_report.html
 """
 from __future__ import annotations
@@ -39,11 +39,11 @@ _fc_d = (sf[["country", "sex", "year", "supply_realized", "lo", "hi"]]
 DLINK = data_link()
 APPENDIX = data_section(
     [("Observed labour supply, 2011–2024 (million career person-years)", _obs_d),
-     ("Forecast labour supply, 2025–2035 (million PY · 80% band)", _fc_d)],
+     ("Forecast labour supply, 2025–2033 (million PY · 80% band)", _fc_d)],
     note="The full per-country × sex × year series behind the charts above. "
          "Source: supply_observed.csv, supply_forecast.csv.")
 
-countries = list((sf[sf.year == 2035].groupby("country").supply_realized.sum() / M)
+countries = list((sf[sf.year == 2033].groupby("country").supply_realized.sum() / M)
                  .pipe(lambda s: (s / (obs[obs.year == 2024].groupby("country").supply_realized.sum() / M) - 1))
                  .sort_values().index)        # biggest decline -> biggest growth
 series = {}
@@ -60,14 +60,14 @@ for c in countries:
         "lo": [round(v, 1) for v in f["lo"].values],
         "hi": [round(v, 1) for v in f["hi"].values],
         "s2024": round(float(o.loc[2024])),
-        "s2035": round(float(f["m"].loc[2035])),
-        "chg": round((f["m"].loc[2035] / o.loc[2024] - 1) * 100, 1),
+        "s2033": round(float(f["m"].loc[2033])),
+        "chg": round((f["m"].loc[2033] / o.loc[2024] - 1) * 100, 1),
     }
 
 o24 = obs[obs.year == 2024]
 tot24 = round(float(o24["supply_realized"].sum() / M))
 ceil24 = round(float(o24["supply_ceiling"].sum() / M))
-tot35 = round(float(sf[sf.year == 2035]["supply_realized"].sum() / M))
+tot35 = round(float(sf[sf.year == 2033]["supply_realized"].sum() / M))
 totchg = round((tot35 / tot24 - 1) * 100, 1)
 realiz = round(float(o24["realization_ratio"].mean()), 2)
 unused = round((1 - tot24 / ceil24) * 100)
@@ -109,15 +109,15 @@ def chart_svg(s):
 
 
 # ---------- interactive choropleth section ----------
-# Prepend a Level-1 supply metric (2035 realized career person-years, by sex) to
+# Prepend a Level-1 supply metric (2033 realized career person-years, by sex) to
 # the shared supply-side metrics in outputs/map_data.json; map opens on supply.
 md = json.loads((OUT / "map_data.json").read_text(encoding="utf-8"))
-sup = {"label": "Potential labour supply 2035 (realized career person-years)",
+sup = {"label": "Potential labour supply 2033 (realized career person-years)",
        "unit": "person-years", "total": "sum", "fmt": "millions",
        "values": {}, "years": {}}
-s2035 = sf[sf.year == 2035]
+s2033 = sf[sf.year == 2033]
 for c in countries:
-    sub = s2035[s2035.country == c]
+    sub = s2033[s2033.country == c]
     vals = {}
     vf, vm = sub[sub.sex == "F"]["supply_realized"].sum(), sub[sub.sex == "M"]["supply_realized"].sum()
     if vf:
@@ -126,13 +126,13 @@ for c in countries:
         vals["M"] = round(float(vm))
     vals["T"] = round(float(sub["supply_realized"].sum()))
     sup["values"][c] = vals
-    sup["years"][c] = 2035
+    sup["years"][c] = 2033
 map_data = {"countries": md["countries"], "regime": md["regime"],
-            "metrics": {"supply_2035": sup, **md["metrics"]}}
+            "metrics": {"supply_2033": sup, **md["metrics"]}}
 map_html = build_map_section(
-    map_data, container="geomap1", default_metric="supply_2035",
+    map_data, container="geomap1", default_metric="supply_2033",
     title="Geographic overview — supply &amp; its drivers",
-    intro="Choropleth of the 8 countries. Default shows 2035 potential labour "
+    intro="Choropleth of the 8 countries. Default shows 2033 potential labour "
           "supply (realized career person-years); switch the metric to its drivers — "
           "healthy life years, life expectancy, working-age population, employment. "
           "Toggle sex; hover a country.")
@@ -140,7 +140,7 @@ map_html = build_map_section(
 charts_html = "".join(chart_svg(series[c]) for c in countries)
 rows_html = "".join(
     f'<tr><td>{series[c]["name"]}</td><td style="color:#78716C">{series[c]["region"]}</td>'
-    f'<td>{series[c]["s2024"]}</td><td>{series[c]["s2035"]}</td>'
+    f'<td>{series[c]["s2024"]}</td><td>{series[c]["s2033"]}</td>'
     f'<td style="color:#78716C">{round(series[c]["lo"][-1])}–{round(series[c]["hi"][-1])}</td>'
     f'<td class="{"neg" if series[c]["chg"]<0 else "pos"}" style="text-align:right">'
     f'{"+" if series[c]["chg"]>0 else ""}{series[c]["chg"]}%</td></tr>' for c in countries)
@@ -183,27 +183,27 @@ border-radius:10px;padding:14px;margin-top:10px}.note b{color:var(--ink)}
 
 HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Level 1 — Labour Supply to 2035</title><style>{CSS}{APPENDIX_CSS}</style></head><body><div class="wrap">
-<h1>Level 1 — Labour Supply to 2035</h1>
+<title>Level 1 — Labour Supply to 2033</title><style>{CSS}{APPENDIX_CSS}</style></head><body><div class="wrap">
+<h1>Level 1 — Labour Supply to 2033</h1>
 <p class="sub">Potential labour supply in <b>human-working-years</b> = health-adjusted working-age
-people × expected working life · observed 2011–2024, forecast to 2035 · 8 countries, by sex.</p>
+people × expected working life · observed 2011–2024, forecast to 2033 · 8 countries, by sex.</p>
 {DLINK}
 <div class="formula"><b>Supply</b> = health-adjusted working-age people <b>×</b> expected working life
 <span class="u">measured in human-working-years (career person-years)</span></div>
-<div class="hero">Total supply is <b>essentially flat ({tot24:,}M → {tot35:,}M, {totchg:+.1f}%)</b> to 2035 — a
+<div class="hero">Total supply is <b>essentially flat ({tot24:,}M → {tot35:,}M, {totchg:+.1f}%)</b> to 2033 — a
 <b>longevity dividend</b>: working-age populations shrink, but rising healthy-life share and longer
 working lives offset the loss. The split is demographic: <b>Romania −13%, Bulgaria −9%</b> (emigration +
 ageing) vs <b>Germany, France, Norway +3–5%</b> (participation + health gains outweigh population decline).</div>
 <div class="kpis">
-<div class="kpi"><div class="v">{tot24:,} → {tot35:,}M</div><div class="l">Realized supply, career person-years (2024→2035)</div></div>
-<div class="kpi"><div class="v" style="color:{totcol}">{totchg:+.1f}%</div><div class="l">Change to 2035 (longevity offsets shrinkage)</div></div>
+<div class="kpi"><div class="v">{tot24:,} → {tot35:,}M</div><div class="l">Realized supply, career person-years (2024→2033)</div></div>
+<div class="kpi"><div class="v" style="color:{totcol}">{totchg:+.1f}%</div><div class="l">Change to 2033 (longevity offsets shrinkage)</div></div>
 <div class="kpi"><div class="v">{ceil24:,}M</div><div class="l">Ceiling supply if all healthy years worked</div></div>
 <div class="kpi"><div class="v">{realiz} · {unused}% idle</div><div class="l">Realization ratio (working-life ÷ max span)</div></div>
 </div>
 {map_html}
 <h2>Supply predictions by country</h2><div class="grid">{charts_html}</div>
 <h2>Forecast table</h2>
-<table><thead><tr><th>Country</th><th>Region</th><th>2024</th><th>2035</th>
+<table><thead><tr><th>Country</th><th>Region</th><th>2024</th><th>2033</th>
 <th>80% band</th><th>Δ%</th></tr></thead><tbody>{rows_html}</tbody></table>
 <div class="note"><b>How to read it.</b> Supply = <b>population (15–64) × healthy-life share (HLY/LE) ×
 expected working life</b>, in career person-years. It's a <b>potential ceiling</b>, net of health and

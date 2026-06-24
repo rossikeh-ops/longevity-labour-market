@@ -1,5 +1,5 @@
 """
-Level 1 — forecast working-age potential SUPPLY to 2035, with Monte-Carlo bands.
+Level 1 — forecast working-age potential SUPPLY to 2033, with Monte-Carlo bands.
 
 Per (country, sex), combined per Monte-Carlo draw:
 
@@ -13,7 +13,7 @@ healthy_share (HLY/LE ratio, bounded 0-1) and working_life_yrs are forecast on t
 FULL history via the simple ensemble (decision D2). Retirement age held at baseline.
 
 Outputs: outputs/supply_forecast.csv (per country-sex-year: mean/lo/hi)
-         console: 8-country total supply 2024 -> 2035 with 80% band.
+         console: 8-country total supply 2024 -> 2033 with 80% band.
 """
 from __future__ import annotations
 from pathlib import Path
@@ -25,7 +25,7 @@ ROOT = Path(__file__).resolve().parents[1]
 panel = pd.read_parquet(ROOT / "data" / "processed" / "panel.parquet")
 OUT = ROOT / "outputs"; OUT.mkdir(exist_ok=True)
 COUNTRIES = ["BG", "PL", "CZ", "RO", "DE", "FR", "NO", "CH"]
-TGT = list(range(2025, 2036))
+TGT = list(range(2025, 2034))
 N = 1000
 
 # add healthy_share to history source
@@ -87,13 +87,13 @@ tmean = total_sims.mean(axis=0) / M
 tlo = np.quantile(total_sims, 0.10, axis=0) / M
 thi = np.quantile(total_sims, 0.90, axis=0) / M
 for i, yr in enumerate(TGT):
-    if yr in (2025, 2030, 2035):
+    if yr in (2025, 2030, 2033):
         print(f"  {yr} (forecast): {tmean[i]:,.0f}   [80% band {tlo[i]:,.0f} - {thi[i]:,.0f}]")
 
-print("\n=== Per-country supply: 2024 obs -> 2035 forecast (million career PY, both sexes) ===")
-g35 = fc[fc.year == 2035].groupby("country")["supply_realized"].sum() / M
+print("\n=== Per-country supply: 2024 obs -> 2033 forecast (million career PY, both sexes) ===")
+g35 = fc[fc.year == 2033].groupby("country")["supply_realized"].sum() / M
 g24 = obs[obs.year == 2024].groupby("country")["supply_realized"].sum() / M
-comp = pd.DataFrame({"2024": g24.round(0), "2035": g35.round(0)})
-comp["chg_%"] = ((comp["2035"]/comp["2024"] - 1) * 100).round(1)
+comp = pd.DataFrame({"2024": g24.round(0), "2033": g35.round(0)})
+comp["chg_%"] = ((comp["2033"]/comp["2024"] - 1) * 100).round(1)
 print(comp.sort_values("chg_%").to_string())
 print(f"\nrows -> outputs/supply_forecast.csv ({len(fc)})")

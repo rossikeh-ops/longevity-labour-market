@@ -7,7 +7,7 @@ ensemble point = mean of four transparent models fit on the FULL series history:
   3. random-walk-with-drift                        -- full trend
   4. naive (last value held flat)                  -- anchor against over-extrapolation
 Damping + the naive anchor stop saturating socio-economic rates (employment rate,
-healthy share) from being projected to run away linearly to 2035.
+healthy share) from being projected to run away linearly to 2033.
 Monte-Carlo: each draw samples one model path + residual noise scaled by sqrt(step),
 giving coherent fan uncertainty that mixes model disagreement and noise.
 

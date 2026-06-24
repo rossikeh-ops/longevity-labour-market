@@ -7,7 +7,7 @@ Four slides follow the supply equation:
   1. Demographic baseline   — interactive population pyramid + ageing trend
   2. Participation (LFPR)    — men vs women labour-force participation over time
   3. Migration adjustments   — BSL / high / low migration working-age scenarios
-  4. Final supply forecast   — synthesised supply (person-years) to 2035 with bands
+  4. Final supply forecast   — synthesised supply (person-years) to 2033 with bands
 
 Data (demo_pjangroup, supply_observed, proj_pop_wa, supply_forecast) is embedded
 inline as JSON so the page is self-contained on GitHub Pages.
@@ -87,7 +87,7 @@ mig = {}
 for c in NAME:
     cs = _geos(c)
     sub = pw[pw.country.isin(cs)]
-    yrs = sorted(sub.year.unique())
+    yrs = [y for y in sorted(sub.year.unique()) if y <= 2033]   # cap at the 2033 horizon
     out = {"years": [int(y) for y in yrs]}
     for sc in ("BSL", "HMIGR", "LMIGR"):
         out[sc] = [round(float(sub[(sub.year == y) & (sub.scenario == sc)]["pop_15_64_proj"].sum()) / 1e6, 2)
@@ -163,7 +163,7 @@ a{color:var(--acc)}
 </style></head><body>
 <header>
   <h1>Labour Supply — a guided story</h1>
-  <span class="who">8 European countries · to 2035</span>
+  <span class="who">8 European countries · to 2033</span>
   <span class="spacer"></span>
   <label class="who" for="country">Country&nbsp;</label>
   <select id="country"></select>
@@ -215,7 +215,7 @@ a{color:var(--acc)}
     <div class="kick">Step 4 · Total supply</div>
     <h2>The synthesised supply forecast</h2>
     <p class="lead">Demographics × participation × healthy working life, combined into potential labour
-    supply in <b>human-working-years</b>, observed then forecast to 2035 with an 80% uncertainty band.</p>
+    supply in <b>human-working-years</b>, observed then forecast to 2033 with an 80% uncertainty band.</p>
     <div class="panel"><div class="chwrap"><canvas id="supply"></canvas></div></div>
     <div class="kpis" id="supKpis"></div>
     <div class="note">Supply = healthy working-age people × expected working life. The longevity dividend
@@ -232,7 +232,7 @@ a{color:var(--acc)}
 <script>const DATA = __DATA__;</script>
 <script>
 const STEPS=[["Demographics","Pop. & ageing"],["Participation","LFPR by sex"],
-  ["Migration","Scenarios"],["Total supply","Forecast 2035"]];
+  ["Migration","Scenarios"],["Total supply","Forecast 2033"]];
 const C={slate:'#475569',mustard:'#D97706',sage:'#4ADE80',terra:'#B91C1C',acc:'#166534',
   ink:'#292524',mut:'#78716C',line:'#E7E5E4'};
 Chart.defaults.color=C.mut; Chart.defaults.font.family="-apple-system,Segoe UI,Roboto,Arial,sans-serif";
@@ -329,7 +329,7 @@ function drawMig(){
         legend:{position:'bottom'},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw}M`}}}}});
   const last=d.years.length-1, spread=(d.HMIGR[last]-d.LMIGR[last]).toFixed(2);
   document.getElementById('migKpis').innerHTML=
-    kpi(d.BSL[last]+'M','Baseline working-age, 2035')+kpi('±'+spread+'M','High–low migration spread by 2035');
+    kpi(d.BSL[last]+'M','Baseline working-age, 2033')+kpi('±'+spread+'M','High–low migration spread by 2033');
 }
 function drawSupply(){
   destroy('supply');const d=DATA.supply[state.country];
@@ -350,8 +350,8 @@ function drawSupply(){
         tooltip:{filter:i=>!i.dataset.label.startsWith('_'),callbacks:{label:c=>`${c.dataset.label}: ${c.raw} M PY`}}}}});
   const chg=((d.fm[d.fm.length-1]/d.ov[d.ov.length-1]-1)*100).toFixed(1);
   document.getElementById('supKpis').innerHTML=
-    kpi(d.ov[d.ov.length-1]+'M','Supply 2024 (M PY)')+kpi(d.fm[d.fm.length-1]+'M','Supply 2035 (M PY)')+
-    kpi((chg>=0?'+':'')+chg+'%','Change to 2035');
+    kpi(d.ov[d.ov.length-1]+'M','Supply 2024 (M PY)')+kpi(d.fm[d.fm.length-1]+'M','Supply 2033 (M PY)')+
+    kpi((chg>=0?'+':'')+chg+'%','Change to 2033');
 }
 function kpi(v,l){return `<div class="kpi"><div class="v">${v}</div><div class="l">${l}</div></div>`;}
 

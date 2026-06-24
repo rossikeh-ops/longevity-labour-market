@@ -346,7 +346,7 @@ to unemployment — halving the earlier curve's error to the naive floor while s
 ~1.8% of jobs, so the balance is barely affected.<br>
 • <b>Healthy-share / HLY</b> — survey-based (GALI), with methodology breaks; the model can't beat a naive guess. Treated as a bounded ratio, not over-modelled.<br>
 • <b>France vacancies</b> carry Eurostat flag <code>d</code> (definition differs) — a data-quality caveat the model can't fix.<br>
-• <b>Short horizons of judgement</b> — HLY has ~18 points; forecasts past ~2035 would be speculative.<br>
+• <b>Short horizons of judgement</b> — HLY has ~18 points; forecasts past ~2033 would be speculative.<br>
 • <b>Participation-dependent results</b> (DE, FR) — baseline assumes employment rates keep rising; the plateau scenario is the honest downside.<br>
 • <b>No causal claims</b> for health-cost / consumption (Levels 4–5) — those are descriptive relationships, not mechanisms.</div>
 <h2>Data sources — Eurostat dataset codes</h2>

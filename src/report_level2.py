@@ -43,7 +43,7 @@ _fc_d = (fc[["country", "sex", "year", "jobs", "demand", "demand_lo", "demand_hi
 DLINK = data_link()
 APPENDIX = data_section(
     [("Observed demand, 2011–2024 (jobs in millions, demand in million career PY)", _obs_d),
-     ("Forecast demand, 2025–2035 (million PY · 80% band)", _fc_d)],
+     ("Forecast demand, 2025–2033 (million PY · 80% band)", _fc_d)],
     note="The full per-country × sex × year series behind the charts above. "
          "Source: supply_observed.csv, demand_forecast.csv.")
 
@@ -62,18 +62,18 @@ for c in countries:
         "lo": [round(v, 1) for v in f["lo"].values],
         "hi": [round(v, 1) for v in f["hi"].values],
         "d2024": round(float(o.loc[2024])),
-        "d2035": round(float(f["mean"].loc[2035])),
-        "chg": round((f["mean"].loc[2035] / o.loc[2024] - 1) * 100, 1),
-        "plateau": round(float(sc[sc.country == c]["demand_2035_plateau"].iloc[0] / M)),
+        "d2033": round(float(f["mean"].loc[2033])),
+        "chg": round((f["mean"].loc[2033] / o.loc[2024] - 1) * 100, 1),
+        "plateau": round(float(sc[sc.country == c]["demand_2033_plateau"].iloc[0] / M)),
     }
 
 tot24 = round(sum(series[c]["d2024"] for c in countries))
-tot35 = round(sum(series[c]["d2035"] for c in countries))
+tot35 = round(sum(series[c]["d2033"] for c in countries))
 totchg = round((tot35 / tot24 - 1) * 100, 1)
 jobs24 = round(float(obs[obs.year == 2024]["jobs"].sum() / M), 1)
-jobs35 = round(float(fc[fc.year == 2035]["jobs"].sum() / M), 1)
-sexF = round(float(fc[fc.year == 2035].query("sex=='F'")["demand"].sum() / M))
-sexM = round(float(fc[fc.year == 2035].query("sex=='M'")["demand"].sum() / M))
+jobs35 = round(float(fc[fc.year == 2033]["jobs"].sum() / M), 1)
+sexF = round(float(fc[fc.year == 2033].query("sex=='F'")["demand"].sum() / M))
+sexM = round(float(fc[fc.year == 2033].query("sex=='M'")["demand"].sum() / M))
 totcol = "#B91C1C" if totchg < 0 else "#15803D"
 
 # ---------- static SVG chart (Python-generated) ----------
@@ -111,7 +111,7 @@ def chart_svg(s):
             f'<polyline points="{obsp}" fill="none" stroke="#475569" stroke-width="2"/>'
             f'<polyline points="{joinp}" fill="none" stroke="#D97706" stroke-width="1.5" stroke-dasharray="2 2"/>'
             f'<polyline points="{fcp}" fill="none" stroke="#D97706" stroke-width="2"/>'
-            f'<circle cx="{X(2035):.1f}" cy="{Y(s["plateau"]):.1f}" r="3.4" fill="none" stroke="#292524" stroke-dasharray="2 1.5"/>'
+            f'<circle cx="{X(2033):.1f}" cy="{Y(s["plateau"]):.1f}" r="3.4" fill="none" stroke="#292524" stroke-dasharray="2 1.5"/>'
             f'</svg></div>')
 
 
@@ -119,7 +119,7 @@ def row_html(s):
     cls = "neg" if s["chg"] < 0 else "pos"
     sign = "+" if s["chg"] > 0 else ""
     return (f'<tr><td>{s["name"]}</td><td style="color:#78716C">{s["region"]}</td>'
-            f'<td>{s["d2024"]}</td><td>{s["d2035"]}</td>'
+            f'<td>{s["d2024"]}</td><td>{s["d2033"]}</td>'
             f'<td style="color:#78716C">{round(s["lo"][-1])}–{round(s["hi"][-1])}</td>'
             f'<td class="{cls}" style="text-align:right">{sign}{s["chg"]}%</td>'
             f'<td style="color:#78716C">{s["plateau"]}</td></tr>')
@@ -130,14 +130,14 @@ rows_html = "".join(row_html(series[c]) for c in countries)
 
 # ---------- interactive choropleth section ----------
 # Reuse the supply-side metrics (outputs/map_data.json) and prepend a Level-2
-# demand metric (2035 career person-years, by sex) so the map opens on demand.
+# demand metric (2033 career person-years, by sex) so the map opens on demand.
 md = json.loads((OUT / "map_data.json").read_text(encoding="utf-8"))
-dem = {"label": "Potential labour demand 2035 (career person-years)",
+dem = {"label": "Potential labour demand 2033 (career person-years)",
        "unit": "person-years", "total": "sum", "fmt": "millions",
        "values": {}, "years": {}}
-f2035 = fc[fc.year == 2035]
+f2033 = fc[fc.year == 2033]
 for c in countries:
-    sub = f2035[f2035.country == c]
+    sub = f2033[f2033.country == c]
     vals = {}
     vf, vm = sub[sub.sex == "F"]["demand"].sum(), sub[sub.sex == "M"]["demand"].sum()
     if vf:
@@ -146,13 +146,13 @@ for c in countries:
         vals["M"] = round(float(vm))
     vals["T"] = round(float(sub["demand"].sum()))
     dem["values"][c] = vals
-    dem["years"][c] = 2035
+    dem["years"][c] = 2033
 map_data = {"countries": md["countries"], "regime": md["regime"],
-            "metrics": {"demand_2035": dem, **md["metrics"]}}
+            "metrics": {"demand_2033": dem, **md["metrics"]}}
 map_html = build_map_section(
-    map_data, container="geomap2", default_metric="demand_2035",
+    map_data, container="geomap2", default_metric="demand_2033",
     title="Geographic overview — demand &amp; its drivers",
-    intro="Choropleth of the 8 countries. Default shows 2035 potential demand "
+    intro="Choropleth of the 8 countries. Default shows 2033 potential demand "
           "(career person-years); switch the metric to its drivers — employment, "
           "vacancies — or supply-side context. Toggle sex; hover a country.")
 
@@ -193,28 +193,28 @@ border-radius:10px;padding:14px;margin-top:10px}
 
 HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Level 2 — Labour Demand to 2035</title><style>{CSS}{APPENDIX_CSS}</style></head><body><div class="wrap">
-<h1>Level 2 — Labour Demand to 2035</h1>
+<title>Level 2 — Labour Demand to 2033</title><style>{CSS}{APPENDIX_CSS}</style></head><body><div class="wrap">
+<h1>Level 2 — Labour Demand to 2033</h1>
 <p class="sub">Potential labour demand in <b>career person-years</b> (jobs × required length of service),
-8 countries, by sex · model 2011–2024, forecast to 2035 · Eurostat + MISSOC.</p>
+8 countries, by sex · model 2011–2024, forecast to 2033 · Eurostat + MISSOC.</p>
 {DLINK}
 <div class="formula"><b>Demand</b> = jobs (employed + vacancies) <b>×</b> required length of service
 <span class="u">measured in human-working-years (career person-years)</span></div>
 <div class="lgd"><span><span class="sw" style="background:var(--obs)"></span>Observed 2011–2024</span>
-<span><span class="sw" style="background:var(--fc)"></span>Forecast 2025–2035</span>
+<span><span class="sw" style="background:var(--fc)"></span>Forecast 2025–2033</span>
 <span><span class="sw" style="background:var(--band)"></span>80% uncertainty band</span>
-<span><span class="sw" style="background:#fff;border:1px dashed #888"></span>Participation-plateau 2035</span></div>
+<span><span class="sw" style="background:#fff;border:1px dashed #888"></span>Participation-plateau 2033</span></div>
 <div class="kpis">
-<div class="kpi"><div class="v">{tot24:,} → {tot35:,}M</div><div class="l">Total demand, career person-years (2024 → 2035)</div></div>
-<div class="kpi"><div class="v" style="color:{totcol}">{totchg:+.1f}%</div><div class="l">Change to 2035 (broadly flat, ageing-tilted)</div></div>
+<div class="kpi"><div class="v">{tot24:,} → {tot35:,}M</div><div class="l">Total demand, career person-years (2024 → 2033)</div></div>
+<div class="kpi"><div class="v" style="color:{totcol}">{totchg:+.1f}%</div><div class="l">Change to 2033 (broadly flat, ageing-tilted)</div></div>
 <div class="kpi"><div class="v">{jobs24:.0f} → {jobs35:.0f}M</div><div class="l">Jobs (employed + vacancies), people</div></div>
-<div class="kpi"><div class="v">{sexF:,} / {sexM:,}M</div><div class="l">2035 demand by sex (F / M)</div></div>
+<div class="kpi"><div class="v">{sexF:,} / {sexM:,}M</div><div class="l">2033 demand by sex (F / M)</div></div>
 </div>
 {map_html}
 <h2>Demand predictions by country</h2><div class="grid">{charts_html}</div>
 <h2>Forecast table</h2>
-<table><thead><tr><th>Country</th><th>Region</th><th>2024</th><th>2035</th>
-<th>80% band</th><th>Δ%</th><th>Plateau 2035</th></tr></thead><tbody>{rows_html}</tbody></table>
+<table><thead><tr><th>Country</th><th>Region</th><th>2024</th><th>2033</th>
+<th>80% band</th><th>Δ%</th><th>Plateau 2033</th></tr></thead><tbody>{rows_html}</tbody></table>
 <div class="note"><b>How to read it.</b> Demand = (employed + vacancies) × required years of service —
 the stock of career-years the economy's jobs require. <b>East (BG/CZ/PL/RO) declines</b> as the
 working-age population shrinks; <b>West holds or grows</b>. The <b>plateau</b> column is the downside

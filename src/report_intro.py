@@ -21,16 +21,16 @@ so = pd.read_csv(OUT / "supply_observed.csv")
 sf = pd.read_csv(OUT / "supply_forecast.csv")
 df = pd.read_csv(OUT / "demand_forecast.csv")
 
-b35 = bf[bf.year == 2035]
+b35 = bf[bf.year == 2033]
 net = round(b35["balance"].sum() / M)
 west_def = round(b35[b35.country.isin(WEST)]["balance"].sum() / M)
 east_sur = round(b35[b35.country.isin(EAST)]["balance"].sum() / M)
 by = (b35.groupby("country")["balance"].sum() / M)
 worst, best = by.idxmin(), by.idxmax()
 sup24 = round(so[so.year == 2024]["supply_realized"].sum() / M)
-sup35 = round(sf[sf.year == 2035]["supply_realized"].sum() / M)
+sup35 = round(sf[sf.year == 2033]["supply_realized"].sum() / M)
 dem24 = round(so[so.year == 2024]["demand"].sum() / M)
-dem35 = round(df[df.year == 2035]["demand"].sum() / M)
+dem35 = round(df[df.year == 2033]["demand"].sum() / M)
 sup_chg = round((sup35 / sup24 - 1) * 100, 1)
 dem_chg = round((dem35 / dem24 - 1) * 100, 1)
 
@@ -40,7 +40,7 @@ INFOGRAPHIC = """
   <path d="M334,236 H442 Q464,236 464,258 V342" fill="none" stroke="#15803D" stroke-width="2.5"/>
   <path d="M626,236 H518 Q496,236 496,258 V342" fill="none" stroke="#D97706" stroke-width="2.5"/>
   <circle cx="480" cy="342" r="4" fill="#292524"/>
-  <text x="480" y="368" text-anchor="middle" font-size="13" fill="#78716C">Balanced labour market · 2035</text>
+  <text x="480" y="368" text-anchor="middle" font-size="13" fill="#78716C">Balanced labour market · 2033</text>
   <circle cx="480" cy="150" r="33" fill="#FFFFFF" stroke="#475569" stroke-width="2.5"/>
   <g transform="translate(480,150)" stroke="#475569" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
     <line x1="0" y1="-17" x2="0" y2="-12"/><circle cx="0" cy="-18" r="1.7" fill="#475569" stroke="none"/>
@@ -99,13 +99,13 @@ text-decoration:none;font-size:14px;font-weight:600}.links a:hover{border-color:
 netcol = "var(--up)" if net >= 0 else "var(--down)"
 HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Introduction — balancing longevity &amp; the labour market by 2035</title>
+<title>Introduction — balancing longevity &amp; the labour market by 2033</title>
 <style>{CSS}</style></head><body><div class="wrap">
-<h1>Introduction — can Europe balance its labour market by 2035?</h1>
+<h1>Introduction — can Europe balance its labour market by 2033?</h1>
 <p class="sub">Europe is ageing: populations are growing older and, across much of the East, shrinking. As
 that happens, can each economy still supply the labour its jobs require? This study answers that by turning
 demographic averages into <b>human-working-years</b> — a stock comparable with jobs — for 8 countries, by sex,
-to 2035.</p>
+to 2033.</p>
 
 <div class="hero"><b>The challenge.</b> Headcounts and life-expectancy averages can't be weighed against jobs,
 so we build a <b>person-year engine</b>: <b>supply</b> = healthy working-age people × expected working life;
@@ -119,7 +119,7 @@ below. Population uses Eurostat's own projection, calibrated to observed 2024.</
 <div class="lever">
 <div class="lv" style="--c:var(--up)"><h3>1 · Supply</h3><p>Healthy working-age people × expected working life — the longevity dividend in person-years.</p></div>
 <div class="lv" style="--c:var(--mustard)"><h3>2 · Demand</h3><p>(Employed + vacancies) × required length of service — the career-years jobs require.</p></div>
-<div class="lv" style="--c:var(--slate)"><h3>3 · Balance</h3><p>Supply − demand, by country × sex, to 2035 with honest bands — the headline.</p></div>
+<div class="lv" style="--c:var(--slate)"><h3>3 · Balance</h3><p>Supply − demand, by country × sex, to 2033 with honest bands — the headline.</p></div>
 </div>
 
 <h2>The headline, previewed</h2>
@@ -130,7 +130,7 @@ of <b style="color:{netcol}">{net:+,}M</b>), hiding a sharp <b>East–West divid
 <b style="color:var(--up)">{east_sur:+,}M</b>.</div>
 
 <div class="kpis">
-<div class="kpi"><div class="v" style="color:{netcol}">{net:+,}M</div><div class="l">Net balance 2035 (human-working-years)</div></div>
+<div class="kpi"><div class="v" style="color:{netcol}">{net:+,}M</div><div class="l">Net balance 2033 (human-working-years)</div></div>
 <div class="kpi"><div class="v" style="color:var(--down)">{west_def:+,}M</div><div class="l">West/EFTA shortage — deepest in {NAME[worst]}</div></div>
 <div class="kpi"><div class="v" style="color:var(--up)">{east_sur:+,}M</div><div class="l">East surplus — largest in {NAME[best]}</div></div>
 </div>
@@ -170,7 +170,7 @@ service-length policy align skills and careers with need — and convert a geogr
 
 <h2>What to keep in mind</h2>
 <div class="note">
-• Forecasts run to <b>2035</b> — a policy baseline, shorter than a full pension/ageing horizon.<br>
+• Forecasts run to <b>2033</b> — a policy baseline, shorter than a full pension/ageing horizon.<br>
 • <b>Supply is a potential ceiling</b> (net of health and working-life length, before skills mismatch and frictions).<br>
 • <b>Healthy-life years</b> (HLY) and <b>vacancies</b> are the weak drivers — both near-random-walk; modelled honestly at their accuracy ceiling.<br>
 • Population is Eurostat's own projection (<code>proj_23np</code>), calibrated to 2024; migration is the biggest swing factor.<br>

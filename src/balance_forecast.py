@@ -1,5 +1,5 @@
 """
-Levels 2 & 3 — joint Monte-Carlo forecast of DEMAND, SUPPLY and BALANCE to 2035.
+Levels 2 & 3 — joint Monte-Carlo forecast of DEMAND, SUPPLY and BALANCE to 2033.
 
 One module so supply and demand share the SAME population draws per MC index
 (proj_23np) -> the balance = supply - demand keeps the correct correlation
@@ -29,7 +29,7 @@ proj = pd.read_csv(ROOT / "data" / "processed" / "proj_pop_wa.csv")
 ret = pd.read_csv(ROOT / "data" / "retirement_params.csv")
 OUT = ROOT / "outputs"
 COUNTRIES = ["BG", "PL", "CZ", "RO", "DE", "FR", "NO", "CH"]
-TGT = list(range(2025, 2036))
+TGT = list(range(2025, 2034))
 N = 1000
 
 panel["healthy_share"] = panel["hly_birth"] / panel["le_birth"]
@@ -113,8 +113,8 @@ for c in COUNTRIES:
     demM_pl = (empM_pl + vac * empM_pl / den_pl) * svc[(c, "M")]
     base35 = (demF[:, -1] + demM[:, -1]).mean()
     plat35 = (demF_pl[:, -1] + demM_pl[:, -1]).mean()
-    srows.append({"country": c, "demand_2035_baseline": base35,
-                  "demand_2035_plateau": plat35})
+    srows.append({"country": c, "demand_2033_baseline": base35,
+                  "demand_2033_plateau": plat35})
     supF = pF * fc(c, "F", "healthy_share", bounds=(0, 1)) * fc(c, "F", "working_life_yrs", nonneg=True)
     supM = pM * fc(c, "M", "healthy_share", bounds=(0, 1)) * fc(c, "M", "working_life_yrs", nonneg=True)
     balF, balM = supF - demF, supM - demM
@@ -136,25 +136,25 @@ dfs = pd.DataFrame(srows); dfs.to_csv(OUT / "scenario_participation.csv", index=
 M = 1e6
 obs = pd.read_csv(OUT / "supply_observed.csv")
 od = obs[obs.year == 2024].groupby("country")["demand"].sum() / M
-print("=== Level 2 DEMAND: 2024 observed -> 2035 forecast (million career PY, both sexes) ===")
-d35 = dfd[dfd.year == 2035].groupby("country")["demand"].sum() / M
-comp = pd.DataFrame({"2024": od.round(0), "2035": d35.round(0)})
-comp["chg_%"] = ((comp["2035"] / comp["2024"] - 1) * 100).round(1)
+print("=== Level 2 DEMAND: 2024 observed -> 2033 forecast (million career PY, both sexes) ===")
+d35 = dfd[dfd.year == 2033].groupby("country")["demand"].sum() / M
+comp = pd.DataFrame({"2024": od.round(0), "2033": d35.round(0)})
+comp["chg_%"] = ((comp["2033"] / comp["2024"] - 1) * 100).round(1)
 print(comp.sort_values("chg_%").to_string())
 tot = dfd.groupby("year")["demand"].sum() / M
 print(f"\n8-country total demand: 2024={od.sum():,.0f}  "
-      f"2030={tot[2030]:,.0f}  2035={tot[2035]:,.0f} (million career PY)")
+      f"2030={tot[2030]:,.0f}  2033={tot[2033]:,.0f} (million career PY)")
 
 # widened-band check + participation-plateau scenario
-w = dfd[dfd.year == 2035].copy()
+w = dfd[dfd.year == 2033].copy()
 relw = ((w["demand_hi"] - w["demand_lo"]) / w["demand"] * 100)
-print(f"\n2035 demand 80% band width (% of point): "
+print(f"\n2033 demand 80% band width (% of point): "
       f"min {relw.min():.0f}%  median {relw.median():.0f}%  max {relw.max():.0f}%")
 
-print("\n=== Participation-PLATEAU scenario, 2035 demand (million career PY) ===")
-dfs["base"] = (dfs.demand_2035_baseline / M).round(0)
-dfs["plateau"] = (dfs.demand_2035_plateau / M).round(0)
-dfs["gap_%"] = ((dfs.demand_2035_plateau / dfs.demand_2035_baseline - 1) * 100).round(1)
+print("\n=== Participation-PLATEAU scenario, 2033 demand (million career PY) ===")
+dfs["base"] = (dfs.demand_2033_baseline / M).round(0)
+dfs["plateau"] = (dfs.demand_2033_plateau / M).round(0)
+dfs["gap_%"] = ((dfs.demand_2033_plateau / dfs.demand_2033_baseline - 1) * 100).round(1)
 print(dfs[["country", "base", "plateau", "gap_%"]].sort_values("gap_%").to_string(index=False))
 print(f"rows -> demand_forecast.csv ({len(dfd)}), balance_forecast.csv ({len(dfb)}), "
       f"scenario_participation.csv ({len(dfs)})")

@@ -104,14 +104,14 @@ STAGES = [
          chip='raw Eurostat &nbsp;→&nbsp; <b>panel.parquet</b>'),
     dict(c="#166534", kick="Level 1", title="Labour supply", icon="heart",
          desc="Forecast life expectancy, healthy-life share, working-life duration and working-age "
-              "population to 2035 (detailed in §1), then combine into healthy person-years.",
+              "population to 2033 (detailed in §1), then combine into healthy person-years.",
          chip='<b>Supply</b> = healthy workers × working life'),
     dict(c="#D97706", kick="Level 2", title="Labour demand", icon="bag",
          desc="Forecast employment (rate × population) and job vacancies (anchored Beveridge) → jobs, "
               "scaled by the required length of service for a full pension.",
          chip='<b>Demand</b> = (employed + vacancies) × service'),
     dict(c="#166534", kick="Level 3", title="Balance — the headline", icon="scale",
-         desc="Subtract the two stocks, by country × sex, to 2035 with Monte-Carlo uncertainty bands; "
+         desc="Subtract the two stocks, by country × sex, to 2033 with Monte-Carlo uncertainty bands; "
               "surfaces the East-surplus / West-shortage divide.",
          chip='<b>Balance</b> = Supply − Demand &nbsp;→&nbsp; human-working-years'),
 ]
@@ -209,7 +209,7 @@ error from backtesting</b> — we re-forecast history and measure how far off we
 <b>demographic uncertainty</b> of the population. That is why the bands are a realistic <b>12–43%</b>
 wide, not a falsely narrow ±5%.</p>
 <p><b>On the supply side</b>, the engine forecasts <b>life expectancy</b>, the <b>healthy-life share
-(HLY/LE)</b>, <b>working-life duration</b> and the <b>working-age population</b> to 2035, which are then
+(HLY/LE)</b>, <b>working-life duration</b> and the <b>working-age population</b> to 2033, which are then
 combined into healthy person-years.</p>
 <div class="formula"><b>Supply</b> = healthy working-age people × expected working life
 <span class="u">person-years</span></div>

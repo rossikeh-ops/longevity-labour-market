@@ -5,10 +5,10 @@ DEMAND build-up, mirroring the supply story, with interactive Chart.js + a
 methodology progress tracker and a present/autoplay mode.
 
 Four slides follow the demand equation  Demand = (employed + vacancies) × service:
-  1. Jobs base       — employment + vacancies = number of jobs, to 2035
+  1. Jobs base       — employment + vacancies = number of jobs, to 2033
   2. Vacancies       — the Beveridge curve (vacancies fall as unemployment rises)
   3. Required service— length of service for a full pension, by country & sex
-  4. Final demand    — jobs × service = potential demand (person-years) to 2035 + band
+  4. Final demand    — jobs × service = potential demand (person-years) to 2033 + band
 
 Data inlined as JSON; Chart.js from CDN. Self-contained for GitHub Pages.
 """
@@ -117,7 +117,7 @@ a{color:var(--acc)}
 </style></head><body>
 <header>
   <h1>Labour Demand — a guided story</h1>
-  <span class="who">8 European countries · to 2035</span>
+  <span class="who">8 European countries · to 2033</span>
   <span class="spacer"></span>
   <label class="who" for="country">Country&nbsp;</label><select id="country"></select>
 </header>
@@ -127,7 +127,7 @@ a{color:var(--acc)}
     <div class="kick">Step 1 · Jobs</div>
     <h2>The jobs base</h2>
     <p class="lead">Demand starts from the jobs the economy runs: <b>employed people plus open
-    vacancies</b>. We forecast each and add them, observed then projected to 2035.</p>
+    vacancies</b>. We forecast each and add them, observed then projected to 2033.</p>
     <div class="panel"><div class="chwrap"><canvas id="jobs"></canvas></div></div>
     <div class="kpis" id="jobsKpis"></div>
     <div class="note">Jobs = employment (<code>lfsa_egan</code>) + job vacancies (<code>jvs_q_r21</code>).</div>
@@ -156,10 +156,10 @@ a{color:var(--acc)}
     <div class="kick">Step 4 · Total demand</div>
     <h2>Potential labour demand</h2>
     <p class="lead">Jobs × required service = potential demand for labour in <b>human-working-years</b>,
-    observed then forecast to 2035 with an 80% uncertainty band.</p>
+    observed then forecast to 2033 with an 80% uncertainty band.</p>
     <div class="panel"><div class="chwrap"><canvas id="demand"></canvas></div></div>
     <div class="kpis" id="demKpis"></div>
-    <div class="note">Demand = (employed + vacancies) × required length of service. Broadly flat to 2035,
+    <div class="note">Demand = (employed + vacancies) × required length of service. Broadly flat to 2033,
     tilted by the East's shrinking workforce vs the West holding steady.</div>
   </section>
 </main>
@@ -173,7 +173,7 @@ a{color:var(--acc)}
 <script>const DATA = __DATA__;</script>
 <script>
 const STEPS=[["Jobs","Employed + vacancies"],["Vacancies","Beveridge curve"],
-  ["Service","Years per career"],["Total demand","Forecast 2035"]];
+  ["Service","Years per career"],["Total demand","Forecast 2033"]];
 const C={slate:'#475569',mustard:'#D97706',sage:'#4ADE80',terra:'#B91C1C',acc:'#166534',ink:'#292524',mut:'#78716C',line:'#E7E5E4'};
 Chart.defaults.color=C.mut;Chart.defaults.font.family="-apple-system,Segoe UI,Roboto,Arial,sans-serif";Chart.defaults.borderColor=C.line;
 let state={country:'ALL',slide:0},charts={};
@@ -216,7 +216,7 @@ function lineOF(id,d,unit,title){
 function drawJobs(){const d=DATA.jobs[state.country];
   lineOF('jobs',d,'jobs (millions of people)',`Number of jobs — ${DATA.countries[state.country]}`);
   document.getElementById('jobsKpis').innerHTML=kpi(d.ov[d.ov.length-1]+'M','Jobs 2024')+
-    kpi(d.fv[d.fv.length-1]+'M','Jobs 2035')+kpi(((d.fv[d.fv.length-1]/d.ov[d.ov.length-1]-1)*100).toFixed(1)+'%','Change to 2035');}
+    kpi(d.fv[d.fv.length-1]+'M','Jobs 2033')+kpi(((d.fv[d.fv.length-1]/d.ov[d.ov.length-1]-1)*100).toFixed(1)+'%','Change to 2033');}
 function drawBev(){destroy('bev');const pts=DATA.bev[state.country];
   charts.bev=new Chart(document.getElementById('bev'),{type:'scatter',
     data:{datasets:[{label:'Year',data:pts,backgroundColor:C.mustard,borderColor:C.acc,pointRadius:5,pointHoverRadius:7}]},
@@ -241,7 +241,7 @@ function drawService(){destroy('service');const s=DATA.service;
 function drawDemand(){const d=DATA.demand[state.country];
   lineOF('demand',d,'demand (million person-years)',`Potential labour demand — ${DATA.countries[state.country]}`);
   document.getElementById('demKpis').innerHTML=kpi(d.ov[d.ov.length-1]+'M','Demand 2024 (M PY)')+
-    kpi(d.fm[d.fm.length-1]+'M','Demand 2035 (M PY)')+kpi(((d.fm[d.fm.length-1]/d.ov[d.ov.length-1]-1)*100).toFixed(1)+'%','Change to 2035');}
+    kpi(d.fm[d.fm.length-1]+'M','Demand 2033 (M PY)')+kpi(((d.fm[d.fm.length-1]/d.ov[d.ov.length-1]-1)*100).toFixed(1)+'%','Change to 2033');}
 function renderAll(){
   if(state.slide===0)drawJobs();else if(state.slide===1)drawBev();
   else if(state.slide===2)drawService();else if(state.slide===3)drawDemand();}
