@@ -12,16 +12,27 @@ h1{font-size:27px;margin:0 0 4px}h2{font-size:19px;margin:34px 0 10px}
 p{margin:12px 0}b{color:var(--ink)}code{color:var(--acc)}
 ol{color:var(--ink)}li{margin:4px 0}
 a{color:var(--acc)}.foot{color:var(--mut);font-size:13px;margin-top:30px}
-.levels{display:flex;flex-direction:column;gap:0;margin:18px 0}
-.lvl{display:flex;gap:16px;background:var(--card);border:1px solid var(--line);
-border-radius:12px;padding:16px 18px}
-.lvl .num{flex:0 0 44px;height:44px;border-radius:10px;display:flex;align-items:center;
-justify-content:center;font-size:20px;font-weight:800;color:#06203a}
-/* flow connector between pipeline stages, aligned under the number badges */
-.conn{height:30px;display:flex;align-items:center;padding-left:32px}
-.lvl .body{flex:1}.lvl h3{margin:0 0 3px;font-size:16px}.lvl .body p{margin:3px 0;font-size:14px}
-.lvl .io{color:var(--mut);font-size:13px;margin-top:7px;line-height:1.5}
-.lvl .io b{color:var(--ink)}.lvl .io code{font-size:12px}
+/* animated "engine" pipeline: icon nodes + colour-transitioning conduit + flow pulses */
+.engine{margin:22px 0}
+.estage{display:flex;gap:18px;align-items:flex-start;position:relative;padding-bottom:24px}
+.estage:last-child{padding-bottom:0}
+.estage:not(:last-child)::before{content:"";position:absolute;left:26px;top:58px;bottom:0;width:4px;
+border-radius:2px;background:linear-gradient(var(--c),var(--c2));opacity:.4}
+.estage:not(:last-child)::after{content:"";position:absolute;left:22px;top:58px;width:12px;height:12px;
+border-radius:50%;background:#eaf3ff;box-shadow:0 0 10px 2px var(--c);animation:flowdot 2.4s ease-in-out infinite}
+.estage:nth-child(2)::after{animation-delay:.8s}.estage:nth-child(3)::after{animation-delay:1.6s}
+@keyframes flowdot{0%{top:58px;opacity:0}12%{opacity:1}88%{opacity:1}100%{top:calc(100% - 6px);opacity:0}}
+.enode{flex:0 0 54px;height:54px;border-radius:16px;background:var(--c);display:flex;align-items:center;
+justify-content:center;box-shadow:0 6px 16px rgba(0,0,0,.32);position:relative;z-index:1}
+.enode svg{stroke:#06203a;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ecard{flex:1;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--c);
+border-radius:14px;padding:13px 18px}
+.ecard .kick{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--c);font-weight:700}
+.ecard h3{margin:2px 0 5px;font-size:16px}.ecard p{margin:3px 0;font-size:13.5px;color:var(--mut)}
+.ecard .chip{display:inline-block;margin-top:10px;background:#0e1830;border:1px solid var(--line);
+border-radius:20px;padding:5px 13px;font-size:12.5px;color:var(--ink)}
+.ecard .chip b{color:var(--c)}.ecard code{font-size:12px}
+@media (prefers-reduced-motion:reduce){.estage::after{animation:none;opacity:0}}
 h2 .hnum{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;
 border-radius:8px;font-size:16px;font-weight:800;color:#06203a;margin-right:10px;vertical-align:-6px}
 </style></head><body><div class="wrap">
@@ -32,31 +43,7 @@ border-radius:8px;font-size:16px;font-weight:800;color:#06203a;margin-right:10px
 <h2>The pipeline — Levels 0 → 3</h2>
 <p class="sub">Where each step sits and what it produces. Levels 1–2 run every driver through the
 ensemble engine (§1), then combine via the identities below; Level 3 subtracts the two.</p>
-<div class="levels">
-<div class="lvl"><div class="num" style="background:#5b9dff">0</div><div class="body">
-<h3>Data foundation</h3>
-<p>Pull every Eurostat series, clean &amp; impute gaps, and assemble one tidy panel —
-8 countries × sex × year, full coverage, reproducible.</p>
-<div class="io">Sources <code>hlth_hlye</code> · <code>demo_pjan</code>/<code>demo_pjangroup</code> ·
-<code>lfsa_egan</code> · <code>jvs_q_r21</code> · <code>lfsi_dwl_a</code> · <code>une_rt_a</code> ·
-<code>proj_23np</code> &nbsp;→&nbsp; <b>panel.parquet</b></div></div></div>
-<div class="conn"><svg width="18" height="30" viewBox="0 0 18 30" xmlns="http://www.w3.org/2000/svg"><line x1="9" y1="0" x2="9" y2="21" stroke="#5b9dff" stroke-width="3" opacity="0.5"/><path d="M3,16 L9,23 L15,16" fill="none" stroke="#5b9dff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/></svg></div>
-<div class="lvl"><div class="num" style="background:#2dd4bf">1</div><div class="body">
-<h3>Labour supply</h3>
-<div class="io">Healthy person-years — driver forecasts and the supply identity are detailed in §1 below.</div></div></div>
-<div class="conn"><svg width="18" height="30" viewBox="0 0 18 30" xmlns="http://www.w3.org/2000/svg"><line x1="9" y1="0" x2="9" y2="21" stroke="#5b9dff" stroke-width="3" opacity="0.5"/><path d="M3,16 L9,23 L15,16" fill="none" stroke="#5b9dff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/></svg></div>
-<div class="lvl"><div class="num" style="background:#fbbf24">2</div><div class="body">
-<h3>Labour demand</h3>
-<p>Forecast employment (rate × population) and job vacancies (anchored Beveridge curve) → jobs;
-scale by the required length of service for a full pension.</p>
-<div class="io"><b>Demand = (employed + vacancies) × required service</b> &nbsp;(person-years)</div></div></div>
-<div class="conn"><svg width="18" height="30" viewBox="0 0 18 30" xmlns="http://www.w3.org/2000/svg"><line x1="9" y1="0" x2="9" y2="21" stroke="#5b9dff" stroke-width="3" opacity="0.5"/><path d="M3,16 L9,23 L15,16" fill="none" stroke="#5b9dff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/></svg></div>
-<div class="lvl"><div class="num" style="background:#34d399">3</div><div class="body">
-<h3>Balance — the headline</h3>
-<p>Subtract the two stocks, by country × sex, to 2035, with Monte-Carlo uncertainty bands.
-Surfaces the East-surplus / West-shortage divide.</p>
-<div class="io"><b>Balance = Supply − Demand</b> &nbsp;(human-working-years)</div></div></div>
-</div>
+<div class="engine"><div class="estage" style="--c:#5b9dff;--c2:#2dd4bf"><div class="enode"><svg viewBox="0 0 24 24" width="27" height="27"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg></div><div class="ecard"><div class="kick">Level 0</div><h3>Data foundation</h3><p>Pull every Eurostat series, clean &amp; impute gaps, and assemble one tidy panel — 8 countries × sex × year, full coverage, reproducible.</p><div class="chip">raw Eurostat &nbsp;→&nbsp; <b>panel.parquet</b></div></div></div><div class="estage" style="--c:#2dd4bf;--c2:#fbbf24"><div class="enode"><svg viewBox="0 0 24 24" width="27" height="27"><path d="M12 20s-6.6-4.2-6.6-8.6A3.5 3.5 0 0112 8a3.5 3.5 0 016.6 3.4C18.6 15.8 12 20 12 20z"/></svg></div><div class="ecard"><div class="kick">Level 1</div><h3>Labour supply</h3><p>Forecast life expectancy, healthy-life share, working-life duration and working-age population to 2035 (detailed in §1), then combine into healthy person-years.</p><div class="chip"><b>Supply</b> = healthy workers × working life</div></div></div><div class="estage" style="--c:#fbbf24;--c2:#34d399"><div class="enode"><svg viewBox="0 0 24 24" width="27" height="27"><rect x="3.5" y="7.5" width="17" height="11" rx="2"/><path d="M9 7.5V6a2 2 0 012-2h2a2 2 0 012 2v1.5"/><path d="M3.5 12h17"/></svg></div><div class="ecard"><div class="kick">Level 2</div><h3>Labour demand</h3><p>Forecast employment (rate × population) and job vacancies (anchored Beveridge) → jobs, scaled by the required length of service for a full pension.</p><div class="chip"><b>Demand</b> = (employed + vacancies) × service</div></div></div><div class="estage" style="--c:#34d399;--c2:#34d399"><div class="enode"><svg viewBox="0 0 24 24" width="27" height="27"><path d="M12 4v16"/><path d="M6 20h12"/><path d="M4 7h16"/><path d="M4 7l-2.2 4.6a2.4 2.4 0 004.8 0z"/><path d="M20 7l-2.2 4.6a2.4 2.4 0 004.8 0z"/></svg></div><div class="ecard"><div class="kick">Level 3</div><h3>Balance — the headline</h3><p>Subtract the two stocks, by country × sex, to 2035 with Monte-Carlo uncertainty bands; surfaces the East-surplus / West-shortage divide.</p><div class="chip"><b>Balance</b> = Supply − Demand &nbsp;→&nbsp; human-working-years</div></div></div></div>
 
 <h2><span class="hnum" style="background:#2dd4bf">1</span>Ensemble forecast engine</h2>
 <p>For each time series (for every country × sex, over its full history) we do not rely on a
