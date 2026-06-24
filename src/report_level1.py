@@ -12,6 +12,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from map_section import build_map_section  # noqa: E402
+from data_appendix import appendix_css, data_link, data_section  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "outputs"
@@ -23,6 +24,24 @@ REGION = {"BG": "East·EU", "PL": "East·EU", "CZ": "East·EU", "RO": "East·EU"
 
 obs = pd.read_csv(OUT / "supply_observed.csv")
 sf = pd.read_csv(OUT / "supply_forecast.csv")
+
+# ---- "data behind this report" appendix ----
+APPENDIX_CSS = appendix_css()
+_obs_d = (obs[obs.year <= 2024][["country", "sex", "year", "supply_realized"]]
+          .assign(**{"supply (M)": lambda d: (d.supply_realized / 1e6).round(1)})
+          .drop(columns="supply_realized").sort_values(["country", "sex", "year"]))
+_fc_d = (sf[["country", "sex", "year", "supply_realized", "lo", "hi"]]
+         .assign(**{"supply (M)": lambda d: (d.supply_realized / 1e6).round(1),
+                    "lo (M)": lambda d: (d.lo / 1e6).round(1),
+                    "hi (M)": lambda d: (d.hi / 1e6).round(1)})
+         [["country", "sex", "year", "supply (M)", "lo (M)", "hi (M)"]]
+         .sort_values(["country", "sex", "year"]))
+DLINK = data_link()
+APPENDIX = data_section(
+    [("Observed labour supply, 2011–2024 (million career person-years)", _obs_d),
+     ("Forecast labour supply, 2025–2035 (million PY · 80% band)", _fc_d)],
+    note="The full per-country × sex × year series behind the charts above. "
+         "Source: supply_observed.csv, supply_forecast.csv.")
 
 countries = list((sf[sf.year == 2035].groupby("country").supply_realized.sum() / M)
                  .pipe(lambda s: (s / (obs[obs.year == 2024].groupby("country").supply_realized.sum() / M) - 1))
@@ -164,10 +183,11 @@ border-radius:10px;padding:14px;margin-top:10px}.note b{color:var(--ink)}
 
 HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Level 1 — Labour Supply to 2035</title><style>{CSS}</style></head><body><div class="wrap">
+<title>Level 1 — Labour Supply to 2035</title><style>{CSS}{APPENDIX_CSS}</style></head><body><div class="wrap">
 <h1>Level 1 — Labour Supply to 2035</h1>
 <p class="sub">Potential labour supply in <b>human-working-years</b> = health-adjusted working-age
 people × expected working life · observed 2011–2024, forecast to 2035 · 8 countries, by sex.</p>
+{DLINK}
 <div class="formula"><b>Supply</b> = health-adjusted working-age people <b>×</b> expected working life
 <span class="u">measured in human-working-years (career person-years)</span></div>
 <div class="hero">Total supply is <b>essentially flat ({tot24:,}M → {tot35:,}M, {totchg:+.1f}%)</b> to 2035 — a
@@ -203,6 +223,7 @@ scenario (D6) flattens supply growth in the West.<br>
 <code>proj_23np</code> population projections (baseline + migration) ·
 <code>lfsi_dwl_a</code> expected duration of working life ·
 <code>demo_pjan</code> / <code>demo_mlexpec</code> total population &amp; LE cross-check.</div>
+{APPENDIX}
 <p class="sub" style="margin-top:24px;font-size:12px">Generated from outputs/supply_forecast.csv · src/supply.py, supply_forecast.py</p>
 </div></body></html>"""
 

@@ -12,6 +12,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from map_section import build_map_section  # noqa: E402
+from data_appendix import appendix_css, data_link, data_section  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "outputs"
@@ -23,6 +24,26 @@ REGION = {"BG": "East·EU", "PL": "East·EU", "CZ": "East·EU", "RO": "East·EU"
 
 obs = pd.read_csv(OUT / "supply_observed.csv")
 bf = pd.read_csv(OUT / "balance_forecast.csv")
+
+# ---- "data behind this report" appendix ----
+APPENDIX_CSS = appendix_css()
+_obs_d = (obs[obs.year <= 2024][["country", "sex", "year", "balance_realized"]]
+          .assign(**{"balance (M)": lambda d: (d.balance_realized / 1e6).round(1)})
+          .drop(columns="balance_realized").sort_values(["country", "sex", "year"]))
+_fc_d = (bf[["country", "sex", "year", "supply", "demand", "balance", "balance_lo", "balance_hi"]]
+         .assign(**{"supply (M)": lambda d: (d.supply / 1e6).round(1),
+                    "demand (M)": lambda d: (d.demand / 1e6).round(1),
+                    "balance (M)": lambda d: (d.balance / 1e6).round(1),
+                    "lo (M)": lambda d: (d.balance_lo / 1e6).round(1),
+                    "hi (M)": lambda d: (d.balance_hi / 1e6).round(1)})
+         [["country", "sex", "year", "supply (M)", "demand (M)", "balance (M)", "lo (M)", "hi (M)"]]
+         .sort_values(["country", "sex", "year"]))
+DLINK = data_link()
+APPENDIX = data_section(
+    [("Observed balance, 2011–2024 (million human-working-years)", _obs_d),
+     ("Forecast supply / demand / balance, 2025–2035 (million HWY · 80% band)", _fc_d)],
+    note="The full per-country × sex × year series behind the charts and map above. "
+         "Source: supply_observed.csv, balance_forecast.csv.")
 
 countries = list((bf[bf.year == 2035].groupby("country").balance.sum() / M)
                  .sort_values().index)        # most deficit -> most surplus
@@ -198,10 +219,11 @@ border-radius:10px;padding:14px;margin-top:10px}.note b{color:var(--ink)}
 
 HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Level 3 — Labour-Market Balance to 2035</title><style>{CSS}</style></head><body><div class="wrap">
+<title>Level 3 — Labour-Market Balance to 2035</title><style>{CSS}{APPENDIX_CSS}</style></head><body><div class="wrap">
 <h1>Level 3 — Labour-Market Balance to 2035</h1>
 <p class="sub">The headline: <b>balance = potential supply − potential demand</b>, in
 <b>human-working-years</b>, by country · observed 2011–2024, forecast to 2035 · 8 countries.</p>
+{DLINK}
 <div class="formula"><b>Balance</b> = potential supply <b>−</b> potential demand
 <span class="u">measured in human-working-years (career person-years)</span></div>
 <div class="hero">Europe is in a <b>slight overall surplus</b> ({tot24:+}M → {tot35:+}M human-working-years to 2035),
@@ -242,6 +264,7 @@ read shortages/surpluses as structural capacity, not literal vacancies.<br>
 <code>hlth_hlye</code>, <code>demo_pjangroup</code>, <code>proj_23np</code>, <code>lfsi_dwl_a</code>
 (supply) · <code>lfsa_egan</code>, <code>jvs_q_r21</code> (demand) · optional slack <code>une_rt_a</code>.
 Retirement rules: <b>MISSOC</b> / <b>OECD Pensions at a Glance</b> (not Eurostat).</div>
+{APPENDIX}
 <p class="sub" style="margin-top:24px;font-size:12px">Generated from outputs/balance_forecast.csv · src/balance_forecast.py</p>
 </div></body></html>"""
 

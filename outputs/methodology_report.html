@@ -35,10 +35,11 @@ border-radius:20px;padding:5px 13px;font-size:12.5px;color:var(--ink)}
 @media (prefers-reduced-motion:reduce){.estage::after{animation:none;opacity:0}}
 h2 .hnum{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;
 border-radius:8px;font-size:16px;font-weight:800;color:#FFFFFF;margin-right:10px;vertical-align:-6px}
-</style></head><body><div class="wrap">
+a.dlink{display:inline-block;margin:2px 0 16px;font-size:13px;font-weight:600;color:var(--acc);text-decoration:none;border:1px solid var(--line);border-radius:20px;padding:6px 15px;background:var(--card)}a.dlink:hover{border-color:var(--acc)}details.data{margin:12px 0;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:0 16px}details.data>summary{cursor:pointer;font-weight:600;padding:14px 2px;list-style:none}details.data>summary::-webkit-details-marker{display:none}details.data>summary::before{content:'\25B8  ';color:var(--acc)}details.data[open]>summary::before{content:'\25BE  '}.dscroll{max-height:440px;overflow:auto;margin:0 0 16px;border-top:1px solid var(--line)}.dscroll table{font-size:12.5px}.dscroll thead th{position:sticky;top:0;background:var(--card);z-index:1}</style></head><body><div class="wrap">
 <h1>Methodology — how the model works</h1>
 <p class="sub">A transparent ensemble of simple statistical models + Monte-Carlo — deliberately
 <b>no neural networks</b> (short series, defensibility required). Three diagrams describe the whole model.</p>
+<a class="dlink" href="#data-behind">📋 Data sources behind the model &darr;</a>
 
 <h2>The pipeline — Levels 0 → 3</h2>
 <p class="sub">Where each step sits and what it produces. Levels 1–2 run every driver through the
@@ -83,6 +84,9 @@ like demand — which is why the two are directly comparable.</p>
 <p><b>Level 3</b> simply subtracts: <b>Balance = Supply − Demand</b> (in human-working-years) — the
 headline result, visualised in the balance report.</p>
 
+<h2 id="data-behind">Data behind this report</h2>
+<p class="sub">Every series the model consumes. Per-country × sex × year values are in the Level 1–3 reports' own data appendices.</p>
+<details class="data"><summary>Eurostat datasets & external sources feeding the engine <span style="color:var(--mut);font-weight:400">· 8 rows</span></summary><div class="dscroll"><table><thead><tr><th>Eurostat code / source</th><th>Provides</th><th>Used in</th></tr></thead><tbody><tr><td>hlth_hlye</td><td>Life expectancy & healthy life years (LE, HLY)</td><td>Level 1 — supply</td></tr><tr><td>demo_pjan / demo_pjangroup</td><td>Population by age & sex (working-age)</td><td>Levels 1–2</td></tr><tr><td>proj_23np</td><td>Eurostat population projection (baseline + migration)</td><td>Levels 1–3</td></tr><tr><td>lfsi_dwl_a</td><td>Expected duration of working life</td><td>Level 1 — supply</td></tr><tr><td>lfsa_egan</td><td>Employment by sex & age</td><td>Level 2 — demand</td></tr><tr><td>jvs_q_r21</td><td>Job vacancies (NACE Rev 2.1, quarterly→annual)</td><td>Level 2 — demand</td></tr><tr><td>une_rt_a</td><td>Unemployment rate (Beveridge vacancy model)</td><td>Level 2 — vacancies</td></tr><tr><td>MISSOC / OECD Pensions at a Glance</td><td>Statutory retirement age & required service</td><td>Level 2 — demand</td></tr></tbody></table></div></details>
 <p class="foot">See also the <a href="model_validation_report.html">“Model trust”</a> report for the
 backtest accuracy of this ensemble. · Code: <code>src/forecast.py</code>, <code>balance_forecast.py</code></p>
 </div></body></html>

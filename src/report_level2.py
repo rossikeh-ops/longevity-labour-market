@@ -13,6 +13,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from map_section import build_map_section  # noqa: E402
+from data_appendix import appendix_css, data_link, data_section  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "outputs"
@@ -25,6 +26,26 @@ REGION = {"BG": "East·EU", "PL": "East·EU", "CZ": "East·EU", "RO": "East·EU"
 obs = pd.read_csv(OUT / "supply_observed.csv")
 fc = pd.read_csv(OUT / "demand_forecast.csv")
 sc = pd.read_csv(OUT / "scenario_participation.csv")
+
+# ---- "data behind this report" appendix ----
+APPENDIX_CSS = appendix_css()
+_obs_d = (obs[obs.year <= 2024][["country", "sex", "year", "jobs", "demand"]]
+          .assign(**{"jobs (M)": lambda d: (d.jobs / 1e6).round(2),
+                     "demand (M)": lambda d: (d.demand / 1e6).round(1)})
+          .drop(columns=["jobs", "demand"]).sort_values(["country", "sex", "year"]))
+_fc_d = (fc[["country", "sex", "year", "jobs", "demand", "demand_lo", "demand_hi"]]
+         .assign(**{"jobs (M)": lambda d: (d.jobs / 1e6).round(2),
+                    "demand (M)": lambda d: (d.demand / 1e6).round(1),
+                    "lo (M)": lambda d: (d.demand_lo / 1e6).round(1),
+                    "hi (M)": lambda d: (d.demand_hi / 1e6).round(1)})
+         [["country", "sex", "year", "jobs (M)", "demand (M)", "lo (M)", "hi (M)"]]
+         .sort_values(["country", "sex", "year"]))
+DLINK = data_link()
+APPENDIX = data_section(
+    [("Observed demand, 2011–2024 (jobs in millions, demand in million career PY)", _obs_d),
+     ("Forecast demand, 2025–2035 (million PY · 80% band)", _fc_d)],
+    note="The full per-country × sex × year series behind the charts above. "
+         "Source: supply_observed.csv, demand_forecast.csv.")
 
 countries = ["DE", "FR", "PL", "RO", "CZ", "CH", "BG", "NO"]
 series = {}
@@ -172,10 +193,11 @@ border-radius:10px;padding:14px;margin-top:10px}
 
 HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Level 2 — Labour Demand to 2035</title><style>{CSS}</style></head><body><div class="wrap">
+<title>Level 2 — Labour Demand to 2035</title><style>{CSS}{APPENDIX_CSS}</style></head><body><div class="wrap">
 <h1>Level 2 — Labour Demand to 2035</h1>
 <p class="sub">Potential labour demand in <b>career person-years</b> (jobs × required length of service),
 8 countries, by sex · model 2011–2024, forecast to 2035 · Eurostat + MISSOC.</p>
+{DLINK}
 <div class="formula"><b>Demand</b> = jobs (employed + vacancies) <b>×</b> required length of service
 <span class="u">measured in human-working-years (career person-years)</span></div>
 <div class="lgd"><span><span class="sw" style="background:var(--obs)"></span>Observed 2011–2024</span>
@@ -210,6 +232,7 @@ model error and demographic uncertainty (decisions D5/D6).</div>
 <code>demo_pjangroup</code> working-age population (for the employment rate) ·
 <code>proj_23np</code> population projections. ·
 Required length of service: <b>MISSOC</b> / <b>OECD Pensions at a Glance</b> (not published by Eurostat).</div>
+{APPENDIX}
 <p class="sub" style="margin-top:24px;font-size:12px">Generated from outputs/demand_forecast.csv · src/balance_forecast.py</p>
 </div></body></html>"""
 

@@ -3,7 +3,12 @@
 Methodology report — how the model works (3 diagrams + English narrative).
 Static, self-contained HTML+SVG. -> outputs/methodology_report.html
 """
+import sys
 from pathlib import Path
+import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from data_appendix import appendix_css, data_link, data_section  # noqa: E402
 
 OUT = Path(__file__).resolve().parents[1] / "outputs"
 
@@ -124,6 +129,25 @@ def _stage(i, s):
 
 ENGINE = '<div class="engine">' + "".join(_stage(i, s) for i, s in enumerate(STAGES)) + '</div>'
 
+# ---- "data behind this report" appendix: the Eurostat sources feeding the model ----
+APPENDIX_CSS = appendix_css()
+_sources = pd.DataFrame([
+    ("hlth_hlye", "Life expectancy & healthy life years (LE, HLY)", "Level 1 — supply"),
+    ("demo_pjan / demo_pjangroup", "Population by age & sex (working-age)", "Levels 1–2"),
+    ("proj_23np", "Eurostat population projection (baseline + migration)", "Levels 1–3"),
+    ("lfsi_dwl_a", "Expected duration of working life", "Level 1 — supply"),
+    ("lfsa_egan", "Employment by sex & age", "Level 2 — demand"),
+    ("jvs_q_r21", "Job vacancies (NACE Rev 2.1, quarterly→annual)", "Level 2 — demand"),
+    ("une_rt_a", "Unemployment rate (Beveridge vacancy model)", "Level 2 — vacancies"),
+    ("MISSOC / OECD Pensions at a Glance", "Statutory retirement age & required service", "Level 2 — demand"),
+], columns=["Eurostat code / source", "Provides", "Used in"])
+DLINK = data_link("Data sources behind the model")
+APPENDIX = data_section(
+    [("Eurostat datasets & external sources feeding the engine", _sources)],
+    heading="Data behind this report",
+    note="Every series the model consumes. Per-country × sex × year values are in the "
+         "Level 1–3 reports' own data appendices.")
+
 CSS = """
 :root{--bg:#FAFAF9;--card:#FFFFFF;--ink:#292524;--mut:#78716C;--line:#E7E5E4;--acc:#166534;}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);
@@ -163,10 +187,11 @@ border-radius:8px;font-size:16px;font-weight:800;color:#FFFFFF;margin-right:10px
 
 HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Methodology — how the model works</title><style>{CSS}</style></head><body><div class="wrap">
+<title>Methodology — how the model works</title><style>{CSS}{APPENDIX_CSS}</style></head><body><div class="wrap">
 <h1>Methodology — how the model works</h1>
 <p class="sub">A transparent ensemble of simple statistical models + Monte-Carlo — deliberately
 <b>no neural networks</b> (short series, defensibility required). Three diagrams describe the whole model.</p>
+{DLINK}
 
 <h2>The pipeline — Levels 0 → 3</h2>
 <p class="sub">Where each step sits and what it produces. Levels 1–2 run every driver through the
@@ -211,6 +236,7 @@ like demand — which is why the two are directly comparable.</p>
 <p><b>Level 3</b> simply subtracts: <b>Balance = Supply − Demand</b> (in human-working-years) — the
 headline result, visualised in the balance report.</p>
 
+{APPENDIX}
 <p class="foot">See also the <a href="model_validation_report.html">“Model trust”</a> report for the
 backtest accuracy of this ensemble. · Code: <code>src/forecast.py</code>, <code>balance_forecast.py</code></p>
 </div></body></html>"""

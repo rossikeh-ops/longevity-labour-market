@@ -4,9 +4,13 @@ Charts/tables are STATIC markup (SVG generated in Python) — no client-side JS.
 Reads outputs/validation_metrics.json (+ panel) -> outputs/model_validation_report.html.
 """
 from __future__ import annotations
+import sys
 from pathlib import Path
 import json
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from data_appendix import appendix_css, data_link, data_section  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "outputs"
@@ -51,6 +55,25 @@ pc_acc = {c: round(sum(v) / len(v), 3) for c, v in pc.items()}
 pc_rows = "".join(
     f'<tr><td>{c}</td><td>{a:.3f}</td></tr>'
     for c, a in sorted(pc_acc.items(), key=lambda x: -x[1]))
+
+# ---- "data behind this report" appendix ----
+APPENDIX_CSS = appendix_css()
+_drv = pd.DataFrame([{
+    "driver": metrics[k]["label"], "accuracy": metrics[k]["accuracy"],
+    "MAPE %": metrics[k]["mape_ens"], "naive %": metrics[k]["mape_naive"],
+    "skill": metrics[k]["skill"], "RMSE": metrics[k]["rmse"],
+    "bias %": metrics[k]["bias_pct"], "cover80 %": round(metrics[k]["coverage80"] * 100),
+    "n": metrics[k]["n"]} for k in order])
+_pc = pd.DataFrame([{"country": c, "accuracy (mean of drivers)": a}
+                    for c, a in sorted(pc_acc.items(), key=lambda x: -x[1])])
+_lvl = pd.DataFrame([{"level metric": kk, "value": vv} for kk, vv in la.items()
+                     if not isinstance(vv, dict)])
+DLINK = data_link("Validation data behind this report")
+APPENDIX = data_section(
+    [("Backtest accuracy by driver (rolling-origin, held-out last 4 years)", _drv),
+     ("Forecast accuracy by country (mean across drivers)", _pc),
+     ("Composed-level accuracy (supply / demand / balance)", _lvl)],
+    note="The metrics behind the charts and verdicts. Source: validation_metrics.json (src/validate.py).")
 
 # reverse test — Beveridge vacancy model vs old direct ensemble
 vt = val.get("vacancy_model_test")
@@ -241,10 +264,11 @@ color:#475569;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace}
 
 HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Can we trust the model?</title><style>{CSS}</style></head><body><div class="wrap">
+<title>Can we trust the model?</title><style>{CSS}{APPENDIX_CSS}</style></head><body><div class="wrap">
 <h1>Can we trust the model?</h1>
 <p class="sub">Honest validation of the longevity–labour forecaster · rolling-origin backtest
 (forecast the held-out last 4 years from history only) · 8 countries × sex.</p>
+{DLINK}
 <div class="hero"><b>Verdict: trustworthy where it matters, honest where it isn't.</b><br>
 The structural drivers — life expectancy, working-life duration and employment rate — are
 forecast to <b>1–2% error</b> and beat a naive baseline. Healthy-share (HLY) is noisier and
@@ -331,6 +355,7 @@ to unemployment — halving the earlier curve's error to the naive floor while s
 <code>lfsi_dwl_a</code> (working-life duration) · <code>lfsa_egan</code> (employment) ·
 <code>jvs_q_r21</code> (vacancies). Population forecast benchmarked to <code>proj_23np</code>;
 retirement rules from MISSOC / OECD Pensions at a Glance.</div>
+{APPENDIX}
 <p class="sub" style="margin-top:24px;font-size:12px">Generated from outputs/validation_metrics.json · src/validate.py · rolling-origin backtest, 500 Monte-Carlo sims.</p>
 </div></body></html>"""
 
