@@ -1,0 +1,45 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Level 1 — Labour supply</title>
+<style>
+:root{--bg:#FAFAF9;--card:#FFFFFF;--ink:#292524;--mut:#78716C;--line:#E7E5E4;--acc:#166534;}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{display:flex;flex-direction:column;height:100vh;background:var(--bg);color:var(--ink);
+font:15px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+header{flex:0 0 auto;padding:12px 22px;border-bottom:1px solid var(--line);background:var(--card);
+display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.home{color:var(--mut);text-decoration:none;font-size:13px;white-space:nowrap}.home:hover{color:var(--acc)}
+.tt{display:flex;flex-direction:column;min-width:0}
+.tt h1{font-size:16px;margin:0;font-weight:650}.tt .sub{color:var(--mut);font-size:12px;
+overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60ch}
+.spacer{flex:1}
+.tabs{display:inline-flex;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px}
+.tab{appearance:none;border:none;background:transparent;color:var(--mut);font-size:13.5px;font-weight:600;
+padding:7px 15px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:7px}
+.tab.active{background:var(--acc);color:#fff}
+.tab:not(.active):hover{color:var(--ink)}
+.pop{color:var(--mut);text-decoration:none;font-size:12.5px;white-space:nowrap}.pop:hover{color:var(--acc)}
+iframe{flex:1 1 auto;width:100%;border:none;background:var(--bg)}
+</style></head><body>
+<header>
+  <a class="home" href="../index.html">← Overview</a>
+  <div class="tt"><h1>Level 1 — Labour supply</h1><span class="sub">Healthy working-age people × working life — the longevity dividend in person-years.</span></div>
+  <span class="spacer"></span>
+  <div class="tabs"><button class="tab" data-key="story" data-src="supply_story.html">▶ Guided story</button><button class="tab" data-key="report" data-src="level1_supply_report.html">📄 Full report</button></div>
+  <a class="pop" id="pop" href="supply_story.html" target="_blank" rel="noopener">open ↗</a>
+</header>
+<iframe id="view" src="supply_story.html" title="Level 1 content"></iframe>
+<script>
+const VIEW=document.getElementById('view'),POP=document.getElementById('pop'),TABS=[...document.querySelectorAll('.tab')];
+function show(key){
+  const t=TABS.find(x=>x.dataset.key===key)||TABS[0];
+  TABS.forEach(x=>x.classList.toggle('active',x===t));
+  const src=t.dataset.src;
+  if(VIEW.getAttribute('src')!==src){VIEW.src=src;}
+  POP.href=src;
+  if(location.hash.slice(1)!==t.dataset.key) history.replaceState(null,'','#'+t.dataset.key);
+}
+TABS.forEach(t=>t.onclick=()=>show(t.dataset.key));
+show(location.hash.slice(1)||TABS[0].dataset.key);
+</script>
+</body></html>

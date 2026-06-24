@@ -184,18 +184,14 @@ service-length policy align skills and careers with need — and convert a geogr
 identity decomposition, not causal mechanisms.</div>
 
 <h2>Explore the analysis</h2>
+<p class="sub" style="margin-bottom:8px">Each level opens its guided story with a one-tab switch to the full report.</p>
 <div class="links">
-<a href="supply_story.html">👥 Supply story</a>
-<a href="demand_story.html">💼 Demand story</a>
-<a href="balance_story.html">⚖️ Balance story</a>
-<a href="cost_story.html">🏥 Cost story</a>
-<a href="dividend_story.html">🌅 Dividend story</a>
-<a href="level1_supply_report.html">📈 L1 Supply</a>
-<a href="level2_demand_report.html">📊 L2 Demand</a>
-<a href="level3_balance_report.html">⚖️ L3 Balance</a>
-<a href="level4_cost_report.html">🏥 L4 Cost</a>
-<a href="level5_dividend_report.html">🌅 L5 Dividend</a>
-<a href="level6_macro_report.html">🌍 L6 Macroeconomy</a>
+<a href="level1.html">👥 L1 Supply</a>
+<a href="level2.html">💼 L2 Demand</a>
+<a href="level3.html">⚖️ L3 Balance</a>
+<a href="level4.html">🏥 L4 Cost</a>
+<a href="level5.html">🌅 L5 Dividend</a>
+<a href="level6.html">🌍 L6 Macroeconomy</a>
 <a href="model_validation_report.html">🔍 Model trust</a>
 <a href="methodology_report.html">🧭 Methodology</a>
 </div>

@@ -15,6 +15,7 @@ padding:22px;text-decoration:none;color:inherit;transition:border-color .15s,tra
 a.card:hover{border-color:var(--acc);transform:translateY(-2px)}
 a.card .ic{font-size:26px}a.card h3{margin:8px 0 4px;font-size:17px;color:var(--ink)}
 a.card p{margin:0;color:var(--mut);font-size:14px}
+a.card p.modes{margin-top:10px;font-size:12.5px;font-weight:600;color:var(--acc);opacity:.85}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
 .kpi .v{font-size:20px;font-weight:700}.kpi .l{color:var(--mut);font-size:12px;margin-top:3px}
@@ -47,62 +48,48 @@ countries (BG, PL, CZ, RO, DE, FR, NO, CH), by sex. Solution to the
 demand, maintain balance) — with a preview of the headline <b>East-surplus / West-shortage</b> finding.</p></a>
 </div>
 
-<h2>Guided presentations</h2>
+<h2>Explore by level — guided story &amp; full report, together</h2>
+<p class="tag" style="margin:-6px 0 16px">Each level opens on its <b>guided presentation</b>; switch to the
+<b>full report</b> (maps, bands, data appendix + Excel) with one tab — same page.</p>
 <div class="cards">
-<a class="card" href="outputs/supply_story.html" style="border-color:var(--acc)">
-<div class="ic">👥</div><h3>Labour supply — guided story</h3>
-<p>Interactive <b>population pyramids</b> (hover &amp; scrub by year), participation by sex, migration
-scenarios, and the supply forecast to 2033. <b>Demographics → Participation → Migration → Total supply</b>.
-Present/autoplay mode included.</p></a>
-<a class="card" href="outputs/demand_story.html" style="border-color:var(--acc)">
-<div class="ic">💼</div><h3>Labour demand — guided story</h3>
-<p>Jobs, the interactive <b>Beveridge curve</b>, required service length by country, and the demand
-forecast to 2033. <b>Jobs → Vacancies → Service → Total demand</b>. Present/autoplay mode included.</p></a>
-<a class="card" href="outputs/balance_story.html" style="border-color:var(--acc)">
-<div class="ic">⚖️</div><h3>Balance — guided story</h3>
-<p>Supply and demand side by side, the balance with bands, and the diverging-bar reveal of the
-<b>East-surplus / West-shortage</b> divide. <b>Supply → Demand → Balance → The divide</b>. Present mode.</p></a>
-<a class="card" href="outputs/cost_story.html" style="border-color:var(--acc)">
-<div class="ic">🏥</div><h3>Cost of unhealthy years — guided story</h3>
-<p>Life expectancy vs healthy years, the poor-health burden, and an honest test of whether it drives
-the health-sector cost (it doesn't). <b>Longer lives → Burden → Does it cost? → The answer</b>. Present mode.</p></a>
-<a class="card" href="outputs/dividend_story.html" style="border-color:var(--acc)">
-<div class="ic">🌅</div><h3>Healthy retirement dividend — guided story</h3>
-<p>Healthy years after retirement by country (+5.6 to −6.6), the dividend in person-years, and an honest
-test of whether it funds leisure (it doesn't). <b>After retirement → Dividend → Consumption? → The answer</b>. Present mode.</p></a>
-</div>
-
-<h2>Interactive reports</h2>
-<div class="cards">
-<a class="card" href="outputs/level1_supply_report.html">
-<div class="ic">📈</div><h3>Level 1 — Labour supply to 2033</h3>
-<p>Healthy working-age people × working life. Longevity dividend offsets shrinking
-populations; realization gap by country with bands.</p></a>
-<a class="card" href="outputs/level2_demand_report.html">
-<div class="ic">📊</div><h3>Level 2 — Labour demand to 2033</h3>
-<p>Per-country predictions with uncertainty bands, jobs, sex split and the
-participation-plateau scenario.</p></a>
-<a class="card" href="outputs/level3_balance_report.html">
-<div class="ic">⚖️</div><h3>Level 3 — Labour-market balance to 2033</h3>
-<p>The headline: supply − demand in human-working-years. Sharp East-surplus /
-West-shortage divide, by country with bands.</p></a>
-<a class="card" href="outputs/level4_cost_report.html">
+<a class="card" href="outputs/level1.html">
+<div class="ic">👥</div><h3>Level 1 — Labour supply</h3>
+<p>Healthy working-age people × working life. Population pyramids, participation &amp; migration scenarios,
+and the supply forecast to 2033 with bands and the realization gap by country.</p>
+<p class="modes">▶ Guided story · 📄 Full report</p></a>
+<a class="card" href="outputs/level2.html">
+<div class="ic">💼</div><h3>Level 2 — Labour demand</h3>
+<p>Jobs = employment + vacancies, the interactive Beveridge curve, required service length, and the demand
+forecast to 2033 with the participation-plateau scenario.</p>
+<p class="modes">▶ Guided story · 📄 Full report</p></a>
+<a class="card" href="outputs/level3.html">
+<div class="ic">⚖️</div><h3>Level 3 — Labour-market balance</h3>
+<p>The headline: supply − demand in human-working-years. Sharp East-surplus / West-shortage divide, by
+country with bands and the diverging-bar reveal.</p>
+<p class="modes">▶ Guided story · 📄 Full report</p></a>
+<a class="card" href="outputs/level4.html">
 <div class="ic">🏥</div><h3>Level 4 — Cost of unhealthy years</h3>
-<p>Poor-health person-years (Pop × (LE−HLY)) to 2033, and an honest test of whether
-that burden drives the NACE-Q health &amp; social-work sector (it doesn't — it tracks GDP).</p></a>
-<a class="card" href="outputs/level5_dividend_report.html">
+<p>Life expectancy vs healthy years, the poor-health burden (Pop × (LE−HLY)) to 2033, and an honest test of
+whether it drives the health &amp; social-work sector (it doesn't — it tracks GDP).</p>
+<p class="modes">▶ Guided story · 📄 Full report</p></a>
+<a class="card" href="outputs/level5.html">
 <div class="ic">🌅</div><h3>Level 5 — Healthy retirement dividend</h3>
-<p>Healthy years after retirement (HLY − retirement age): <b>+5.6 yrs (BG) to −6.6 yrs (CH)</b>, and an
-honest test of whether they drive leisure/education/culture consumption (they don't — it tracks income).</p></a>
-<a class="card" href="outputs/level6_macro_report.html">
+<p>Healthy years after retirement (<b>+5.6 to −6.6</b> by country), the dividend in person-years, and an
+honest test of whether it funds leisure (it doesn't — it tracks income).</p>
+<p class="modes">▶ Guided story · 📄 Full report</p></a>
+<a class="card" href="outputs/level6.html">
 <div class="ic">🌍</div><h3>Level 6 — Longevity in the macroeconomy</h3>
 <p>Open horizons: growth accounting splits real GDP to 2033 into <b>labour</b> and <b>productivity</b>
-channels. Longevity reaches GDP through labour (East productivity-led, West labour-tilted); no measurable
-productivity boost from healthy lifespan.</p></a>
+channels. Longevity reaches GDP through labour, not a productivity boost.</p>
+<p class="modes">📄 Full report</p></a>
+</div>
+
+<h2>Supporting</h2>
+<div class="cards">
 <a class="card" href="outputs/model_validation_report.html">
 <div class="ic">🔍</div><h3>Model trust — can we believe it?</h3>
-<p>Rolling-origin backtest: accuracy by driver, calibration, observed-vs-predicted
-charts, and honest failure points.</p></a>
+<p>Rolling-origin cross-validation: accuracy by driver and by country, calibration,
+observed-vs-predicted charts, and honest failure points.</p></a>
 <a class="card" href="outputs/methodology_report.html">
 <div class="ic">🧭</div><h3>Methodology — how the model works</h3>
 <p>Three diagrams: the 4-model ensemble engine, and how supply &amp; demand are
