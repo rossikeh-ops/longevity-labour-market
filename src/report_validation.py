@@ -164,7 +164,7 @@ hz_rows = "".join(
     f'<td>±{la["balance_by_h"].get(str(h),la["balance_by_h"].get(h,"?"))}M</td></tr>' for h in hz)
 
 # ---------- static SVG: showcase observed-vs-predicted traces ----------
-def trace_svg(s):
+def trace_svg(s, why=""):
     W, H, PLm, PRm, PTm, PBm = 470, 190, 40, 12, 12, 24
     hy, hv, ty = s["hist_years"], s["hist"], s["test_years"]
     lo, hi, pred = s["lo"], s["hi"], s["pred"]
@@ -186,10 +186,17 @@ def trace_svg(s):
             f'<polygon points="{band}" fill="rgba(217,119,6,0.15)"/>'
             f'<polyline points="{hist}" fill="none" stroke="#475569" stroke-width="1.6" opacity="0.9"/>'
             f'<polyline points="{pp}" fill="none" stroke="#D97706" stroke-width="2"/>'
-            f'{dots}</svg></div>')
+            f'{dots}</svg>'
+            f'<div class="cap">{why}</div></div>')
 
 
-trace_html = "".join(trace_svg(show[k]) for k in show)
+WHY_TRACE = {
+    "le_birth": "Shown as the <b>trustworthy backbone</b> — a smooth driver the model tracks to ~1% error.",
+    "healthy_share": "Shown as the <b>hardest smooth driver</b> — self-perceived (GALI), noisy, no better than naive.",
+    "emp_rate": "Shown as a <b>fast-converging participation</b> series the damped trend pins well.",
+    "working_life_yrs": "Shown as the <b>best-skill driver</b> — a clear rising trend the model captures.",
+}
+trace_html = "".join(trace_svg(show[k], WHY_TRACE.get(k.split("|")[0], "")) for k in show)
 
 # ---------- static SVG: MAPE horizontal bars ----------
 maxM = 30.0
@@ -252,6 +259,7 @@ th:first-child,td:first-child{text-align:left}th{color:var(--mut);font-weight:60
 .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
 .chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
 .chart .t{font-weight:600;font-size:14px;margin-bottom:4px}
+.chart .cap{color:var(--mut);font-size:12px;margin-top:6px;line-height:1.4}.chart .cap b{color:var(--ink)}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .vc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px}
 .vc .h{font-weight:600;margin-bottom:4px}.vc .d{color:var(--mut);font-size:13px}
