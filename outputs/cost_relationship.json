@@ -1,0 +1,11 @@
+{
+ "elasticity_levels_fe": 0.1,
+ "r2_levels_fe": 0.991,
+ "elasticity_within_diff": 0.013,
+ "r2_within_diff": 0.001,
+ "corr_within_diff": 0.026,
+ "q_real_growth_pct": 2.4,
+ "burden_growth_pct": 1.06,
+ "n_levels": 157,
+ "n_diff": 149
+}
