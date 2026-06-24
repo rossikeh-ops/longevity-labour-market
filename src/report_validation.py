@@ -28,8 +28,8 @@ VERDICT = {
     "le_birth": ("Trustworthy", "ok", "1.2% error, beats naive, well-calibrated. The model's backbone."),
     "working_life_yrs": ("Trustworthy", "ok", "1.5% error, best skill vs naive (+0.20)."),
     "emp_rate": ("Trustworthy", "ok", "1.8% error, beats naive; drives employment."),
-    "healthy_share": ("Use with caution", "warn", "3.1% error, no better than naive — HLY is survey noise + breaks."),
-    "vacancy_count": ("At its ceiling", "warn", "Near-random-walk; anchored model ties the naive floor (~16% median APE). Only ~1.8% of jobs."),
+    "healthy_share": ("Use with caution", "warn", "3.13% error, no better than naive — HLY is a self-perceived survey measure (see below)."),
+    "vacancy_count": ("At its ceiling", "warn", "24.41% error = the naive random-walk floor; vacancies are shock-driven and only ~1.8% of jobs (see below)."),
 }
 order = ["le_birth", "working_life_yrs", "emp_rate", "healthy_share", "vacancy_count"]
 rows = []
@@ -289,6 +289,27 @@ last-value forecast; Coverage = share of actuals inside the 80% band.</p>
 <table><thead><tr><th>Driver</th><th>Accuracy</th><th>MAPE</th><th>RMSE</th><th>Bias</th>
 <th>Skill</th><th>Cover 80%</th><th>Verdict</th></tr></thead><tbody>{table_html}</tbody></table>
 <div style="margin-top:14px">{mape_svg}</div>
+
+<h2>What's behind the two weak numbers</h2>
+<div class="note"><b>Healthy share (HLY ÷ LE) — 3.13%: it measures <span style="color:var(--warn,#D97706)">self-perceived</span> health.</b>
+Healthy Life Years come from Eurostat's <b>GALI</b> question in the EU-SILC survey — people are simply asked whether
+they are "limited in activities people usually do, because of a health problem, for at least the past 6 months"
+(none / some / severe). HLY is then the Sullivan-method combination of that <b>self-reported</b> answer with the life
+table. So healthy share is partly <b>subjective and cultural</b>, not a clinical measurement: e.g. <b>Switzerland reports
+low healthy years despite the highest life expectancy</b> — a self-perception artefact, not worse health. That subjectivity
+(plus small survey samples and Eurostat methodology breaks, flag <code>b</code>) is most of the 3.13% — there is no learnable
+trend in perception, so the model <b>cannot beat a naive last-value guess</b>. We treat it as a bounded ratio with wide bands.</div>
+
+<div class="note"><b>Job vacancies — 24.41%: it's the irreducible random-walk floor, not a model failure.</b>
+The number is the mean absolute % error of the <b>total job-vacancy count</b> forecast. Vacancies are <b>shock- and
+cycle-driven</b> (hiring freezes, booms, COVID) — year-to-year swings are essentially unforecastable, so <b>24.41% exactly
+ties the naive baseline</b> (skill ≈ 0): matching last year's value is the best any honest method can do (a 5-agent study
+confirmed seasonal, covariate and trend models all did <i>worse</i>). The level looks alarming but: (1) the median error is
+only ~16% — the 24.4% mean is inflated by tiny, hyper-volatile series like Czechia; (2) <b>France's vacancies carry Eurostat
+flag <code>d</code></b> (definition differs); and (3) vacancies are just <b>~1.8% of jobs</b>, so this error moves total
+labour demand by only ~{jobs_impact:.1f}%. We forecast them through an anchored Beveridge curve, which keeps the link to
+unemployment for scenarios while sitting at this accuracy ceiling.</div>
+
 <h2>Accuracy of the composed outputs (Levels 1–3)</h2>
 <p class="sub">The drivers above are the inputs. The actual <b>level outputs</b> have their own
 accuracy — backtested by assembling supply/demand/balance from history-only forecasts and
