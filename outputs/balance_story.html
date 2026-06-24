@@ -1,0 +1,148 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Labour-Market Balance — a guided story</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+:root{--bg:#FAFAF9;--card:#FFFFFF;--ink:#292524;--mut:#78716C;--line:#E7E5E4;--acc:#166534;
+--slate:#475569;--mustard:#D97706;--sage:#4ADE80;--terra:#B91C1C;}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+display:flex;flex-direction:column;min-height:100vh}
+header{padding:18px 28px 8px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+header h1{font-size:19px;margin:0;font-weight:650}header .who{color:var(--mut);font-size:13px}
+.spacer{flex:1}
+select{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px}
+.track{display:flex;align-items:center;gap:0;padding:6px 28px 12px;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:9px;cursor:pointer;color:var(--mut);font-size:13px;font-weight:600}
+.step .dot{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:var(--card);
+display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--mut);transition:.2s}
+.step.active .dot,.step.done .dot{border-color:var(--acc);background:var(--acc);color:#fff}
+.step.active{color:var(--ink)}
+.link{flex:0 0 46px;height:3px;background:var(--line);margin:0 6px;border-radius:2px}.link.done{background:var(--acc)}
+main{flex:1;padding:6px 28px 20px;max-width:1080px;margin:0 auto;width:100%}
+.slide{display:none;animation:fade .35s ease}.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kick{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--acc);font-weight:700}
+.slide h2{font-size:24px;margin:4px 0 6px}.slide p.lead{color:var(--mut);margin:0 0 14px;max-width:760px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:12px 0}
+.chwrap{position:relative;height:430px}
+.kpis{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;min-width:150px}
+.kpi .v{font-size:22px;font-weight:700}.kpi .l{color:var(--mut);font-size:12px;margin-top:2px}
+.note{color:var(--mut);font-size:13px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:10px}code{color:var(--acc)}
+footer{display:flex;align-items:center;justify-content:space-between;padding:14px 28px 26px;max-width:1080px;margin:0 auto;width:100%}
+button.nav{background:var(--acc);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer}
+button.nav:disabled{background:var(--line);color:var(--mut);cursor:default}button.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+a{color:var(--acc)}
+</style></head><body>
+<header>
+  <h1>Labour-Market Balance — a guided story</h1>
+  <span class="who">8 European countries · to 2033</span><span class="spacer"></span>
+  <label class="who" for="country">Country&nbsp;</label><select id="country"></select>
+</header>
+<nav class="track" id="track"></nav>
+<main>
+  <section class="slide" data-i="0">
+    <div class="kick">Step 1 · Supply</div><h2>The healthy workforce</h2>
+    <p class="lead">Potential <b>supply</b> = healthy working-age people × expected working life, in
+    human-working-years. Near-flat to 2033 — the longevity dividend offsets shrinking populations.</p>
+    <div class="panel"><div class="chwrap"><canvas id="supply"></canvas></div></div>
+    <div class="kpis" id="supKpis"></div></section>
+  <section class="slide" data-i="1">
+    <div class="kick">Step 2 · Demand</div><h2>The career-years jobs require</h2>
+    <p class="lead">Potential <b>demand</b> = (employed + vacancies) × required length of service. The stock
+    of career-years the economy's jobs need to be staffed.</p>
+    <div class="panel"><div class="chwrap"><canvas id="demand"></canvas></div></div>
+    <div class="kpis" id="demKpis"></div></section>
+  <section class="slide" data-i="2">
+    <div class="kick">Step 3 · Balance</div><h2>Subtract them: surplus or shortage</h2>
+    <p class="lead"><b>Balance = Supply − Demand.</b> Above zero is slack (more healthy workers than jobs
+    require); below is a shortage. The band is wide — read direction, not a point.</p>
+    <div class="panel"><div class="chwrap"><canvas id="balance"></canvas></div></div>
+    <div class="kpis" id="balKpis"></div>
+    <div class="note">The balance is a small difference of two ~4,300M stocks, so its band is wide —
+    it is a structural signal, not a precise number.</div></section>
+  <section class="slide" data-i="3">
+    <div class="kick">Step 4 · The divide</div><h2>East surplus, West shortage</h2>
+    <p class="lead">The 8-country total is roughly balanced, but it hides a sharp geographic split: the East
+    holds a labour reserve while the West/EFTA runs a shortage — the demographic basis of West-bound migration.</p>
+    <div class="panel"><div class="chwrap"><canvas id="divide"></canvas></div></div>
+    <div class="kpis" id="divKpis"></div></section>
+</main>
+<footer>
+  <button class="nav ghost" id="prev">‹ Back</button>
+  <div style="display:flex;align-items:center;gap:14px"><button class="nav ghost" id="play">▶ Present</button>
+  <span class="who" id="counter"></span></div>
+  <button class="nav" id="next">Next ›</button>
+</footer>
+<script>const DATA = {"countries": {"ALL": "All 8 countries", "BG": "Bulgaria", "PL": "Poland", "CZ": "Czechia", "RO": "Romania", "DE": "Germany", "FR": "France", "NO": "Norway", "CH": "Switzerland"}, "supply": {"ALL": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [4185.6, 4201.6, 4202.1, 4180.1, 4438.8, 4459.6, 4461.9, 4484.6, 4504.7, 4481.7, 4503.5, 4384.4, 4412.2, 4491.8], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [4508.3, 4501.2, 4487.0, 4469.6, 4453.2, 4437.1, 4423.3, 4416.0, 4399.1]}, "BG": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [135.2, 134.6, 132.4, 129.7, 125.7, 125.7, 126.2, 125.4, 127.3, 122.9, 118.6, 124.2, 126.1, 127.0], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [124.2, 123.1, 122.2, 121.6, 120.8, 119.3, 118.9, 118.6, 117.1]}, "PL": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [685.3, 687.0, 685.4, 684.8, 686.3, 698.4, 689.4, 690.0, 686.0, 687.1, 688.5, 674.7, 677.5, 692.0], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [686.0, 679.1, 673.8, 668.6, 658.6, 654.5, 649.6, 641.4, 641.8]}, "CZ": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [201.3, 201.8, 202.6, 202.6, 199.6, 200.3, 194.5, 199.3, 196.3, 195.2, 192.6, 190.8, 199.1, 203.2], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [206.3, 205.2, 203.5, 202.5, 200.5, 199.0, 198.1, 197.5, 196.2]}, "RO": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [339.6, 344.2, 347.1, 351.4, 348.7, 340.7, 342.1, 342.8, 345.2, 345.6, 308.8, 309.1, 307.8, 340.4], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [327.6, 324.1, 321.1, 318.1, 315.2, 312.4, 310.4, 309.2, 303.8]}, "DE": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [1427.1, 1421.6, 1433.7, 1409.2, 1666.7, 1686.8, 1686.8, 1693.7, 1714.3, 1685.7, 1682.9, 1589.5, 1623.1, 1633.7], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [1656.4, 1660.5, 1658.9, 1655.9, 1659.2, 1653.8, 1650.9, 1653.7, 1655.3]}, "FR": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [1103.9, 1114.0, 1124.4, 1124.0, 1127.7, 1123.1, 1132.0, 1141.6, 1144.1, 1150.6, 1215.2, 1204.9, 1193.7, 1205.8], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [1215.8, 1217.2, 1214.1, 1209.7, 1205.9, 1206.0, 1202.1, 1203.6, 1193.6]}, "NO": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [118.1, 114.1, 112.7, 115.5, 116.2, 115.4, 116.5, 116.8, 116.4, 114.7, 118.2, 118.4, 114.9, 115.9], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [117.9, 118.4, 119.5, 120.0, 120.7, 120.7, 121.9, 121.7, 121.4]}, "CH": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [175.1, 184.3, 163.9, 162.8, 167.9, 169.2, 174.4, 174.9, 175.0, 179.9, 178.6, 172.7, 170.0, 173.8], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [174.2, 173.7, 173.8, 173.2, 172.3, 171.4, 171.3, 170.2, 169.9]}}, "demand": {"ALL": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [4070.2, 4086.4, 4098.9, 4155.3, 4184.2, 4243.9, 4298.0, 4333.4, 4373.0, 4293.6, 4299.3, 4402.2, 4416.9, 4419.3], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [4396.8, 4391.4, 4383.0, 4369.7, 4359.7, 4340.4, 4334.9, 4321.8, 4309.7]}, "BG": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [113.1, 111.8, 111.5, 113.1, 114.9, 114.3, 118.9, 118.7, 114.0, 109.5, 107.7, 109.9, 109.1, 109.0], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [108.8, 108.3, 107.8, 107.5, 106.9, 106.3, 106.1, 105.7, 105.4]}, "PL": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [350.1, 350.3, 349.7, 356.1, 361.3, 363.7, 368.6, 370.4, 379.9, 378.8, 383.7, 385.0, 385.2, 383.0], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [379.5, 376.2, 372.4, 368.5, 369.9, 364.6, 363.2, 357.9, 359.5]}, "CZ": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [169.1, 169.7, 170.9, 172.8, 175.9, 179.9, 184.2, 189.0, 190.3, 186.6, 185.3, 183.2, 176.8, 180.5], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [179.8, 179.2, 178.9, 178.4, 177.8, 176.7, 176.1, 175.4, 174.8]}, "RO": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [285.8, 288.6, 287.3, 290.2, 289.9, 287.9, 294.8, 295.5, 296.1, 290.8, 269.8, 272.1, 267.9, 273.2], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [265.5, 263.5, 261.8, 259.6, 258.3, 256.3, 255.1, 253.6, 250.1]}, "DE": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [1750.3, 1760.7, 1774.4, 1790.0, 1804.5, 1851.3, 1871.3, 1885.2, 1909.3, 1853.9, 1837.7, 1899.6, 1914.5, 1898.8], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [1884.0, 1882.2, 1877.5, 1868.9, 1861.1, 1852.5, 1847.3, 1844.2, 1837.3]}, "FR": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [1107.6, 1107.5, 1105.4, 1130.2, 1131.9, 1138.7, 1150.1, 1160.2, 1165.6, 1158.3, 1194.7, 1224.5, 1231.0, 1242.2], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [1249.7, 1252.0, 1253.8, 1255.5, 1254.2, 1251.9, 1254.7, 1252.6, 1249.5]}, "NO": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [108.1, 109.9, 110.4, 110.9, 111.1, 111.0, 111.5, 113.5, 114.9, 114.0, 117.3, 121.2, 122.7, 122.6], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [121.4, 121.9, 122.5, 123.1, 123.8, 124.3, 124.8, 125.2, 125.6]}, "CH": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [186.0, 187.8, 189.3, 192.1, 194.6, 197.0, 198.6, 200.8, 202.9, 201.8, 203.1, 206.8, 209.7, 209.9], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [208.1, 208.1, 208.2, 208.2, 207.8, 207.6, 207.6, 207.3, 207.6]}}, "balance": {"ALL": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [115.4, 115.3, 103.2, 24.8, 254.6, 215.7, 163.9, 151.3, 131.7, 188.1, 204.1, -17.8, -4.8, 72.5], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [111.5, 109.8, 104.0, 100.0, 93.5, 96.7, 88.4, 94.2, 89.4], "lo": [-91.6, -194.6, -313.8, -404.2, -513.1, -615.3, -719.3, -798.9, -872.2], "hi": [317.1, 417.9, 515.3, 598.1, 702.2, 783.5, 872.8, 939.4, 1016.5]}, "BG": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [22.1, 22.8, 20.9, 16.6, 10.7, 11.4, 7.3, 6.7, 13.4, 13.3, 10.9, 14.4, 17.0, 18.0], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [15.4, 14.8, 14.4, 14.2, 13.9, 13.0, 12.9, 12.9, 11.7], "lo": [10.7, 7.3, 4.5, 2.8, 1.2, -1.4, -3.3, -4.7, -6.6], "hi": [19.9, 22.6, 24.1, 25.6, 26.6, 27.3, 28.9, 30.9, 30.0]}, "PL": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [335.2, 336.6, 335.7, 328.7, 325.0, 334.7, 320.8, 319.6, 306.1, 308.3, 304.8, 289.8, 292.3, 309.1], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [306.4, 303.0, 301.4, 300.2, 288.8, 289.8, 286.4, 283.5, 282.3], "lo": [280.2, 252.1, 216.7, 181.6, 144.2, 103.1, 72.3, 39.9, 13.7], "hi": [331.4, 352.7, 381.6, 411.5, 436.5, 465.2, 498.9, 509.9, 542.7]}, "CZ": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [32.1, 32.1, 31.8, 29.9, 23.6, 20.4, 10.3, 10.3, 5.9, 8.6, 7.3, 7.6, 22.3, 22.6], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [26.5, 26.0, 24.6, 24.1, 22.7, 22.2, 22.1, 22.2, 21.5], "lo": [16.4, 8.7, -3.3, -11.5, -26.2, -36.6, -46.7, -59.9, -70.4], "hi": [36.5, 43.2, 50.6, 58.9, 66.9, 77.7, 86.2, 103.2, 109.4]}, "RO": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [53.8, 55.6, 59.8, 61.2, 58.8, 52.8, 47.3, 47.4, 49.1, 54.8, 39.0, 37.0, 39.9, 67.1], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [62.1, 60.6, 59.4, 58.5, 56.9, 56.1, 55.3, 55.5, 53.7], "lo": [40.6, 33.3, 29.0, 27.5, 23.8, 18.8, 13.3, 10.0, 13.2], "hi": [83.9, 88.2, 88.7, 91.1, 89.9, 94.2, 99.4, 101.1, 95.3]}, "DE": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [-323.2, -339.1, -340.7, -380.8, -137.8, -164.5, -184.5, -191.5, -194.9, -168.2, -154.7, -310.1, -291.4, -265.1], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [-227.6, -221.8, -218.6, -213.0, -201.9, -198.7, -196.4, -190.5, -182.0], "lo": [-317.1, -344.1, -373.8, -375.9, -393.7, -405.5, -423.5, -428.9, -443.1], "hi": [-134.3, -95.3, -61.7, -45.0, -3.6, 11.6, 25.7, 41.9, 69.0]}, "FR": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [-3.8, 6.5, 19.0, -6.2, -4.2, -15.7, -18.2, -18.6, -21.4, -7.7, 20.4, -19.6, -37.4, -36.4], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [-33.9, -34.8, -39.7, -45.8, -48.3, -46.0, -52.6, -49.0, -55.9], "lo": [-71.8, -95.3, -125.5, -162.8, -194.9, -220.5, -254.2, -277.4, -298.7], "hi": [3.6, 25.8, 45.5, 67.8, 94.3, 112.6, 134.8, 156.0, 171.5]}, "NO": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [10.0, 4.3, 2.3, 4.6, 5.1, 4.4, 5.0, 3.3, 1.5, 0.7, 0.8, -2.8, -7.8, -6.7], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [-3.5, -3.5, -3.0, -3.2, -3.1, -3.6, -2.9, -3.4, -4.1], "lo": [-9.8, -12.0, -14.6, -16.8, -18.5, -21.8, -24.0, -26.4, -26.4], "hi": [3.2, 5.3, 8.4, 10.3, 13.4, 15.7, 18.6, 18.5, 19.2]}, "CH": {"oy": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "ov": [-11.0, -3.5, -25.4, -29.3, -26.7, -27.8, -24.2, -25.9, -27.9, -21.9, -24.4, -34.1, -39.8, -36.1], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [-33.9, -34.5, -34.3, -35.0, -35.6, -36.2, -36.3, -37.0, -37.7], "lo": [-40.7, -44.7, -46.9, -49.0, -49.0, -51.6, -53.2, -51.6, -53.9], "hi": [-27.1, -24.5, -21.8, -22.1, -21.9, -20.8, -19.8, -22.0, -20.5]}}, "divide": {"codes": ["DE", "FR", "CH", "NO", "BG", "CZ", "RO", "PL"], "names": ["Germany", "France", "Switzerland", "Norway", "Bulgaria", "Czechia", "Romania", "Poland"], "val": [-182, -56, -38, -4, 12, 21, 54, 282]}};</script>
+<script>
+const STEPS=[["Supply","Healthy workforce"],["Demand","Jobs to staff"],["Balance","Surplus / shortage"],["The divide","By country, 2033"]];
+const C={slate:'#475569',mustard:'#D97706',sage:'#4ADE80',terra:'#B91C1C',acc:'#166534',ink:'#292524',mut:'#78716C',line:'#E7E5E4'};
+Chart.defaults.color=C.mut;Chart.defaults.font.family="-apple-system,Segoe UI,Roboto,Arial,sans-serif";Chart.defaults.borderColor=C.line;
+let state={country:'ALL',slide:0},charts={};
+const sel=document.getElementById('country');
+Object.entries(DATA.countries).forEach(([k,v])=>{const o=document.createElement('option');o.value=k;o.textContent=v;sel.appendChild(o);});
+sel.value=state.country;sel.onchange=()=>{state.country=sel.value;renderAll();};
+const track=document.getElementById('track');
+STEPS.forEach((s,i)=>{if(i>0){const l=document.createElement('span');l.className='link';l.dataset.link=i;track.appendChild(l);}
+  const el=document.createElement('div');el.className='step';el.dataset.step=i;
+  el.innerHTML=`<span class="dot">${i+1}</span><span>${s[0]}</span>`;el.onclick=()=>go(i);track.appendChild(el);});
+function go(i){state.slide=Math.max(0,Math.min(3,i));
+  document.querySelectorAll('.slide').forEach(s=>s.classList.toggle('active',+s.dataset.i===state.slide));
+  document.querySelectorAll('.step').forEach((s,idx)=>{s.classList.toggle('active',idx===state.slide);s.classList.toggle('done',idx<state.slide);});
+  document.querySelectorAll('.link').forEach(l=>l.classList.toggle('done',+l.dataset.link<=state.slide));
+  document.getElementById('prev').disabled=state.slide===0;
+  document.getElementById('next').textContent=state.slide===3?'Finish':'Next ›';
+  document.getElementById('counter').textContent=`Step ${state.slide+1} of 4 — ${STEPS[state.slide][1]}`;renderAll();}
+document.getElementById('prev').onclick=()=>go(state.slide-1);
+document.getElementById('next').onclick=()=>go(state.slide+1);
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')go(state.slide+1);if(e.key==='ArrowLeft')go(state.slide-1);});
+function destroy(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+const axis=(t)=>({title:{display:!!t,text:t,color:C.mut},grid:{color:C.line}});
+function kpi(v,l){return `<div class="kpi"><div class="v">${v}</div><div class="l">${l}</div></div>`;}
+function lineOF(id,d,unit,title,col){
+  destroy(id);const labels=d.oy.concat(d.fy);
+  const obs=d.ov.concat(Array(d.fy.length).fill(null));
+  const fcast=Array(d.oy.length-1).fill(null).concat([d.ov[d.ov.length-1]]).concat(d.fm);
+  const sets=[{label:'Observed',data:obs,borderColor:C.slate,backgroundColor:C.slate,tension:.25,pointRadius:0,borderWidth:2.5},
+    {label:'Forecast',data:fcast,borderColor:col||C.acc,backgroundColor:col||C.acc,borderDash:[5,3],tension:.25,pointRadius:0,borderWidth:2.5}];
+  if(d.lo){const pad=(a)=>Array(d.oy.length).fill(null).concat(a);
+    sets.unshift({label:'_hi',data:pad(d.hi),borderColor:'transparent',backgroundColor:'rgba(22,101,52,.10)',pointRadius:0,fill:false});
+    sets.unshift({label:'80% band',data:pad(d.lo),borderColor:'transparent',backgroundColor:'rgba(22,101,52,.10)',pointRadius:0,fill:'+1'});}
+  charts[id]=new Chart(document.getElementById(id),{type:'line',data:{labels,datasets:sets},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      scales:{y:{...axis(unit)},x:axis()},
+      plugins:{title:{display:true,text:title,color:C.ink,font:{size:15}},
+        legend:{position:'bottom',labels:{filter:i=>!i.text.startsWith('_')}},
+        tooltip:{filter:i=>!i.dataset.label.startsWith('_'),callbacks:{label:c=>`${c.dataset.label}: ${c.raw} M`}}}}});
+}
+function pct(d){return ((d.fm[d.fm.length-1]/d.ov[d.ov.length-1]-1)*100).toFixed(1);}
+function drawSupply(){const d=DATA.supply[state.country];lineOF('supply',d,'supply (million human-working-years)',`Potential supply — ${DATA.countries[state.country]}`,C.acc);
+  document.getElementById('supKpis').innerHTML=kpi(d.ov[d.ov.length-1]+'M','2024')+kpi(d.fm[d.fm.length-1]+'M','2033')+kpi((pct(d)>=0?'+':'')+pct(d)+'%','Change');}
+function drawDemand(){const d=DATA.demand[state.country];lineOF('demand',d,'demand (million career person-years)',`Potential demand — ${DATA.countries[state.country]}`,C.mustard);
+  document.getElementById('demKpis').innerHTML=kpi(d.ov[d.ov.length-1]+'M','2024')+kpi(d.fm[d.fm.length-1]+'M','2033')+kpi((pct(d)>=0?'+':'')+pct(d)+'%','Change');}
+function drawBalance(){const d=DATA.balance[state.country];lineOF('balance',d,'balance (million human-working-years)',`Balance = supply − demand — ${DATA.countries[state.country]}`,C.acc);
+  const b=d.fm[d.fm.length-1];document.getElementById('balKpis').innerHTML=
+    kpi((d.ov[d.ov.length-1]>=0?'+':'')+d.ov[d.ov.length-1]+'M','Balance 2024')+
+    kpi((b>=0?'+':'')+b+'M','Balance 2033')+kpi((b>=0?'Surplus':'Shortage'),'2033 status');}
+function drawDivide(){destroy('divide');const dv=DATA.divide;
+  charts.divide=new Chart(document.getElementById('divide'),{type:'bar',
+    data:{labels:dv.names,datasets:[{label:'2033 balance (M)',data:dv.val,
+      backgroundColor:dv.val.map(v=>v>=0?C.sage:C.terra),borderColor:dv.val.map(v=>v>=0?C.acc:C.terra),borderWidth:1.2,borderRadius:3}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      scales:{x:{...axis('balance 2033 (million human-working-years)'),grid:{color:C.line}},y:{grid:{display:false}}},
+      plugins:{title:{display:true,text:'2033 balance by country — surplus (green) vs shortage (red)',color:C.ink,font:{size:15}},legend:{display:false},
+        tooltip:{callbacks:{label:c=>`${c.raw>=0?'+':''}${c.raw}M ${c.raw>=0?'surplus':'shortage'}`}}}}});
+  const sur=dv.val.filter(v=>v>0).reduce((a,b)=>a+b,0),sh=dv.val.filter(v=>v<0).reduce((a,b)=>a+b,0);
+  document.getElementById('divKpis').innerHTML=kpi('+'+Math.round(sur)+'M','East surplus')+kpi(Math.round(sh)+'M','West/EFTA shortage')+
+    kpi((Math.round(sur+sh)>=0?'+':'')+Math.round(sur+sh)+'M','Net');}
+function renderAll(){if(state.slide===0)drawSupply();else if(state.slide===1)drawDemand();else if(state.slide===2)drawBalance();else drawDivide();}
+let timer=null;
+function setPlay(on){const b=document.getElementById('play');
+  if(on){b.textContent='⏸ Pause';b.classList.remove('ghost');timer=setInterval(()=>go(state.slide>=3?0:state.slide+1),7000);}
+  else{b.textContent='▶ Present';b.classList.add('ghost');clearInterval(timer);timer=null;}}
+document.getElementById('play').onclick=()=>setPlay(!timer);
+go(0);
+</script>
+</body></html>
