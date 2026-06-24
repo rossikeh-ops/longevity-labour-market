@@ -78,37 +78,53 @@ def _paths(years, vals, tgt, members=DEFAULT_MEMBERS):
 
 
 def _member_weights(years, vals, tgt, members=DEFAULT_MEMBERS):
-    """Weight each member by its rolling-origin backtest accuracy (∝ 1/RMSE),
-    shrunk toward equal weights. Lets the better models dominate where one member
-    systematically wins (e.g. ar1 on vacancies), without over-committing on short
-    series. Falls back to equal weights when history is too short."""
-    n = len(vals)
-    k = len(members)
-    eq = np.ones(k) / k
+    """Per-HORIZON member weights from a rolling-origin backtest: at each forecast
+    horizon, weight members by 1/RMSE *at that horizon* (shrunk toward equal). This
+    lets mean-reverting members (naive, ar1) dominate far out while trend members lead
+    near-term — instead of one compromise weight across all horizons. Returns an array
+    shaped (n_members, n_targets). Falls back to equal weights on short history."""
+    years = np.asarray(years, float)
+    vals = np.asarray(vals, float)
+    tgt = np.asarray(tgt, float)
+    n, k, T = len(vals), len(members), len(tgt)
+    eq = np.ones((k, T)) / k
     if n < 8 or k == 1:
         return eq
-    sse = np.zeros(k)
-    cnt = np.zeros(k)
-    for cut in range(max(5, n - 6), n):       # up to ~6 rolling origins
+    horizons = (tgt - years[-1]).astype(int)
+    sse, cnt = {}, {}                          # backtest-horizon -> per-member arrays
+    for cut in range(max(5, n - 6), n):        # up to ~6 rolling origins
         ytr, vtr, fy = years[:cut], vals[:cut], years[cut:]
         if len(fy) == 0:
             continue
         act = vals[cut:cut + len(fy)]
         for mi, m in enumerate(members):
             pred = _MEMBERS[m](ytr, vtr, fy)[0]
-            sse[mi] += float(np.sum((act - pred) ** 2))
-            cnt[mi] += len(fy)
-    rmse = np.sqrt(sse / np.maximum(cnt, 1))
-    inv = 1.0 / (rmse + 0.25 * rmse.mean() + 1e-9)     # shrink toward equal
-    w = inv / inv.sum()
-    return 0.7 * w + 0.3 * eq                  # 30% floor on equal weighting
+            for j, yy in enumerate(fy):
+                h = int(yy - ytr[-1])
+                sse.setdefault(h, np.zeros(k)); cnt.setdefault(h, np.zeros(k))
+                sse[h][mi] += float((act[j] - pred[j]) ** 2)
+                cnt[h][mi] += 1
+    bt_h = sorted(sse)
+    if not bt_h:
+        return eq
+
+    def _w_at(h):                              # weights for one backtest-horizon bucket
+        rmse = np.sqrt(sse[h] / np.maximum(cnt[h], 1))
+        inv = 1.0 / (rmse + 0.25 * rmse.mean() + 1e-9)
+        return 0.7 * (inv / inv.sum()) + 0.3 / k     # 30% floor on equal weighting
+
+    W = np.zeros((k, T))
+    for ti, h in enumerate(horizons):
+        use = h if h in sse else max(bt_h)     # beyond backtest range -> longest horizon
+        W[:, ti] = _w_at(use)
+    return W
 
 
 def _ensemble_mean(years, vals, tgt, members=DEFAULT_MEMBERS, weighting="equal"):
     p, _ = _paths(years, vals, tgt, members)
     if weighting == "backtest":
-        w = _member_weights(years, vals, tgt, members)
-        return (p * w[:, None]).sum(axis=0)
+        W = _member_weights(years, vals, tgt, members)     # (k, T) horizon-aware
+        return (p * W).sum(axis=0)
     return p.mean(axis=0)
 
 
@@ -161,22 +177,23 @@ def forecast_series(years, values, target_years, n_sim=1000,
     work = np.log(np.clip(values, 1e-9, None)) if log else values
     paths, _ = _paths(years, work, tgt, members)
     if weighting == "backtest":
-        w = _member_weights(years, work, tgt, members)
+        W = _member_weights(years, work, tgt, members)     # (k, T) horizon-aware
     else:
-        w = np.ones(paths.shape[0]) / paths.shape[0]
-    mean_w = (paths * w[:, None]).sum(axis=0)
+        W = np.ones((paths.shape[0], len(tgt))) / paths.shape[0]
+    mean_w = (paths * W).sum(axis=0)
 
     # Honest band = model DISAGREEMENT (weighted spread across members) (+) empirical
     # out-of-sample MODEL error from the rolling backtest, in quadrature.
-    model_spread = np.sqrt((w[:, None] * (paths - mean_w) ** 2).sum(axis=0))
+    model_spread = np.sqrt((W * (paths - mean_w) ** 2).sum(axis=0))
     bt_sigma = _backtest_sigma(years, work, tgt, members)
     sigma = np.sqrt(model_spread ** 2 + bt_sigma ** 2)
 
     mean = np.exp(mean_w) if log else mean_w
     sims = np.empty((n_sim, len(tgt)))
     n_paths = paths.shape[0]
+    w_path = W.mean(axis=1); w_path = w_path / w_path.sum()   # horizon-avg for coherent paths
     for i in range(n_sim):
-        choice = paths[RNG.choice(n_paths, p=w)]      # sample members by weight
+        choice = paths[RNG.choice(n_paths, p=w_path)]      # sample members by weight
         sims[i] = choice + RNG.normal(0, sigma)
     if log:
         sims = np.exp(sims)
