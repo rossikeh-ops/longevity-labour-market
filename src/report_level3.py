@@ -5,8 +5,13 @@ observed 2011-2024 + forecast to 2035. Reads outputs/{supply_observed,balance_fo
 -> outputs/level3_balance_report.html
 """
 from __future__ import annotations
+import sys
+import json
 from pathlib import Path
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from map_section import build_map_section  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "outputs"
@@ -109,6 +114,43 @@ def traj_svg(s):
             f'</svg></div>')
 
 
+# ---------- interactive choropleth section ----------
+# Default = 2035 balance (DIVERGING: surplus green / shortage red); plus supply &
+# demand components, then the shared supply-side driver metrics from map_data.json.
+md = json.loads((OUT / "map_data.json").read_text(encoding="utf-8"))
+b2035 = bf[bf.year == 2035]
+
+
+def _metric_from_bf(col, label, unit, diverging=False):
+    d = {"label": label, "unit": unit, "total": "sum", "fmt": "millions",
+         "values": {}, "years": {}, "diverging": diverging}
+    for c in countries:
+        sub = b2035[b2035.country == c]
+        vals = {}
+        vf, vm = sub[sub.sex == "F"][col].sum(), sub[sub.sex == "M"][col].sum()
+        if pd.notna(vf):
+            vals["F"] = round(float(vf))
+        if pd.notna(vm):
+            vals["M"] = round(float(vm))
+        vals["T"] = round(float(sub[col].sum()))
+        d["values"][c] = vals
+        d["years"][c] = 2035
+    return d
+
+
+map_data = {"countries": md["countries"], "regime": md["regime"], "metrics": {
+    "balance_2035": _metric_from_bf("balance", "Labour-market balance 2035 (human-working-years)",
+                                    "human-working-years", diverging=True),
+    "supply_2035": _metric_from_bf("supply", "Potential labour supply 2035 (person-years)", "person-years"),
+    "demand_2035": _metric_from_bf("demand", "Potential labour demand 2035 (person-years)", "person-years"),
+    **md["metrics"]}}
+map_html = build_map_section(
+    map_data, container="geomap3", default_metric="balance_2035",
+    title="Geographic overview — balance &amp; its components",
+    intro="Choropleth of the 8 countries. Default = 2035 labour-market balance "
+          "(supply − demand, human-working-years): <b>green = surplus, red = shortage</b>. "
+          "Switch to supply, demand or their drivers; toggle sex; hover a country.")
+
 charts_html = "".join(traj_svg(series[c]) for c in countries)
 rows_html = "".join(
     f'<tr><td>{series[c]["name"]}</td><td style="color:#94a3b8">{series[c]["region"]}</td>'
@@ -172,6 +214,7 @@ demographic basis of West-bound migration.</div>
 <div class="kpi"><div class="v" style="color:var(--down)">{deficit35:+,}M</div><div class="l">West/EFTA shortage (DE, FR, CH, NO)</div></div>
 <div class="kpi"><div class="v" style="color:var(--up)">{surplus35:+,}M</div><div class="l">East surplus (PL, RO, CZ, BG)</div></div>
 </div>
+{map_html}
 <h2>Balance by country, 2035</h2>
 <div class="panel">{diverge_svg}</div>
 <h2>Balance trajectories, 2011 → 2035</h2>

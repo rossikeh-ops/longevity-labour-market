@@ -81,11 +81,12 @@ def build_map_section(data: dict, *, container: str = "geomap",
 const CFG={payload};
 const ISO={{Bulgaria:"BG",Poland:"PL",Czechia:"CZ","Czech Republic":"CZ",Romania:"RO",
   Germany:"DE",France:"FR",Norway:"NO",Switzerland:"CH"}};
-const PAL=d3.interpolateYlGnBu, DATA=CFG.data, root=document.getElementById(CFG.container);
+const DATA=CFG.data, root=document.getElementById(CFG.container);
 let state={{metric:CFG.default, sex:"T"}};
 const $=s=>root.querySelector(s);
 function fmt(v,f){{ if(v==null||isNaN(v))return"n/a";
-  if(f==="millions"){{ if(v>=1e9)return(v/1e9).toFixed(2)+" bn"; if(v>=1e6)return(v/1e6).toFixed(2)+" M";
+  if(f==="millions"){{ const a=Math.abs(v),s=v<0?"-":"";
+    if(a>=1e9)return s+(a/1e9).toFixed(2)+" bn"; if(a>=1e6)return s+(a/1e6).toFixed(2)+" M";
     return d3.format(",")(Math.round(v)); }} return d3.format(",.2~f")(v); }}
 fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(r=>r.json()).then(topo=>{{
   const sel=d3.select($(".gm-metric"));
@@ -121,7 +122,12 @@ fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(r=>
   function render(){{
     const m=DATA.metrics[state.metric];
     const arr=vlist().filter(d=>d.v!=null).map(d=>d.v),lo=d3.min(arr),hi=d3.max(arr);
-    const color=d3.scaleSequential(PAL).domain([lo,hi]);
+    // diverging metrics (e.g. the balance: surplus vs shortage) use a red→green
+    // scale centred on zero; everything else a sequential YlGnBu scale.
+    const div=!!m.diverging, PAL=div?d3.interpolateRdYlGn:d3.interpolateYlGnBu;
+    const mag=Math.max(Math.abs(lo),Math.abs(hi))||1;
+    const seq=d3.scaleSequential(PAL).domain([lo,hi]);
+    const color=v=>div?PAL(0.5+0.5*v/mag):seq(v);
     g.selectAll("path.gm-c")
       .attr("fill",d=>{{const v=(m.values[ISO[d.properties.name]]||{{}})[state.sex];return v==null?"#42506b":color(v);}});
     $(".gm-bar").style.background=`linear-gradient(90deg,${{d3.range(0,1.01,.1).map(t=>PAL(t)).join(",")}})`;
@@ -129,11 +135,12 @@ fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(r=>
     const yrs=Object.values(m.years||{{}});
     $(".gm-meta").innerHTML=`Unit: <b style="color:var(--ink,#e8edf7)">${{m.unit}}</b> · years ${{d3.min(yrs)}}–${{d3.max(yrs)}}`;
     const sorted=vlist().filter(d=>d.v!=null).sort((a,b)=>b.v-a.v);
-    const bw=d3.scaleLinear().domain([0,hi]).range([0,140]);
+    const maxw=div?mag:(hi||1);
+    const bw=d3.scaleLinear().domain([0,maxw]).range([0,140]);
     const list=d3.select($(".gm-list")).html("");
     sorted.forEach(d=>{{const row=list.append("div").attr("class","gm-row");
       row.append("span").attr("class","nm").text(DATA.countries[d.iso]);
-      row.append("span").attr("class","tk").style("width",bw(d.v)+"px").style("background",color(d.v));
+      row.append("span").attr("class","tk").style("width",bw(Math.abs(d.v))+"px").style("background",color(d.v));
       row.append("span").attr("class","vl").text(fmt(d.v,m.fmt));}});
   }}
   function hover(ev,d){{const iso=ISO[d.properties.name],m=DATA.metrics[state.metric],rec=m.values[iso]||{{}};

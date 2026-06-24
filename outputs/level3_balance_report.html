@@ -51,6 +51,137 @@ demographic basis of West-bound migration.</div>
 <div class="kpi"><div class="v" style="color:var(--down)">-286M</div><div class="l">West/EFTA shortage (DE, FR, CH, NO)</div></div>
 <div class="kpi"><div class="v" style="color:var(--up)">+361M</div><div class="l">East surplus (PL, RO, CZ, BG)</div></div>
 </div>
+<h2>Geographic overview — balance &amp; its components</h2><p class="sub">Choropleth of the 8 countries. Default = 2035 labour-market balance (supply − demand, human-working-years): <b>green = surplus, red = shortage</b>. Switch to supply, demand or their drivers; toggle sex; hover a country.</p>
+<div id="geomap3"><style>
+#geomap3 .gm-wrap{display:flex;gap:16px;flex-wrap:wrap;align-items:stretch}
+#geomap3 .gm-map{background:var(--card,#171e2e);border:1px solid var(--line,#2a3445);
+  border-radius:12px;padding:8px;flex:1 1 560px;min-width:320px;position:relative}
+#geomap3 .gm-side{flex:0 0 250px;display:flex;flex-direction:column;gap:12px}
+#geomap3 .gm-ctl{background:var(--card,#171e2e);border:1px solid var(--line,#2a3445);
+  border-radius:12px;padding:14px}
+#geomap3 .gm-lab{display:block;font-size:11px;color:var(--mut,#94a3b8);margin:0 0 6px;
+  text-transform:uppercase;letter-spacing:.6px}
+#geomap3 select{width:100%;background:#0e1830;color:var(--ink,#e8edf7);
+  border:1px solid var(--line,#2a3445);border-radius:8px;padding:8px 9px;font-size:14px}
+#geomap3 .gm-seg{display:flex;gap:5px;margin-top:4px}
+#geomap3 .gm-seg button{flex:1;background:#0e1830;color:var(--mut,#94a3b8);
+  border:1px solid var(--line,#2a3445);border-radius:8px;padding:7px 0;font-size:13px;cursor:pointer}
+#geomap3 .gm-seg button.on{background:var(--acc,#5b9dff);color:#06203a;
+  border-color:var(--acc,#5b9dff);font-weight:600}
+#geomap3 .gm-scale{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11px;color:var(--mut,#94a3b8)}
+#geomap3 .gm-bar{height:11px;flex:1;border-radius:3px}
+#geomap3 .gm-meta{font-size:11px;color:var(--mut,#94a3b8);margin-top:8px}
+#geomap3 .gm-rank{background:var(--card,#171e2e);border:1px solid var(--line,#2a3445);
+  border-radius:12px;padding:12px 14px}
+#geomap3 .gm-rank h4{margin:0 0 9px;font-size:11px;color:var(--mut,#94a3b8);
+  font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+#geomap3 .gm-row{display:flex;align-items:center;gap:7px;margin:4px 0;font-size:12px}
+#geomap3 .gm-row .nm{width:74px;color:var(--ink,#e8edf7)}
+#geomap3 .gm-row .tk{height:13px;border-radius:3px;min-width:2px}
+#geomap3 .gm-row .vl{color:var(--mut,#94a3b8);font-variant-numeric:tabular-nums}
+#geomap3 .gm-c{stroke:#0c1322;stroke-width:.6px;cursor:pointer}
+#geomap3 .gm-c.other{fill:#222c40;stroke:#1a2233}
+#geomap3 .gm-c:hover{opacity:.82}
+#geomap3 .gm-clab{font-size:10px;fill:#06203a;font-weight:700;pointer-events:none;text-anchor:middle}
+#geomap3 .gm-tip{position:absolute;pointer-events:none;background:#06121f;
+  border:1px solid var(--acc,#5b9dff);border-radius:8px;padding:8px 11px;font-size:12px;
+  color:var(--ink,#e8edf7);opacity:0;max-width:210px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+#geomap3 .gm-tip b{color:var(--acc,#5b9dff)}
+</style>
+<div class="gm-wrap">
+  <div class="gm-map"><svg class="gm-svg" viewBox="0 0 720 520" width="100%" style="display:block"></svg>
+    <div class="gm-tip"></div></div>
+  <div class="gm-side">
+    <div class="gm-ctl">
+      <label class="gm-lab">Metric</label><select class="gm-metric"></select>
+      <label class="gm-lab" style="margin-top:12px">Sex</label>
+      <div class="gm-seg"><button data-s="T" class="on">Total</button>
+        <button data-s="F">Women</button><button data-s="M">Men</button></div>
+      <div class="gm-scale"><span class="gm-lo"></span><div class="gm-bar"></div><span class="gm-hi"></span></div>
+      <div class="gm-meta"></div>
+    </div>
+    <div class="gm-rank"><h4>Ranking</h4><div class="gm-list"></div></div>
+  </div>
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+<script>(function(){
+const CFG={"data": {"countries": {"BG": "Bulgaria", "PL": "Poland", "CZ": "Czechia", "RO": "Romania", "DE": "Germany", "FR": "France", "NO": "Norway", "CH": "Switzerland"}, "regime": {"BG": "Post-socialist EU", "PL": "Post-socialist EU", "CZ": "Post-socialist EU", "RO": "Post-socialist EU", "DE": "Western EU", "FR": "Western EU", "NO": "EFTA", "CH": "EFTA"}, "metrics": {"balance_2035": {"label": "Labour-market balance 2035 (human-working-years)", "unit": "human-working-years", "total": "sum", "fmt": "millions", "values": {"DE": {"F": -105592394, "M": -81743371, "T": -187335765}, "FR": {"F": -51337034, "M": -7008559, "T": -58345593}, "CH": {"F": -23360392, "M": -14880082, "T": -38240474}, "NO": {"F": -5047041, "M": 2185517, "T": -2861524}, "BG": {"F": 6486139, "M": 4047449, "T": 10533588}, "CZ": {"F": 5762934, "M": 14460866, "T": 20223800}, "RO": {"F": 19547808, "M": 32855621, "T": 52403430}, "PL": {"F": 134519187, "M": 143580638, "T": 278099826}}, "years": {"DE": 2035, "FR": 2035, "CH": 2035, "NO": 2035, "BG": 2035, "CZ": 2035, "RO": 2035, "PL": 2035}, "diverging": true}, "supply_2035": {"label": "Potential labour supply 2035 (person-years)", "unit": "person-years", "total": "sum", "fmt": "millions", "values": {"DE": {"F": 771214894, "M": 884812304, "T": 1656027198}, "FR": {"F": 573307559, "M": 618539584, "T": 1191847142}, "CH": {"F": 76517482, "M": 93019580, "T": 169537062}, "NO": {"F": 55195995, "M": 67873781, "T": 123069776}, "BG": {"F": 53115132, "M": 61711332, "T": 114826464}, "CZ": {"F": 84640099, "M": 110383390, "T": 195023489}, "RO": {"F": 120741174, "M": 173642802, "T": 294383977}, "PL": {"F": 272476612, "M": 355983584, "T": 628460196}}, "years": {"DE": 2035, "FR": 2035, "CH": 2035, "NO": 2035, "BG": 2035, "CZ": 2035, "RO": 2035, "PL": 2035}, "diverging": false}, "demand_2035": {"label": "Potential labour demand 2035 (person-years)", "unit": "person-years", "total": "sum", "fmt": "millions", "values": {"DE": {"F": 876807288, "M": 966555675, "T": 1843362964}, "FR": {"F": 624644593, "M": 625548143, "T": 1250192736}, "CH": {"F": 99877874, "M": 107899663, "T": 207777536}, "NO": {"F": 60243036, "M": 65688264, "T": 125931300}, "BG": {"F": 46628993, "M": 57663882, "T": 104292875}, "CZ": {"F": 78877165, "M": 95922524, "T": 174799689}, "RO": {"F": 101193366, "M": 140787181, "T": 241980547}, "PL": {"F": 137957425, "M": 212402945, "T": 350360370}}, "years": {"DE": 2035, "FR": 2035, "CH": 2035, "NO": 2035, "BG": 2035, "CZ": 2035, "RO": 2035, "PL": 2035}, "diverging": false}, "supply_birth": {"label": "Potential labour supply (healthy person-years)", "unit": "person-years", "total": "sum", "fmt": "millions", "values": {"BG": {"F": 239031706.2, "M": 206926226.4, "T": 445957932.6}, "PL": {"F": 1252172933.8, "M": 1119017367.2, "T": 2371190301.0}, "CZ": {"F": 351262124.0, "M": 329639037.0, "T": 680901161.0}, "RO": {"F": 645569975.4, "M": 593367680.0, "T": 1238937655.4}, "DE": {"F": 2647611536.4, "M": 2556155915.1, "T": 5203767451.5}, "FR": {"F": 2252439070.7, "M": 2115133692.0, "T": 4367572762.7}, "NO": {"F": 171604415.5, "M": 187313106.0, "T": 358917521.5}, "CH": {"F": 254856019.0, "M": 264421000.8, "T": 519277019.8}}, "years": {"BG": 2024, "PL": 2024, "CZ": 2024, "RO": 2024, "DE": 2024, "FR": 2024, "NO": 2024, "CH": 2024}}, "hly_birth": {"label": "Healthy life years at birth", "unit": "years", "total": "wmean", "fmt": "plain", "values": {"BG": {"F": 71.4, "M": 66.8, "T": 69.19}, "PL": {"F": 66.2, "M": 63.2, "T": 64.75}, "CZ": {"F": 63.2, "M": 61.7, "T": 62.46}, "RO": {"F": 65.9, "M": 64.0, "T": 64.98}, "DE": {"F": 62.6, "M": 62.1, "T": 62.35}, "FR": {"F": 63.7, "M": 63.5, "T": 63.6}, "NO": {"F": 62.3, "M": 67.0, "T": 64.67}, "CH": {"F": 56.5, "M": 59.4, "T": 57.94}}, "years": {"BG": 2024, "PL": 2024, "CZ": 2024, "RO": 2024, "DE": 2024, "FR": 2024, "NO": 2024, "CH": 2024}}, "le_birth": {"label": "Life expectancy at birth", "unit": "years", "total": "wmean", "fmt": "plain", "values": {"BG": {"F": 79.5, "M": 72.2, "T": 75.99}, "PL": {"F": 82.2, "M": 74.8, "T": 78.62}, "CZ": {"F": 83.0, "M": 77.1, "T": 80.11}, "RO": {"F": 80.3, "M": 72.8, "T": 76.65}, "DE": {"F": 83.5, "M": 78.9, "T": 81.23}, "FR": {"F": 85.8, "M": 80.2, "T": 83.08}, "NO": {"F": 84.8, "M": 81.6, "T": 83.19}, "CH": {"F": 85.9, "M": 82.4, "T": 84.16}}, "years": {"BG": 2024, "PL": 2024, "CZ": 2024, "RO": 2024, "DE": 2024, "FR": 2024, "NO": 2024, "CH": 2024}}, "pop_total": {"label": "Population (1 Jan)", "unit": "persons", "total": "sum", "fmt": "millions", "values": {"BG": {"F": 3342220.0, "M": 3095140.0, "T": 6437360.0}, "PL": {"F": 18855180.0, "M": 17642315.0, "T": 36497495.0}, "CZ": {"F": 5554921.0, "M": 5354579.0, "T": 10909500.0}, "RO": {"F": 9752617.0, "M": 9290534.0, "T": 19043151.0}, "DE": {"F": 42335439.0, "M": 41241701.0, "T": 83577140.0}, "FR": {"F": 35448530.0, "M": 33434070.0, "T": 68882600.0}, "NO": {"F": 2775143.0, "M": 2819197.0, "T": 5594340.0}, "CH": {"F": 4550640.0, "M": 4500389.0, "T": 9051029.0}}, "years": {"BG": 2025, "PL": 2025, "CZ": 2025, "RO": 2025, "DE": 2025, "FR": 2025, "NO": 2025, "CH": 2025}}, "employed_ths": {"label": "Employment 15-64", "unit": "thousands", "total": "sum", "fmt": "plain", "values": {"BG": {"F": 1321.4, "M": 1487.9, "T": 2809.3}, "PL": {"F": 7753.1, "M": 8994.9, "T": 16748.0}, "CZ": {"F": 2361.1, "M": 2702.2, "T": 5063.3}, "RO": {"F": 3243.2, "M": 4371.4, "T": 7614.6}, "DE": {"F": 19202.4, "M": 21394.5, "T": 40596.9}, "FR": {"F": 14051.6, "M": 14681.1, "T": 28732.7}, "NO": {"F": 1323.5, "M": 1444.2, "T": 2767.7}, "CH": {"F": 2213.4, "M": 2459.7, "T": 4673.1}}, "years": {"BG": 2025, "PL": 2025, "CZ": 2025, "RO": 2025, "DE": 2025, "FR": 2025, "NO": 2025, "CH": 2025}}, "vacancy_rate": {"label": "Job vacancy rate", "unit": "%", "total": "wmean", "fmt": "plain", "values": {"BG": {"F": 0.85, "M": 0.85, "T": 0.85}, "PL": {"F": 0.78, "M": 0.78, "T": 0.78}, "CZ": {"F": 1.95, "M": 1.95, "T": 1.95}, "RO": {"F": 0.6, "M": 0.6, "T": 0.6}, "DE": {"F": 2.62, "M": 2.62, "T": 2.62}, "FR": {"F": 2.4, "M": 2.4, "T": 2.4}, "NO": {"F": 2.83, "M": 2.83, "T": 2.83}, "CH": {"F": 1.62, "M": 1.62, "T": 1.62}}, "years": {"BG": 2025, "PL": 2025, "CZ": 2025, "RO": 2025, "DE": 2025, "FR": 2025, "NO": 2025, "CH": 2025}}}}, "container": "geomap3", "default": "balance_2035"};
+const ISO={Bulgaria:"BG",Poland:"PL",Czechia:"CZ","Czech Republic":"CZ",Romania:"RO",
+  Germany:"DE",France:"FR",Norway:"NO",Switzerland:"CH"};
+const DATA=CFG.data, root=document.getElementById(CFG.container);
+let state={metric:CFG.default, sex:"T"};
+const $=s=>root.querySelector(s);
+function fmt(v,f){ if(v==null||isNaN(v))return"n/a";
+  if(f==="millions"){ const a=Math.abs(v),s=v<0?"-":"";
+    if(a>=1e9)return s+(a/1e9).toFixed(2)+" bn"; if(a>=1e6)return s+(a/1e6).toFixed(2)+" M";
+    return d3.format(",")(Math.round(v)); } return d3.format(",.2~f")(v); }
+fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(r=>r.json()).then(topo=>{
+  const sel=d3.select($(".gm-metric"));
+  Object.entries(DATA.metrics).forEach(([k,m])=>sel.append("option").attr("value",k).text(m.label));
+  sel.property("value",state.metric);
+  const feats=topojson.feature(topo,topo.objects.countries).features;
+  // keep only European polygons (drops France's overseas territories, Svalbard…)
+  const euroOnly=f=>{ if(f.geometry.type!=="MultiPolygon") return f;
+    const polys=f.geometry.coordinates.filter(poly=>{
+      const c=d3.geoCentroid({type:"Polygon",coordinates:poly});
+      return c[0]>-25&&c[0]<45&&c[1]>34&&c[1]<73;});
+    return {...f,geometry:{type:"MultiPolygon",coordinates:polys.length?polys:f.geometry.coordinates}};};
+  const eight=feats.filter(f=>Object.keys(DATA.countries).includes(ISO[f.properties.name])).map(euroOnly);
+  const svg=d3.select($(".gm-svg"));
+  const proj=d3.geoConicConformal().rotate([-10,0]).parallels([43,62])
+    .fitExtent([[28,20],[692,470]],{type:"FeatureCollection",features:eight});
+  const path=d3.geoPath(proj);
+  const inEU=f=>{try{const[[w,s],[e,n]]=d3.geoBounds(f);
+    return n>33&&s<73&&w<55&&e>-32&&(e-w)<90;}catch(_){return false;}};
+  svg.append("g").selectAll("path").data(feats.filter(inEU)).join("path").attr("class","gm-c other").attr("d",path);
+  const g=svg.append("g");
+  g.selectAll("path").data(eight).join("path").attr("class","gm-c")
+    .attr("data-iso",d=>ISO[d.properties.name]).attr("d",path)
+    .on("mousemove",hover).on("mouseleave",()=>d3.select($(".gm-tip")).style("opacity",0));
+  svg.append("g").selectAll("text").data(eight).join("text").attr("class","gm-clab")
+    .attr("x",d=>path.centroid(d)[0]).attr("y",d=>path.centroid(d)[1]+3).text(d=>ISO[d.properties.name]);
+  sel.on("change",function(){state.metric=this.value;render();});
+  d3.selectAll(root.querySelectorAll(".gm-seg button")).on("click",function(){
+    root.querySelectorAll(".gm-seg button").forEach(b=>b.classList.remove("on"));
+    this.classList.add("on");state.sex=this.dataset.s;render();});
+  function vlist(){const m=DATA.metrics[state.metric];
+    return Object.keys(DATA.countries).map(iso=>({iso,v:(m.values[iso]||{})[state.sex]??null}));}
+  function render(){
+    const m=DATA.metrics[state.metric];
+    const arr=vlist().filter(d=>d.v!=null).map(d=>d.v),lo=d3.min(arr),hi=d3.max(arr);
+    // diverging metrics (e.g. the balance: surplus vs shortage) use a red→green
+    // scale centred on zero; everything else a sequential YlGnBu scale.
+    const div=!!m.diverging, PAL=div?d3.interpolateRdYlGn:d3.interpolateYlGnBu;
+    const mag=Math.max(Math.abs(lo),Math.abs(hi))||1;
+    const seq=d3.scaleSequential(PAL).domain([lo,hi]);
+    const color=v=>div?PAL(0.5+0.5*v/mag):seq(v);
+    g.selectAll("path.gm-c")
+      .attr("fill",d=>{const v=(m.values[ISO[d.properties.name]]||{})[state.sex];return v==null?"#42506b":color(v);});
+    $(".gm-bar").style.background=`linear-gradient(90deg,${d3.range(0,1.01,.1).map(t=>PAL(t)).join(",")})`;
+    $(".gm-lo").textContent=fmt(lo,m.fmt);$(".gm-hi").textContent=fmt(hi,m.fmt);
+    const yrs=Object.values(m.years||{});
+    $(".gm-meta").innerHTML=`Unit: <b style="color:var(--ink,#e8edf7)">${m.unit}</b> · years ${d3.min(yrs)}–${d3.max(yrs)}`;
+    const sorted=vlist().filter(d=>d.v!=null).sort((a,b)=>b.v-a.v);
+    const maxw=div?mag:(hi||1);
+    const bw=d3.scaleLinear().domain([0,maxw]).range([0,140]);
+    const list=d3.select($(".gm-list")).html("");
+    sorted.forEach(d=>{const row=list.append("div").attr("class","gm-row");
+      row.append("span").attr("class","nm").text(DATA.countries[d.iso]);
+      row.append("span").attr("class","tk").style("width",bw(Math.abs(d.v))+"px").style("background",color(d.v));
+      row.append("span").attr("class","vl").text(fmt(d.v,m.fmt));});
+  }
+  function hover(ev,d){const iso=ISO[d.properties.name],m=DATA.metrics[state.metric],rec=m.values[iso]||{};
+    const tip=d3.select($(".gm-tip"));
+    const rows=["T","F","M"].filter(s=>rec[s]!=null)
+      .map(s=>`${({T:"Total",F:"Women",M:"Men"})[s]}: <b>${fmt(rec[s],m.fmt)}</b>`).join("<br>");
+    tip.html(`<b>${DATA.countries[iso]}</b> · ${DATA.regime[iso]}<br>
+      <span style="color:var(--mut,#94a3b8)">${m.label}</span><br>${rows||"n/a"}`).style("opacity",1);
+    const r=$(".gm-svg").getBoundingClientRect(),mr=$(".gm-map").getBoundingClientRect();
+    tip.style("left",(ev.clientX-mr.left+14)+"px").style("top",(ev.clientY-mr.top+10)+"px");}
+  render();
+});
+})();</script>
 <h2>Balance by country, 2035</h2>
 <div class="panel"><svg viewBox="0 0 960 300" width="100%" xmlns="http://www.w3.org/2000/svg"><text x="14" y="21.0" fill="#e8edf7" font-size="13" dominant-baseline="middle">Germany</text><rect x="266.2" y="9" width="238.8" height="16" rx="3" fill="#f87171" opacity="0.85"/><text x="258.2" y="21.0" fill="#f87171" font-size="12" text-anchor="end" dominant-baseline="middle">-187M</text><text x="14" y="55.0" fill="#e8edf7" font-size="13" dominant-baseline="middle">France</text><rect x="430.9" y="43" width="74.1" height="16" rx="3" fill="#f87171" opacity="0.85"/><text x="422.9" y="55.0" fill="#f87171" font-size="12" text-anchor="end" dominant-baseline="middle">-58M</text><text x="14" y="89.0" fill="#e8edf7" font-size="13" dominant-baseline="middle">Switzerland</text><rect x="456.5" y="77" width="48.5" height="16" rx="3" fill="#f87171" opacity="0.85"/><text x="448.5" y="89.0" fill="#f87171" font-size="12" text-anchor="end" dominant-baseline="middle">-38M</text><text x="14" y="123.0" fill="#e8edf7" font-size="13" dominant-baseline="middle">Norway</text><rect x="501.2" y="111" width="3.8" height="16" rx="3" fill="#f87171" opacity="0.85"/><text x="493.2" y="123.0" fill="#f87171" font-size="12" text-anchor="end" dominant-baseline="middle">-3M</text><text x="14" y="157.0" fill="#e8edf7" font-size="13" dominant-baseline="middle">Bulgaria</text><rect x="505.0" y="145" width="14.0" height="16" rx="3" fill="#34d399" opacity="0.85"/><text x="527.0" y="157.0" fill="#34d399" font-size="12" text-anchor="start" dominant-baseline="middle">+11M</text><text x="14" y="191.0" fill="#e8edf7" font-size="13" dominant-baseline="middle">Czechia</text><rect x="505.0" y="179" width="25.5" height="16" rx="3" fill="#34d399" opacity="0.85"/><text x="538.5" y="191.0" fill="#34d399" font-size="12" text-anchor="start" dominant-baseline="middle">+20M</text><text x="14" y="225.0" fill="#e8edf7" font-size="13" dominant-baseline="middle">Romania</text><rect x="505.0" y="213" width="66.4" height="16" rx="3" fill="#34d399" opacity="0.85"/><text x="579.4" y="225.0" fill="#34d399" font-size="12" text-anchor="start" dominant-baseline="middle">+52M</text><text x="14" y="259.0" fill="#e8edf7" font-size="13" dominant-baseline="middle">Poland</text><rect x="505.0" y="247" width="355.0" height="16" rx="3" fill="#34d399" opacity="0.85"/><text x="868.0" y="259.0" fill="#34d399" font-size="12" text-anchor="start" dominant-baseline="middle">+278M</text><line x1="505.0" y1="4" x2="505.0" y2="274" stroke="#94a3b8" stroke-width="1"/><text x="513.0" y="292" fill="#34d399" font-size="11">surplus →</text><text x="497.0" y="292" fill="#f87171" font-size="11" text-anchor="end">← shortage</text></svg></div>
 <h2>Balance trajectories, 2011 → 2035</h2>
