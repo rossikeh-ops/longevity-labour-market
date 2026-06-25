@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8">
+<!doctype html><html lang="bg" data-lang="bg"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What-if — longer, healthier lives & the economy</title>
 <style>
@@ -52,46 +52,60 @@ border:6px solid transparent;border-top-color:#292524;z-index:60;pointer-events:
 .legend{display:flex;gap:16px;color:var(--mut);font-size:12px;margin:4px 2px 0;flex-wrap:wrap}
 .sw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 @media(max-width:720px){.sliders{grid-template-columns:1fr}.cards{grid-template-columns:1fr}}
-</style></head><body><div class="wrap">
-<a class="home" href="../index.html">← Overview</a>
-<h1>What-if — do longer, healthier lives reshape the economy?</h1>
-<p class="lead">Three dials, four answers. Everything recomputes live from the 2033 base using the
+html[data-lang='en'] [lang='bg']{display:none!important}html[data-lang='bg'] [lang='en']{display:none!important}
+.langtoggle{position:fixed;top:14px;right:14px;z-index:9999;background:var(--card);border:1px solid var(--line);
+border-radius:20px;padding:7px 15px;cursor:pointer;font:700 13px/1 inherit;color:var(--acc);box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.langtoggle:hover{border-color:var(--acc)}
+</style></head><body>
+<button class="langtoggle" id="langtoggle" aria-label="switch language">EN</button>
+<div class="wrap">
+<a class="home" href="../index.html"><span lang="en">← Overview</span><span lang="bg">← Обзор</span></a>
+<h1 lang="en">What-if — do longer, healthier lives reshape the economy?</h1>
+<h1 lang="bg">Какво-ако — преобразяват ли по-дългите, по-здрави животи икономиката?</h1>
+<p class="lead" lang="en">Three dials, four answers. Everything recomputes live from the 2033 base using the
 same identities as Levels 1, 4 and 5 — a transparent, central-path scenario sandbox.</p>
-<p class="ask">“Do they live longer in good health? And what does that mean for our economy — who keeps working,
+<p class="lead" lang="bg">Три плъзгача, четири отговора. Всичко се преизчислява на живо от базата за 2033 г. по същите
+тъждества като Нива 1, 4 и 5 — прозрачен пясъчник на сценарий по централната пътека.</p>
+<p class="ask" lang="en">“Do they live longer in good health? And what does that mean for our economy — who keeps working,
 who retires, who needs healthcare, and who fills the concert halls and the adult-education courses?”</p>
+<p class="ask" lang="bg">„Живеят ли по-дълго в добро здраве? И какво означава това за нашата икономика — кой продължава да работи,
+кой се пенсионира, кой има нужда от здравни грижи и кой пълни концертните зали и курсовете за възрастни?“</p>
 
 <div class="panel">
   <div class="row">
-    <div class="fctl"><label for="country">Country</label>
+    <div class="fctl"><label for="country"><span lang="en">Country</span><span lang="bg">Държава</span></label>
       <select id="country"></select></div>
     <div style="flex:1"></div>
   </div>
   <div class="sliders">
-    <div class="sl"><h4>🫀 Healthy life years</h4>
-      <div class="d">Do they live longer <i>in good health</i>? Shift healthy-life expectancy (HLY).</div>
-      <div class="val"><span id="vH">+0.0</span> years HLY</div>
+    <div class="sl"><h4><span lang="en">🫀 Healthy life years</span><span lang="bg">🫀 Здрави години живот</span></h4>
+      <div class="d" lang="en">Do they live longer <i>in good health</i>? Shift healthy-life expectancy (HLY).</div>
+      <div class="d" lang="bg">Живеят ли по-дълго <i>в добро здраве</i>? Променете очакваните здрави години живот (ЗГЖ).</div>
+      <div class="val"><span id="vH">+0.0</span> <span lang="en">years HLY</span><span lang="bg">години ЗГЖ</span></div>
       <input type="range" id="sH" min="-3" max="6" step="0.5" value="0">
-      <div class="scale"><span>−3</span><span>base</span><span>+6</span></div></div>
-    <div class="sl"><h4>🧓 Retirement age</h4>
-      <div class="d">Do they retire later? Shift the statutory retirement age.</div>
-      <div class="val"><span id="vR">+0.0</span> years</div>
+      <div class="scale"><span>−3</span><span lang="en">base</span><span lang="bg">база</span><span>+6</span></div></div>
+    <div class="sl"><h4><span lang="en">🧓 Retirement age</span><span lang="bg">🧓 Пенсионна възраст</span></h4>
+      <div class="d" lang="en">Do they retire later? Shift the statutory retirement age.</div>
+      <div class="d" lang="bg">Пенсионират ли се по-късно? Променете законовата пенсионна възраст.</div>
+      <div class="val"><span id="vR">+0.0</span> <span lang="en">years</span><span lang="bg">години</span></div>
       <input type="range" id="sR" min="-2" max="6" step="0.5" value="0">
-      <div class="scale"><span>−2</span><span>base</span><span>+6</span></div></div>
-    <div class="sl"><h4>💪 Participation</h4>
-      <div class="d">Do more of them work? Shift the employment rate of healthy working-age people.</div>
-      <div class="val"><span id="vP">+0</span> pp</div>
+      <div class="scale"><span>−2</span><span lang="en">base</span><span lang="bg">база</span><span>+6</span></div></div>
+    <div class="sl"><h4><span lang="en">💪 Participation</span><span lang="bg">💪 Участие</span></h4>
+      <div class="d" lang="en">Do more of them work? Shift the employment rate of healthy working-age people.</div>
+      <div class="d" lang="bg">Работят ли повече от тях? Променете коефициента на заетост на здравите хора в трудоспособна възраст.</div>
+      <div class="val"><span id="vP">+0</span> <span lang="en">pp</span><span lang="bg">пр.п.</span></div>
       <input type="range" id="sP" min="-5" max="12" step="1" value="0">
-      <div class="scale"><span>−5</span><span>base</span><span>+12</span></div>
+      <div class="scale"><span>−5</span><span lang="en">base</span><span lang="bg">база</span><span>+12</span></div>
       <div class="jobchips">
-        <div class="jc"><div class="jv" id="occJobs">—</div><div class="jl">💼 Occupied jobs</div></div>
-        <div class="jc"><div class="jv" id="jobList">—</div><div class="jl">📋 Job listings (vacancies)</div></div>
+        <div class="jc"><div class="jv" id="occJobs">—</div><div class="jl"><span lang="en">💼 Occupied jobs</span><span lang="bg">💼 Заети работни места</span></div></div>
+        <div class="jc"><div class="jv" id="jobList">—</div><div class="jl"><span lang="en">📋 Job listings (vacancies)</span><span lang="bg">📋 Обяви за работа (свободни)</span></div></div>
       </div></div>
   </div>
   <div class="presets">
-    <button class="preset" data-h="3" data-r="0" data-p="0">Healthy ageing (+3 HLY)</button>
-    <button class="preset" data-h="0" data-r="3" data-p="5">Work longer (+3 ret, +5pp)</button>
-    <button class="preset" data-h="3" data-r="2" data-p="5">Both at once</button>
-    <button class="preset reset" data-h="0" data-r="0" data-p="0">Reset</button>
+    <button class="preset" data-h="3" data-r="0" data-p="0"><span lang="en">Healthy ageing (+3 HLY)</span><span lang="bg">Здраво застаряване (+3 ЗГЖ)</span></button>
+    <button class="preset" data-h="0" data-r="3" data-p="5"><span lang="en">Work longer (+3 ret, +5pp)</span><span lang="bg">Работа по-дълго (+3 пенс., +5пр.п.)</span></button>
+    <button class="preset" data-h="3" data-r="2" data-p="5"><span lang="en">Both at once</span><span lang="bg">И двете заедно</span></button>
+    <button class="preset reset" data-h="0" data-r="0" data-p="0"><span lang="en">Reset</span><span lang="bg">Нулиране</span></button>
   </div>
 </div>
 
@@ -99,48 +113,64 @@ who retires, who needs healthcare, and who fills the concert halls and the adult
 
 <div class="cards">
   <div class="oc" style="--c:var(--slate)"><div class="ic">👷</div>
-    <h3>Who keeps working<span class="info" data-tip="Labour supply in human-working-years = healthy working-age people × working life × participation (Level 1) — the labour the population can actually supply.">i</span></h3><p class="q">Labour supply — human-working-years</p>
-    <div class="v" id="wWork">—</div><div class="u">million human-working-years</div>
+    <h3><span lang="en">Who keeps working</span><span lang="bg">Кой продължава да работи</span><span class="info" lang="en" data-tip="Labour supply in human-working-years = healthy working-age people × working life × participation (Level 1) — the labour the population can actually supply.">i</span><span class="info" lang="bg" data-tip="Предлагане на труд в човеко-работни години = здрави хора в трудоспособна възраст × трудов живот × участие (Ниво 1) — трудът, който населението реално може да осигури.">i</span></h3><p class="q"><span lang="en">Labour supply — human-working-years</span><span lang="bg">Предлагане на труд — човеко-работни години</span></p>
+    <div class="v" id="wWork">—</div><div class="u"><span lang="en">million human-working-years</span><span lang="bg">милиона човеко-работни години</span></div>
     <div class="chg" id="cWork"></div></div>
   <div class="oc" style="--c:var(--mustard)"><div class="ic">🏖️</div>
-    <h3>Who retires<span class="info" data-tip="Population × years lived beyond the statutory retirement age (LE − retirement age) — total person-years spent in retirement. The bar splits them into healthy vs poor-health years.">i</span></h3><p class="q">Years lived beyond the retirement age</p>
-    <div class="v" id="wRet">—</div><div class="u">million retirement person-years</div>
+    <h3><span lang="en">Who retires</span><span lang="bg">Кой се пенсионира</span><span class="info" lang="en" data-tip="Population × years lived beyond the statutory retirement age (LE − retirement age) — total person-years spent in retirement. The bar splits them into healthy vs poor-health years.">i</span><span class="info" lang="bg" data-tip="Население × годините, изживени след законовата пенсионна възраст (ОПЖ − пенс. възраст) — общо човеко-години в пенсия. Лентата ги разделя на здрави срещу в лошо здраве.">i</span></h3><p class="q"><span lang="en">Years lived beyond the retirement age</span><span lang="bg">Години, изживени след пенсионната възраст</span></p>
+    <div class="v" id="wRet">—</div><div class="u"><span lang="en">million retirement person-years</span><span lang="bg">милиона пенсионни човеко-години</span></div>
     <div class="chg" id="cRet"></div>
-    <div class="legend"><span><span class="sw" style="background:var(--up)"></span>healthy</span>
-      <span><span class="sw" style="background:var(--down)"></span>in poor health (needs care)</span></div>
+    <div class="legend"><span><span class="sw" style="background:var(--up)"></span><span lang="en">healthy</span><span lang="bg">здрави</span></span>
+      <span><span class="sw" style="background:var(--down)"></span><span lang="en">in poor health (needs care)</span><span lang="bg">в лошо здраве (нужда от грижи)</span></span></div>
     <div class="bar" id="barRet"></div></div>
   <div class="oc" style="--c:var(--terra)"><div class="ic">🏥</div>
-    <h3>Who needs healthcare<span class="info" data-tip="Population × years lived in poor health (LE − HLY) (Level 4). Lower is better — more healthy life years means less care needed.">i</span></h3><p class="q">Poor-health person-years (LE − HLY)</p>
-    <div class="v" id="wCare">—</div><div class="u">million poor-health person-years · lower is better</div>
+    <h3><span lang="en">Who needs healthcare</span><span lang="bg">Кой има нужда от здравни грижи</span><span class="info" lang="en" data-tip="Population × years lived in poor health (LE − HLY) (Level 4). Lower is better — more healthy life years means less care needed.">i</span><span class="info" lang="bg" data-tip="Население × годините, изживени в лошо здраве (ОПЖ − ЗГЖ) (Ниво 4). По-ниско е по-добре — повече здрави години означава по-малко нужда от грижи.">i</span></h3><p class="q"><span lang="en">Poor-health person-years (LE − HLY)</span><span lang="bg">Човеко-години в лошо здраве (ОПЖ − ЗГЖ)</span></p>
+    <div class="v" id="wCare">—</div><div class="u"><span lang="en">million poor-health person-years · lower is better</span><span lang="bg">милиона човеко-години в лошо здраве · по-ниско е по-добре</span></div>
     <div class="chg" id="cCare"></div></div>
   <div class="oc" style="--c:var(--acc)"><div class="ic">🎭</div>
-    <h3>Who fills concert halls &amp; courses<span class="info" data-tip="Population × healthy years after retirement (HLY − retirement age, floored at 0) (Level 5) — the active, healthy retirees who fill leisure, education &amp; culture.">i</span></h3><p class="q">Healthy years after retirement</p>
-    <div class="v" id="wCult">—</div><div class="u">million healthy-retirement person-years</div>
+    <h3><span lang="en">Who fills concert halls &amp; courses</span><span lang="bg">Кой пълни концертните зали и курсовете</span><span class="info" lang="en" data-tip="Population × healthy years after retirement (HLY − retirement age, floored at 0) (Level 5) — the active, healthy retirees who fill leisure, education &amp; culture.">i</span><span class="info" lang="bg" data-tip="Население × здравите години след пенсиониране (ЗГЖ − пенс. възраст, ограничено до 0) (Ниво 5) — активните, здрави пенсионери, които пълнят свободното време, образованието и културата.">i</span></h3><p class="q"><span lang="en">Healthy years after retirement</span><span lang="bg">Здрави години след пенсиониране</span></p>
+    <div class="v" id="wCult">—</div><div class="u"><span lang="en">million healthy-retirement person-years</span><span lang="bg">милиона човеко-години здраво пенсиониране</span></div>
     <div class="chg" id="cCult"></div></div>
 </div>
 
-<div class="note"><b>How it works.</b> Values are a <b>central-path scenario</b> for 2033, recomputed from the
+<div class="note" lang="en"><b>How it works.</b> Values are a <b>central-path scenario</b> for 2033, recomputed from the
 forecast base by these identities (all per sex, then summed): <code>work = supply × (HLY/LE · working-life · participation)</code>,
 <code>retire = pop × max(0, LE − retirement age)</code>, <code>care = pop × (LE − HLY)</code>,
 <code>concert/courses = pop × max(0, HLY − retirement age)</code>. Raising HLY lifts the workforce and the healthy-retiree pool
 while cutting the care burden — at the central path several countries start near <b>zero</b> healthy years after retirement
 (self-perceived HLY below the retirement age), so the dial reveals how much health gain it takes to change that.</div>
-<div class="note"><b>Honest caveats.</b> HLY is <b>self-perceived</b> (Eurostat GALI) — read shifts, not absolute levels.
+<div class="note" lang="bg"><b>Как работи.</b> Стойностите са <b>сценарий по централната пътека</b> за 2033 г., преизчислени от
+прогнозната база по тези тъждества (всички по пол, после сумирани): <code>труд = предлагане × (ЗГЖ/ОПЖ · трудов живот · участие)</code>,
+<code>пенсия = насел. × max(0, ОПЖ − пенс. възраст)</code>, <code>грижи = насел. × (ОПЖ − ЗГЖ)</code>,
+<code>концерти/курсове = насел. × max(0, ЗГЖ − пенс. възраст)</code>. Повишаването на ЗГЖ увеличава работната сила и пула от
+здрави пенсионери, докато намалява тежестта от грижи — по централната пътека няколко държави започват близо до <b>нула</b>
+здрави години след пенсиониране (самооценените ЗГЖ под пенсионната възраст), затова плъзгачът разкрива колко здравна печалба е нужна, за да се промени това.</div>
+<div class="note" lang="en"><b>Honest caveats.</b> HLY is <b>self-perceived</b> (Eurostat GALI) — read shifts, not absolute levels.
 This is a deterministic central path (Level 5's headline dividend is the probability-weighted mean, which is higher because
 the healthy-retirement clip is convex). Participation and working-life responses are first-order — illustrative, not a labour-market model.</div>
-<p class="lead" style="margin-top:22px;font-size:12px"><a href="../index.html">← Overview</a> ·
-Generated from outputs/whatif_base.json · src/whatif_data.py, report_whatif.py</p>
+<div class="note" lang="bg"><b>Честни уговорки.</b> ЗГЖ е <b>самооценено</b> (Eurostat GALI) — четете промените, не абсолютните нива.
+Това е детерминистична централна пътека (заглавният дивидент на Ниво 5 е вероятностно претеглената средна, която е по-висока,
+защото отрязването при здравото пенсиониране е изпъкнало). Реакциите на участието и трудовия живот са от първи ред — илюстративни, не модел на пазара на труда.</div>
+<p class="lead" style="margin-top:22px;font-size:12px"><a href="../index.html"><span lang="en">← Overview</span><span lang="bg">← Обзор</span></a> ·
+src/whatif_data.py, report_whatif.py</p>
 </div>
 <script>const BASE = {"year": 2033, "countries": {"BG": {"name": "Bulgaria", "region": "East\u00b7EU", "P": 5904688, "LE": 76.2, "HLY": 67.8, "ret": 63.6, "work0": 117138779, "care0": 49346649, "culture0": 25082415, "retire0": 74429064, "vac0": 19567, "seg": [{"sex": "F", "pop": 3078880.2476, "pwa": 1784253.8922, "le": 79.8544, "hly": 69.7887, "ret": 62.5, "wl": 34.2818, "part": 0.6997, "work0": 54393104.7527}, {"sex": "M", "pop": 2825808.0953, "pwa": 1840282.8818, "le": 72.1804, "hly": 65.6847, "ret": 64.75, "wl": 36.4829, "part": 0.7584, "work0": 62745674.7031}]}, "PL": {"name": "Poland", "region": "East\u00b7EU", "P": 36757512, "LE": 78.9, "HLY": 64.3, "ret": 62.4, "work0": 635390852, "care0": 538696612, "culture0": 101343261, "retire0": 606648071, "vac0": 93956, "seg": [{"sex": "F", "pop": 18980457.9788, "pwa": 11851476.8129, "le": 82.3087, "hly": 65.3393, "ret": 60.0, "wl": 31.7541, "part": 0.6483, "work0": 275688940.3753}, {"sex": "M", "pop": 17777054.2873, "pwa": 11990949.9305, "le": 75.3065, "hly": 63.1216, "ret": 65.0, "wl": 37.3864, "part": 0.7586, "work0": 359701911.1547}]}, "CZ": {"name": "Czechia", "region": "East\u00b7EU", "P": 10708028, "LE": 80.6, "HLY": 62.7, "ret": 64.5, "work0": 195726248, "care0": 191755890, "culture0": 0, "retire0": 172647565, "vac0": 86414, "seg": [{"sex": "F", "pop": 5479493.5681, "pwa": 3407620.0219, "le": 83.6271, "hly": 63.3876, "ret": 64.5, "wl": 33.8405, "part": 0.6934, "work0": 84718357.4237}, {"sex": "M", "pop": 5228533.9908, "pwa": 3528384.8008, "le": 77.4751, "hly": 62.0111, "ret": 64.5, "wl": 39.7103, "part": 0.7792, "work0": 111007890.6389}]}, "RO": {"name": "Romania", "region": "East\u00b7EU", "P": 18618572, "LE": 77.1, "HLY": 63.4, "ret": 63.7, "work0": 304030883, "care0": 255153806, "culture0": 13051703, "retire0": 248609145, "vac0": 30430, "seg": [{"sex": "F", "pop": 9537017.4763, "pwa": 5765112.8783, "le": 80.6522, "hly": 63.8685, "ret": 62.5, "wl": 28.2439, "part": 0.5339, "work0": 124872887.8289}, {"sex": "M", "pop": 9081554.2547, "pwa": 6181611.346, "le": 73.3126, "hly": 62.8422, "ret": 65.0, "wl": 35.8864, "part": 0.7075, "work0": 179157994.7557}]}, "DE": {"name": "Germany", "region": "West\u00b7EU", "P": 85489960, "LE": 81.4, "HLY": 64.0, "ret": 66.3, "work0": 1644018954, "care0": 1487986013, "culture0": 0, "retire0": 1285833479, "vac0": 1121872, "seg": [{"sex": "F", "pop": 43196003.7609, "pwa": 26717325.5707, "le": 83.6272, "hly": 64.4778, "ret": 66.33, "wl": 39.6127, "part": 0.7624, "work0": 761983370.3046}, {"sex": "M", "pop": 42293956.7088, "pwa": 27774317.5133, "le": 79.0662, "hly": 63.442, "ret": 66.33, "wl": 42.5264, "part": 0.8074, "work0": 882035583.9629}]}, "FR": {"name": "France", "region": "West\u00b7EU", "P": 71765650, "LE": 83.3, "HLY": 64.1, "ret": 64.0, "work0": 1198806444, "care0": 1377971132, "culture0": 6467728, "retire0": 1384438860, "vac0": 477308, "seg": [{"sex": "F", "pop": 36936803.9577, "pwa": 22313576.3988, "le": 85.8913, "hly": 64.1385, "ret": 64.0, "wl": 36.4084, "part": 0.6688, "work0": 576976605.0804}, {"sex": "M", "pop": 34828846.4763, "pwa": 21939053.9456, "le": 80.5336, "hly": 64.0388, "ret": 64.0, "wl": 37.4542, "part": 0.6866, "work0": 621829838.656}]}, "NO": {"name": "Norway", "region": "EFTA", "P": 5785193, "LE": 83.9, "HLY": 66.1, "ret": 62.8, "work0": 121523554, "care0": 103030022, "culture0": 19289849, "retire0": 122319872, "vac0": 89148, "seg": [{"sex": "F", "pop": 2872524.674, "pwa": 1844619.4902, "le": 85.2303, "hly": 63.6917, "ret": 62.75, "wl": 40.1829, "part": 0.7538, "work0": 54038305.3914}, {"sex": "M", "pop": 2912667.8466, "pwa": 1941466.5615, "le": 82.5753, "hly": 68.444, "ret": 62.75, "wl": 43.0918, "part": 0.7814, "work0": 67485248.157}]}, "CH": {"name": "Switzerland", "region": "EFTA", "P": 9210835, "LE": 84.4, "HLY": 56.3, "ret": 64.5, "work0": 169124754, "care0": 259060140, "culture0": 0, "retire0": 183745947, "vac0": 90466, "seg": [{"sex": "F", "pop": 4634312.665, "pwa": 3015799.4613, "le": 86.0417, "hly": 54.7934, "ret": 64.5, "wl": 41.7822, "part": 0.7619, "work0": 76335498.3159}, {"sex": "M", "pop": 4576522.7692, "pwa": 3116906.1673, "le": 82.8359, "hly": 57.8726, "ret": 64.5, "wl": 44.6032, "part": 0.8115, "work0": 92789255.2867}]}}};</script>
 <script>
 const C={up:'#15803D',down:'#B91C1C',mut:'#78716C'};
 const M=1e6, fmt=v=>Math.round(v/M).toLocaleString();
 const fmtM=v=>{const m=v/M;return (m>=10?m.toFixed(1):m.toFixed(2))+'M';};
+const isBg=()=>document.documentElement.dataset.lang==='bg';
+const L=(en,bg)=>isBg()?bg:en;
 const ceq=document.getElementById('country');
-const ALL={name:'All 8 countries'};
 const codes=Object.keys(BASE.countries);
-[['ALL','All 8 countries'],...codes.map(c=>[c,BASE.countries[c].name])].forEach(([k,n])=>{
-  const o=document.createElement('option');o.value=k;o.textContent=n;ceq.appendChild(o);});
+let allOpt;
+[['ALL',null],...codes.map(c=>[c,BASE.countries[c].name])].forEach(([k,n])=>{
+  const o=document.createElement('option');o.value=k;o.textContent=n||L('All 8 countries','Всички 8 държави');
+  ceq.appendChild(o);if(k==='ALL')allOpt=o;});
+(function(){var r=document.documentElement;var Lg=localStorage.getItem('site-lang')||'bg';r.dataset.lang=Lg;
+ var b=document.getElementById('langtoggle');function u(){b.textContent=r.dataset.lang==='en'?'БГ':'EN';}
+ b.onclick=function(){var n=r.dataset.lang==='en'?'bg':'en';r.dataset.lang=n;localStorage.setItem('site-lang',n);u();
+   allOpt.textContent=L('All 8 countries','Всички 8 държави');render();};u();})();
 let state={c:'ALL',h:0,r:0,p:0};
 const clip=(v,a,b)=>Math.max(a,Math.min(b,v));
 
@@ -167,7 +197,7 @@ function chg(el,now,base,goodUp){
   el.style.color=col;
   const s=(d>=0?'+':'')+d.toFixed(1)+'%';
   const a=(abs>=0?'+':'')+Math.round(abs).toLocaleString()+'M';
-  el.textContent=Math.abs(d)<0.05?'no change vs base':`${s}  (${a} vs base)`;
+  el.textContent=Math.abs(d)<0.05?L('no change vs base','без промяна спрямо базата'):`${s}  (${a} ${L('vs base','спрямо базата')})`;
 }
 
 function render(){
@@ -202,24 +232,42 @@ function render(){
 }
 
 function narrate(now,base){
-  const nm=state.c==='ALL'?'the 8 countries':BASE.countries[state.c].name;
+  const bg=isBg();
+  const nm=state.c==='ALL'?(bg?'8-те държави':'the 8 countries'):BASE.countries[state.c].name;
+  const el=document.getElementById('story');
   if(state.h===0&&state.r===0&&state.p===0){
-    document.getElementById('story').innerHTML=
-      `<b>Base case (2033) for ${nm}.</b> Move the dials: ask whether people live longer in good health,
-       retire later, or work more — and watch who works, who retires, who needs care, and who fills the
-       concert halls respond together.`;return;}
+    el.innerHTML=bg
+      ? `<b>Базов случай (2033) за ${nm}.</b> Движете плъзгачите: попитайте дали хората живеят по-дълго в добро здраве,
+         пенсионират ли се по-късно или работят повече — и вижте как „кой работи“, „кой се пенсионира“, „кой има нужда от
+         грижи“ и „кой пълни концертните зали“ реагират заедно.`
+      : `<b>Base case (2033) for ${nm}.</b> Move the dials: ask whether people live longer in good health,
+         retire later, or work more — and watch who works, who retires, who needs care, and who fills the
+         concert halls respond together.`;
+    return;}
   const pc=(n,b)=>((n/b-1)*100);
   const w=pc(now.work,base.work), ca=pc(now.care,base.care), cu=pc(now.cult,base.cult);
   const bits=[];
-  if(state.h)bits.push(`<b>+${state.h}</b> healthy year${state.h==1?'':'s'}`);
-  if(state.r)bits.push(`retiring <b>${state.r>0?state.r+' yr later':Math.abs(state.r)+' yr earlier'}</b>`);
-  if(state.p)bits.push(`participation <b>${state.p>0?'+':''}${state.p}pp</b>`);
-  const careTxt = ca<=-0.05?`the care burden falls <b class="dn">${ca.toFixed(1)}%</b>`
-                : ca>=0.05?`the care burden rises <span class="dn">+${ca.toFixed(1)}%</span>`:`the care burden is flat`;
-  document.getElementById('story').innerHTML=
-    `For ${nm}: ${bits.join(', ')} → the workforce ${w>=0?'grows':'shrinks'} <b>${w>=0?'+':''}${w.toFixed(1)}%</b>,
-     ${careTxt}, and the <b>active healthy-retiree</b> pool (concert halls &amp; courses)
-     ${cu>=0?'grows':'shrinks'} <b>${cu>=0?'+':''}${cu.toFixed(1)}%</b>.`;
+  if(bg){
+    if(state.h)bits.push(`<b>+${state.h}</b> г. ЗГЖ`);
+    if(state.r)bits.push(`пенсиониране <b>${state.r>0?state.r+' г. по-късно':Math.abs(state.r)+' г. по-рано'}</b>`);
+    if(state.p)bits.push(`участие <b>${state.p>0?'+':''}${state.p}пр.п.</b>`);
+    const careTxt = ca<=-0.05?`тежестта от грижи пада <b class="dn">${ca.toFixed(1)}%</b>`
+                  : ca>=0.05?`тежестта от грижи расте <span class="dn">+${ca.toFixed(1)}%</span>`:`тежестта от грижи е без промяна`;
+    el.innerHTML=
+      `За ${nm}: ${bits.join(', ')} → работната сила ${w>=0?'расте':'намалява'} <b>${w>=0?'+':''}${w.toFixed(1)}%</b>,
+       ${careTxt}, а пулът от <b>активни здрави пенсионери</b> (концертни зали и курсове)
+       ${cu>=0?'расте':'намалява'} <b>${cu>=0?'+':''}${cu.toFixed(1)}%</b>.`;
+  } else {
+    if(state.h)bits.push(`<b>+${state.h}</b> healthy year${state.h==1?'':'s'}`);
+    if(state.r)bits.push(`retiring <b>${state.r>0?state.r+' yr later':Math.abs(state.r)+' yr earlier'}</b>`);
+    if(state.p)bits.push(`participation <b>${state.p>0?'+':''}${state.p}pp</b>`);
+    const careTxt = ca<=-0.05?`the care burden falls <b class="dn">${ca.toFixed(1)}%</b>`
+                  : ca>=0.05?`the care burden rises <span class="dn">+${ca.toFixed(1)}%</span>`:`the care burden is flat`;
+    el.innerHTML=
+      `For ${nm}: ${bits.join(', ')} → the workforce ${w>=0?'grows':'shrinks'} <b>${w>=0?'+':''}${w.toFixed(1)}%</b>,
+       ${careTxt}, and the <b>active healthy-retiree</b> pool (concert halls &amp; courses)
+       ${cu>=0?'grows':'shrinks'} <b>${cu>=0?'+':''}${cu.toFixed(1)}%</b>.`;
+  }
 }
 
 ceq.onchange=()=>{state.c=ceq.value;render();};
