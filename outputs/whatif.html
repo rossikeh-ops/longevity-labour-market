@@ -32,6 +32,16 @@ padding:14px 18px;margin:16px 0;font-size:15.5px;line-height:1.5}
 .oc .ic{font-size:22px}.oc h3{margin:6px 0 2px;font-size:15px}.oc .q{color:var(--mut);font-size:12.5px;margin:0 0 10px}
 .oc .v{font-size:28px;font-weight:750;line-height:1}.oc .u{color:var(--mut);font-size:12px;margin-top:3px}
 .oc .chg{font-size:14px;font-weight:700;margin-top:8px}
+.info{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;
+border:1px solid var(--mut);color:var(--mut);font:700 9px/1 Georgia,serif;font-style:italic;cursor:help;
+margin-left:5px;position:relative;vertical-align:middle;user-select:none}
+.info:hover{border-color:var(--acc);color:var(--acc)}
+.info:hover::after{content:attr(data-tip);position:absolute;left:50%;bottom:150%;transform:translateX(-50%);
+background:#292524;color:#fff;font:400 12px/1.45 -apple-system,Segoe UI,Roboto,Arial,sans-serif;font-style:normal;
+text-align:left;padding:9px 11px;border-radius:8px;width:250px;max-width:70vw;white-space:normal;z-index:60;
+box-shadow:0 6px 20px rgba(0,0,0,.22);pointer-events:none}
+.info:hover::before{content:'';position:absolute;left:50%;bottom:150%;transform:translateX(-50%) translateY(99%);
+border:6px solid transparent;border-top-color:#292524;z-index:60;pointer-events:none}
 .bar{height:12px;background:var(--bg);border:1px solid var(--line);border-radius:7px;overflow:hidden;margin-top:12px;display:flex}
 .bar .seg{height:100%}
 .note{color:var(--mut);font-size:13px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:16px}
@@ -82,22 +92,22 @@ who retires, who needs healthcare, and who fills the concert halls and the adult
 
 <div class="cards">
   <div class="oc" style="--c:var(--slate)"><div class="ic">👷</div>
-    <h3>Who keeps working</h3><p class="q">Labour supply — human-working-years</p>
+    <h3>Who keeps working<span class="info" data-tip="Labour supply in human-working-years = healthy working-age people × working life × participation (Level 1) — the labour the population can actually supply.">i</span></h3><p class="q">Labour supply — human-working-years</p>
     <div class="v" id="wWork">—</div><div class="u">million human-working-years</div>
     <div class="chg" id="cWork"></div></div>
   <div class="oc" style="--c:var(--mustard)"><div class="ic">🏖️</div>
-    <h3>Who retires</h3><p class="q">Years lived beyond the retirement age</p>
+    <h3>Who retires<span class="info" data-tip="Population × years lived beyond the statutory retirement age (LE − retirement age) — total person-years spent in retirement. The bar splits them into healthy vs poor-health years.">i</span></h3><p class="q">Years lived beyond the retirement age</p>
     <div class="v" id="wRet">—</div><div class="u">million retirement person-years</div>
     <div class="chg" id="cRet"></div>
     <div class="legend"><span><span class="sw" style="background:var(--up)"></span>healthy</span>
       <span><span class="sw" style="background:var(--down)"></span>in poor health (needs care)</span></div>
     <div class="bar" id="barRet"></div></div>
   <div class="oc" style="--c:var(--terra)"><div class="ic">🏥</div>
-    <h3>Who needs healthcare</h3><p class="q">Poor-health person-years (LE − HLY)</p>
+    <h3>Who needs healthcare<span class="info" data-tip="Population × years lived in poor health (LE − HLY) (Level 4). Lower is better — more healthy life years means less care needed.">i</span></h3><p class="q">Poor-health person-years (LE − HLY)</p>
     <div class="v" id="wCare">—</div><div class="u">million poor-health person-years · lower is better</div>
     <div class="chg" id="cCare"></div></div>
   <div class="oc" style="--c:var(--acc)"><div class="ic">🎭</div>
-    <h3>Who fills concert halls &amp; courses</h3><p class="q">Healthy years after retirement</p>
+    <h3>Who fills concert halls &amp; courses<span class="info" data-tip="Population × healthy years after retirement (HLY − retirement age, floored at 0) (Level 5) — the active, healthy retirees who fill leisure, education &amp; culture.">i</span></h3><p class="q">Healthy years after retirement</p>
     <div class="v" id="wCult">—</div><div class="u">million healthy-retirement person-years</div>
     <div class="chg" id="cCult"></div></div>
 </div>
