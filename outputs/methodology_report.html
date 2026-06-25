@@ -47,6 +47,14 @@ border-radius:20px;padding:5px 13px;font-size:12.5px;color:var(--ink)}
 @media (prefers-reduced-motion:reduce){.estage::after{animation:none;opacity:0}}
 h2 .hnum{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;
 border-radius:8px;font-size:16px;font-weight:800;color:#FFFFFF;margin-right:10px;vertical-align:-6px}
+/* scroll reveal: each block lights up as you reach it; level badges glow */
+.reveal{opacity:.32;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.reveal.shown{opacity:1;transform:none}
+.hnum{transition:box-shadow .4s ease}
+.hnum.glow{animation:levelup 1.1s ease-out}
+@keyframes levelup{0%{box-shadow:0 0 0 0 var(--gc,rgba(22,101,52,.55));transform:scale(1)}
+35%{transform:scale(1.18)}100%{box-shadow:0 0 0 16px rgba(22,101,52,0);transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.hnum.glow{animation:none}}
 a.dlink{display:inline-block;margin:2px 0 16px;font-size:13px;font-weight:600;color:var(--acc,#166534);text-decoration:none;border:1px solid var(--line,#E7E5E4);border-radius:20px;padding:6px 15px;background:var(--card,#FFFFFF)}a.dlink:hover{border-color:var(--acc,#166534)}button.dlbtn{display:inline-block;margin:2px 0 14px;font-size:13px;font-weight:600;color:#fff;background:var(--acc,#166534);border:1px solid var(--acc,#166534);border-radius:20px;padding:7px 16px;cursor:pointer}button.dlbtn:hover{filter:brightness(1.08)}details.data{margin:12px 0;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:0 16px}details.data>summary{cursor:pointer;font-weight:600;padding:14px 2px;list-style:none}details.data>summary::-webkit-details-marker{display:none}details.data>summary::before{content:'\25B8  ';color:var(--acc)}details.data[open]>summary::before{content:'\25BE  '}.dscroll{max-height:440px;overflow:auto;margin:0 0 16px;border-top:1px solid var(--line)}.dscroll table{font-size:12.5px}.dscroll thead th{position:sticky;top:0;background:var(--card);z-index:1}</style></head><body><div class="wrap">
 <h1>Methodology — how the model works</h1>
 <p class="sub">A transparent ensemble of simple statistical models + Monte-Carlo — deliberately
@@ -168,4 +176,28 @@ has the wrong sign (a self-perceived-health / GALI artifact) and within a countr
 <script>(function(){var SHEETS=[{"id": "dtab-0", "name": "Eurostat datasets & external"}];function run(){if(!window.XLSX){alert('Excel export library is still loading — please try again.');return;}var wb=XLSX.utils.book_new();SHEETS.forEach(function(s){var t=document.getElementById(s.id);if(t){var ws=XLSX.utils.table_to_sheet(t);XLSX.utils.book_append_sheet(wb,ws,s.name);}});XLSX.writeFile(wb,'methodology_sources.xlsx');}document.querySelectorAll('.dlbtn').forEach(function(b){b.addEventListener('click',run);});})();</script>
 <p class="foot">See also the <a href="model_validation_report.html">“Model trust”</a> report for the
 backtest accuracy of this ensemble. · Code: <code>src/forecast.py</code>, <code>balance_forecast.py</code></p>
-</div></body></html>
+</div>
+<script>
+// Light up each section as it scrolls into view; pulse the level badge as you reach it.
+(function(){
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  const sel='.wrap h2,.wrap p,.wrap .fig,.wrap .formula,.wrap .codebox,.wrap .g2,.wrap .note,.wrap ol,.wrap table,.wrap .engine';
+  const els=[...document.querySelectorAll(sel)];
+  els.forEach(el=>el.classList.add('reveal'));
+  const io=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting) return;
+      e.target.classList.add('shown');
+      const badge=e.target.querySelector && e.target.querySelector('.hnum');
+      if(badge){
+        const m=(badge.getAttribute('style')||'').match(/#[0-9a-fA-F]{6}/);
+        badge.style.setProperty('--gc', (m?m[0]:'#166534')+'88');
+        badge.classList.add('glow');
+      }
+      io.unobserve(e.target);
+    });
+  },{threshold:0.12, rootMargin:'0px 0px -7% 0px'});
+  els.forEach(el=>io.observe(el));
+})();
+</script>
+</body></html>

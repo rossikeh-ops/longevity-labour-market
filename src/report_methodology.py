@@ -256,6 +256,14 @@ border-radius:20px;padding:5px 13px;font-size:12.5px;color:var(--ink)}
 @media (prefers-reduced-motion:reduce){.estage::after{animation:none;opacity:0}}
 h2 .hnum{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;
 border-radius:8px;font-size:16px;font-weight:800;color:#FFFFFF;margin-right:10px;vertical-align:-6px}
+/* scroll reveal: each block lights up as you reach it; level badges glow */
+.reveal{opacity:.32;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.reveal.shown{opacity:1;transform:none}
+.hnum{transition:box-shadow .4s ease}
+.hnum.glow{animation:levelup 1.1s ease-out}
+@keyframes levelup{0%{box-shadow:0 0 0 0 var(--gc,rgba(22,101,52,.55));transform:scale(1)}
+35%{transform:scale(1.18)}100%{box-shadow:0 0 0 16px rgba(22,101,52,0);transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.hnum.glow{animation:none}}
 """
 
 HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -376,7 +384,31 @@ has the wrong sign (a self-perceived-health / GALI artifact) and within a countr
 {APPENDIX}
 <p class="foot">See also the <a href="model_validation_report.html">“Model trust”</a> report for the
 backtest accuracy of this ensemble. · Code: <code>src/forecast.py</code>, <code>balance_forecast.py</code></p>
-</div></body></html>"""
+</div>
+<script>
+// Light up each section as it scrolls into view; pulse the level badge as you reach it.
+(function(){{
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  const sel='.wrap h2,.wrap p,.wrap .fig,.wrap .formula,.wrap .codebox,.wrap .g2,.wrap .note,.wrap ol,.wrap table,.wrap .engine';
+  const els=[...document.querySelectorAll(sel)];
+  els.forEach(el=>el.classList.add('reveal'));
+  const io=new IntersectionObserver((entries)=>{{
+    entries.forEach(e=>{{
+      if(!e.isIntersecting) return;
+      e.target.classList.add('shown');
+      const badge=e.target.querySelector && e.target.querySelector('.hnum');
+      if(badge){{
+        const m=(badge.getAttribute('style')||'').match(/#[0-9a-fA-F]{{6}}/);
+        badge.style.setProperty('--gc', (m?m[0]:'#166534')+'88');
+        badge.classList.add('glow');
+      }}
+      io.unobserve(e.target);
+    }});
+  }},{{threshold:0.12, rootMargin:'0px 0px -7% 0px'}});
+  els.forEach(el=>io.observe(el));
+}})();
+</script>
+</body></html>"""
 
 (OUT / "methodology_report.html").write_text(HTML, encoding="utf-8")
 print(f"wrote outputs/methodology_report.html ({len(HTML)} bytes)")
