@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8">
+<!doctype html><html lang="en" data-lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Longevity & the Labour Market — Person-Year Engine</title>
 <style>
@@ -43,145 +43,199 @@ th{color:var(--mut);font-weight:600}.done{color:var(--ok)}.prog{color:var(--warn
 .note{color:var(--mut);font-size:14px;background:var(--card);border:1px solid var(--line);
 border-radius:10px;padding:16px;margin-top:12px}code{color:var(--acc)}
 a{color:var(--acc)}.foot{color:var(--mut);font-size:13px;margin-top:30px}
-</style></head><body><div class="wrap">
+html[data-lang='en'] [lang='bg']{display:none!important}
+html[data-lang='bg'] [lang='en']{display:none!important}
+.langtoggle{position:fixed;top:14px;right:14px;z-index:9999;background:var(--card);border:1px solid var(--line);
+border-radius:20px;padding:7px 15px;cursor:pointer;font:700 13px/1 inherit;color:var(--acc);box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.langtoggle:hover{border-color:var(--acc)}
+</style></head><body>
+<button class="langtoggle" id="langtoggle" aria-label="switch language">БГ</button>
+<div class="wrap">
 
-<h1>Longevity &amp; the Labour Market</h1>
-<p class="tag">A person-year engine: converting demographic averages into human-working-years,
+<h1><span lang="en">Longevity &amp; the Labour Market</span><span lang="bg">Дълголетие и пазарът на труда</span></h1>
+<p class="tag" lang="en">A person-year engine: converting demographic averages into human-working-years,
 forecasting labour <b>supply</b>, <b>demand</b> and their <b>balance</b> to 2033 for 8 European
 countries (BG, PL, CZ, RO, DE, FR, NO, CH), by sex. Solution to the
 <a href="https://github.com/Marchev-Science/case-longevity-and-labour-market">Marchev-Science case</a>.</p>
+<p class="tag" lang="bg">Двигател на човеко-години: превръща демографските средни стойности в човеко-работни
+години и прогнозира <b>предлагането</b>, <b>търсенето</b> на труд и техния <b>баланс</b> до 2033 г. за 8 европейски
+държави (BG, PL, CZ, RO, DE, FR, NO, CH), по пол. Решение на
+<a href="https://github.com/Marchev-Science/case-longevity-and-labour-market">казуса на Marchev-Science</a>.</p>
 
 <div class="kpis">
-<div class="kpi"><div class="v">8 × 2</div><div class="l">countries × sex</div></div>
-<div class="kpi"><div class="v">2011–2024</div><div class="l">common observed period</div></div>
-<div class="kpi"><div class="v">→ 2033</div><div class="l">forecast horizon</div></div>
-<div class="kpi"><div class="v">No neural nets</div><div class="l">Simple ensemble + Monte-Carlo</div></div>
+<div class="kpi"><div class="v">8 × 2</div><div class="l"><span lang="en">countries × sex</span><span lang="bg">държави × пол</span></div></div>
+<div class="kpi"><div class="v">2011–2024</div><div class="l"><span lang="en">common observed period</span><span lang="bg">общ наблюдаван период</span></div></div>
+<div class="kpi"><div class="v">→ 2033</div><div class="l"><span lang="en">forecast horizon</span><span lang="bg">хоризонт на прогнозата</span></div></div>
+<div class="kpi"><div class="v"><span lang="en">No neural nets</span><span lang="bg">Без невронни мрежи</span></div><div class="l"><span lang="en">Simple ensemble + Monte-Carlo</span><span lang="bg">Прост ансамбъл + Монте Карло</span></div></div>
 </div>
 
-<h2>Start here — introduction</h2>
+<h2><span lang="en">Start here — introduction</span><span lang="bg">Започнете оттук — въведение</span></h2>
 <div class="cards">
 <a class="card" href="outputs/introduction.html" style="grid-column:1/-1;border-color:var(--acc)">
-<div class="ic">🧭</div><h3>Introduction — can Europe balance its labour market by 2033?</h3>
-<p>The question, the person-year approach, and the <b>three policy levers</b> (increase supply, ease
-demand, maintain balance) — with a preview of the headline <b>East-surplus / West-shortage</b> finding.</p></a>
+<div class="ic">🧭</div>
+<h3 lang="en">Introduction — can Europe balance its labour market by 2033?</h3>
+<h3 lang="bg">Въведение — може ли Европа да балансира пазара си на труда до 2033 г.?</h3>
+<p lang="en">The question, the person-year approach, and the <b>three policy levers</b> (increase supply, ease
+demand, maintain balance) — with a preview of the headline <b>East-surplus / West-shortage</b> finding.</p>
+<p lang="bg">Въпросът, подходът на човеко-годините и <b>трите политически лоста</b> (увеличаване на предлагането,
+намаляване на търсенето, поддържане на баланс) — с преглед на ключовия извод: <b>излишък на Изток / недостиг на Запад</b>.</p></a>
 </div>
 
-<h2>Supporting</h2>
+<h2><span lang="en">Supporting</span><span lang="bg">Помощни материали</span></h2>
 <div class="cards">
 <a class="card" href="outputs/model_validation_report.html">
-<div class="ic">🔍</div><h3>Model trust — can we believe it?</h3>
-<p>Rolling-origin cross-validation: accuracy by driver and by country, calibration,
-observed-vs-predicted charts, and honest failure points.</p></a>
+<div class="ic">🔍</div>
+<h3 lang="en">Model trust — can we believe it?</h3><h3 lang="bg">Доверие в модела — можем ли да му вярваме?</h3>
+<p lang="en">Rolling-origin cross-validation: accuracy by driver and by country, calibration,
+observed-vs-predicted charts, and honest failure points.</p>
+<p lang="bg">Крос-валидация с плъзгащ произход: точност по показател и по държава, калибрация,
+графики наблюдавано-срещу-прогнозирано и честни слаби места.</p></a>
 <a class="card" href="outputs/methodology_report.html">
-<div class="ic">🧭</div><h3>Methodology — how the model works</h3>
-<p>Three diagrams: the 5-model ensemble engine, and how supply &amp; demand are
-assembled into human-working-years.</p></a>
+<div class="ic">🧭</div>
+<h3 lang="en">Methodology — how the model works</h3><h3 lang="bg">Методология — как работи моделът</h3>
+<p lang="en">Three diagrams: the 5-model ensemble engine, and how supply &amp; demand are
+assembled into human-working-years.</p>
+<p lang="bg">Три диаграми: ансамбловият двигател от 5 модела и как предлагането и търсенето се сглобяват
+в човеко-работни години.</p></a>
 <a class="card" href="outputs/ensemble_visualizer.html">
-<div class="ic">🎲</div><h3>Ensemble uncertainty visualizer</h3>
-<p>Interactive: drag <b>ensemble size</b> and <b>sampling noise</b> and watch a cloud of simple models form the
-uncertainty band — the project's <b>no-neural-nets, ensemble + Monte-Carlo</b> method, live.</p></a>
+<div class="ic">🎲</div>
+<h3 lang="en">Ensemble uncertainty visualizer</h3><h3 lang="bg">Визуализатор на несигурността на ансамбъла</h3>
+<p lang="en">Interactive: drag <b>ensemble size</b> and <b>sampling noise</b> and watch a cloud of simple models form the
+uncertainty band — the project's <b>no-neural-nets, ensemble + Monte-Carlo</b> method, live.</p>
+<p lang="bg">Интерактивно: променете <b>размера на ансамбъла</b> и <b>шума при извадката</b> и вижте как облак от прости
+модели формира лентата на несигурност — методът на проекта <b>без невронни мрежи, ансамбъл + Монте Карло</b>, на живо.</p></a>
 </div>
 
-<h2>KPIs at a glance</h2>
-<p class="tag" style="margin:-6px 0 6px">The headline numbers across every level, for 2033 — click any tile to open its report.</p>
-<div class="kgroup">Headline · labour-market balance 2033 (human-working-years)</div>
+<h2><span lang="en">KPIs at a glance</span><span lang="bg">Ключови показатели накратко</span></h2>
+<p class="tag" style="margin:-6px 0 6px"><span lang="en">The headline numbers across every level, for 2033 — click any tile to open its report.</span><span lang="bg">Основните числа по всички нива за 2033 г. — щракнете върху плочка, за да отворите доклада ѝ.</span></p>
+<div class="kgroup"><span lang="en">Headline · labour-market balance 2033 (human-working-years)</span><span lang="bg">Заглавно · баланс на пазара на труда 2033 (човеко-работни години)</span></div>
 <div class="kdash">
-<a class="ktile" href="outputs/level3.html"><div class="v" style="color:var(--ok)">+89M</div><div class="l">Net balance (≈ balanced in aggregate)</div></a>
-<a class="ktile" href="outputs/level3.html"><div class="v" style="color:var(--ok)">+369M</div><div class="l">East surplus (PL, RO, CZ, BG)</div></a>
-<a class="ktile" href="outputs/level3.html"><div class="v" style="color:#B91C1C">−280M</div><div class="l">West/EFTA shortage (DE, FR, CH, NO)</div></a>
+<a class="ktile" href="outputs/level3.html"><div class="v" style="color:var(--ok)">+89M</div><div class="l"><span lang="en">Net balance (≈ balanced in aggregate)</span><span lang="bg">Нетен баланс (≈ балансиран сумарно)</span></div></a>
+<a class="ktile" href="outputs/level3.html"><div class="v" style="color:var(--ok)">+369M</div><div class="l"><span lang="en">East surplus (PL, RO, CZ, BG)</span><span lang="bg">Излишък на Изток (PL, RO, CZ, BG)</span></div></a>
+<a class="ktile" href="outputs/level3.html"><div class="v" style="color:#B91C1C">−280M</div><div class="l"><span lang="en">West/EFTA shortage (DE, FR, CH, NO)</span><span lang="bg">Недостиг Запад/ЕАСТ (DE, FR, CH, NO)</span></div></a>
 </div>
-<div class="kgroup">Building blocks · supply &amp; demand (2024 → 2033)</div>
+<div class="kgroup"><span lang="en">Building blocks · supply &amp; demand (2024 → 2033)</span><span lang="bg">Градивни елементи · предлагане и търсене (2024 → 2033)</span></div>
 <div class="kdash">
-<a class="ktile" href="outputs/level1.html"><div class="v">4,386M</div><div class="l">Labour supply, human-working-years (−2.4%)</div></a>
-<a class="ktile" href="outputs/level2.html"><div class="v">4,310M</div><div class="l">Labour demand, human-working-years (−2.5%)</div></a>
+<a class="ktile" href="outputs/level1.html"><div class="v">4,386M</div><div class="l"><span lang="en">Labour supply, human-working-years (−2.4%)</span><span lang="bg">Предлагане на труд, човеко-работни години (−2.4%)</span></div></a>
+<a class="ktile" href="outputs/level2.html"><div class="v">4,310M</div><div class="l"><span lang="en">Labour demand, human-working-years (−2.5%)</span><span lang="bg">Търсене на труд, човеко-работни години (−2.5%)</span></div></a>
 </div>
-<div class="kgroup">Open horizons · health, retirement &amp; macro (2033)</div>
+<div class="kgroup"><span lang="en">Open horizons · health, retirement &amp; macro (2033)</span><span lang="bg">Отворени хоризонти · здраве, пенсиониране и макро (2033)</span></div>
 <div class="kdash">
-<a class="ktile" href="outputs/level4.html"><div class="v">4,263M</div><div class="l">Poor-health person-years (LE − HLY)</div></a>
-<a class="ktile" href="outputs/level5.html"><div class="v">438M</div><div class="l">Healthy-retirement dividend (+5.6 to −6.6 yrs/person)</div></a>
-<a class="ktile" href="outputs/level6.html"><div class="v">€8.6T</div><div class="l">Real GDP (≈0.8%/yr, productivity-led)</div></a>
+<a class="ktile" href="outputs/level4.html"><div class="v">4,263M</div><div class="l"><span lang="en">Poor-health person-years (LE − HLY)</span><span lang="bg">Човеко-години в лошо здраве (ОПЖ − ЗГЖ)</span></div></a>
+<a class="ktile" href="outputs/level5.html"><div class="v">438M</div><div class="l"><span lang="en">Healthy-retirement dividend (+5.6 to −6.6 yrs/person)</span><span lang="bg">Дивидент от здраво пенсиониране (+5.6 до −6.6 г./човек)</span></div></a>
+<a class="ktile" href="outputs/level6.html"><div class="v">€8.6T</div><div class="l"><span lang="en">Real GDP (≈0.8%/yr, productivity-led)</span><span lang="bg">Реален БВП (≈0.8%/год., водено от производителност)</span></div></a>
 </div>
-<div class="kgroup">Can we trust it? · leakage-safe backtest accuracy (MAPE)</div>
+<div class="kgroup"><span lang="en">Can we trust it? · leakage-safe backtest accuracy (MAPE)</span><span lang="bg">Можем ли да вярваме? · точност при бектест без изтичане (MAPE)</span></div>
 <div class="kdash">
-<a class="ktile" href="outputs/model_validation_report.html"><div class="v" style="color:var(--ok)">3.6%</div><div class="l">Supply forecast error</div></a>
-<a class="ktile" href="outputs/model_validation_report.html"><div class="v" style="color:var(--ok)">2.2%</div><div class="l">Demand forecast error</div></a>
-<a class="ktile" href="outputs/model_validation_report.html"><div class="v" style="color:var(--warn)">~23%</div><div class="l">Balance (a difference of two large stocks)</div></a>
+<a class="ktile" href="outputs/model_validation_report.html"><div class="v" style="color:var(--ok)">3.6%</div><div class="l"><span lang="en">Supply forecast error</span><span lang="bg">Грешка в прогнозата за предлагане</span></div></a>
+<a class="ktile" href="outputs/model_validation_report.html"><div class="v" style="color:var(--ok)">2.2%</div><div class="l"><span lang="en">Demand forecast error</span><span lang="bg">Грешка в прогнозата за търсене</span></div></a>
+<a class="ktile" href="outputs/model_validation_report.html"><div class="v" style="color:var(--warn)">~23%</div><div class="l"><span lang="en">Balance (a difference of two large stocks)</span><span lang="bg">Баланс (разлика на две големи величини)</span></div></a>
 </div>
 
-<h2>Explore by level — guided story &amp; full report, together</h2>
-<p class="tag" style="margin:-6px 0 16px">Pick a level to preview its <b>guided presentation</b> right here —
-then open it full-screen for the <b>full report</b> (maps, bands, data appendix + Excel).</p>
+<h2><span lang="en">Explore by level — guided story &amp; full report, together</span><span lang="bg">Разгледайте по нива — водена презентация и пълен доклад, заедно</span></h2>
+<p class="tag" style="margin:-6px 0 16px"><span lang="en">Pick a level to preview its <b>guided presentation</b> right here —
+then open it full-screen for the <b>full report</b> (maps, bands, data appendix + Excel).</span><span lang="bg">Изберете ниво, за да видите <b>водената му презентация</b> тук — после го отворете на цял екран
+за <b>пълния доклад</b> (карти, ленти, приложение с данни + Excel).</span></p>
 
 <div class="viewer">
   <div class="vbar">
-    <span class="vtitle">Level</span>
+    <span class="vtitle"><span lang="en">Level</span><span lang="bg">Ниво</span></span>
     <div class="lvbtns" id="lvbtns"></div>
   </div>
   <iframe id="vframe" title="Level viewer" loading="lazy"></iframe>
-  <p class="tag" style="margin:10px 2px 0;font-size:13px"><a class="vopen" id="vopen" href="outputs/level1.html">Open this level full-screen ↗</a></p>
+  <p class="tag" style="margin:10px 2px 0;font-size:13px"><a class="vopen" id="vopen" href="outputs/level1.html"><span lang="en">Open this level full-screen ↗</span><span lang="bg">Отворете нивото на цял екран ↗</span></a></p>
 </div>
 
 <div class="cards">
 <a class="card" href="outputs/whatif.html" style="grid-column:1/-1;border-color:var(--acc)">
-<div class="ic">🎚️</div><h3>What-if — do longer, healthier lives reshape the economy?</h3>
-<p>An interactive sandbox: three dials (<b>healthy life years</b>, retirement age, participation) and four
+<div class="ic">🎚️</div>
+<h3 lang="en">What-if — do longer, healthier lives reshape the economy?</h3>
+<h3 lang="bg">Какво-ако — преобразяват ли по-дългите и по-здрави животи икономиката?</h3>
+<p lang="en">An interactive sandbox: three dials (<b>healthy life years</b>, retirement age, participation) and four
 live answers — <b>who keeps working, who retires, who needs healthcare, and who fills the concert halls &amp;
-adult-education courses</b>. Built on the Level 1/4/5 identities.</p></a>
+adult-education courses</b>. Built on the Level 1/4/5 identities.</p>
+<p lang="bg">Интерактивен пясъчник: три плъзгача (<b>здрави години живот</b>, пенсионна възраст, участие) и четири живи
+отговора — <b>кой продължава да работи, кой се пенсионира, кой има нужда от здравни грижи и кой пълни концертните
+зали и курсовете за възрастни</b>. Базирано на тъждествата от Нива 1/4/5.</p></a>
 </div>
 
-<h2>Practical applications</h2>
+<h2><span lang="en">Practical applications</span><span lang="bg">Практически приложения</span></h2>
 <div class="cards">
 <a class="card" href="outputs/applications.html" style="grid-column:1/-1;border-color:var(--acc)">
-<div class="ic">🧩</div><h3>Practical applications — who uses this, and why it matters</h3>
-<p>Where this analysis is used in the real world — <b>pensions &amp; retirement</b>, <b>health &amp; long-term
+<div class="ic">🧩</div>
+<h3 lang="en">Practical applications — who uses this, and why it matters</h3>
+<h3 lang="bg">Практически приложения — кой ги използва и защо са важни</h3>
+<p lang="en">Where this analysis is used in the real world — <b>pensions &amp; retirement</b>, <b>health &amp; long-term
 care</b>, <b>labour &amp; migration</b>, <b>macro &amp; fiscal sustainability</b>, <b>workforce planning</b> and
 the <b>silver economy</b> — each tied to the level that supports it, grounded in the EU Ageing Report and the
-Silver Economy study.</p></a>
+Silver Economy study.</p>
+<p lang="bg">Къде се използва този анализ в реалния свят — <b>пенсии и пенсиониране</b>, <b>здравеопазване и дългосрочни
+грижи</b>, <b>труд и миграция</b>, <b>макро и фискална устойчивост</b>, <b>планиране на работната сила</b> и
+<b>сребърната икономика</b> — всяко свързано с подкрепящото го ниво, на база Доклада за застаряването на ЕС и
+проучването за сребърната икономика.</p></a>
 </div>
 
-<h2>Progress by level</h2>
-<table><thead><tr><th>Level</th><th>Status</th></tr></thead><tbody>
-<tr><td>L0 — Data foundation (Eurostat pipeline, balanced panel)</td><td class="done">✓ done</td></tr>
-<tr><td>L1 — Labour supply (working-age, forecast to 2033)</td><td class="done">✓ done</td></tr>
-<tr><td>L2 — Labour demand (jobs × service, scenarios)</td><td class="done">✓ done</td></tr>
-<tr><td>L3 — Balance (supply − demand), validated</td><td class="done">✓ done</td></tr>
-<tr><td>L4 — Cost of unhealthy years (poor-health person-years)</td><td class="done">✓ done</td></tr>
-<tr><td>L5 — Retirement dividend (healthy years after retirement)</td><td class="done">✓ done</td></tr>
-<tr><td>L6 — Open horizons (longevity → labour → macroeconomy, growth accounting)</td><td class="done">✓ done</td></tr>
+<h2><span lang="en">Progress by level</span><span lang="bg">Напредък по нива</span></h2>
+<table><thead><tr><th><span lang="en">Level</span><span lang="bg">Ниво</span></th><th><span lang="en">Status</span><span lang="bg">Статус</span></th></tr></thead><tbody>
+<tr lang="en"><td>L0 — Data foundation (Eurostat pipeline, balanced panel)</td><td class="done">✓ done</td></tr>
+<tr lang="bg"><td>L0 — Основа на данните (Eurostat поток, балансиран панел)</td><td class="done">✓ готово</td></tr>
+<tr lang="en"><td>L1 — Labour supply (working-age, forecast to 2033)</td><td class="done">✓ done</td></tr>
+<tr lang="bg"><td>L1 — Предлагане на труд (трудоспособна възраст, прогноза до 2033)</td><td class="done">✓ готово</td></tr>
+<tr lang="en"><td>L2 — Labour demand (jobs × service, scenarios)</td><td class="done">✓ done</td></tr>
+<tr lang="bg"><td>L2 — Търсене на труд (работни места × стаж, сценарии)</td><td class="done">✓ готово</td></tr>
+<tr lang="en"><td>L3 — Balance (supply − demand), validated</td><td class="done">✓ done</td></tr>
+<tr lang="bg"><td>L3 — Баланс (предлагане − търсене), валидиран</td><td class="done">✓ готово</td></tr>
+<tr lang="en"><td>L4 — Cost of unhealthy years (poor-health person-years)</td><td class="done">✓ done</td></tr>
+<tr lang="bg"><td>L4 — Цена на нездравите години (човеко-години в лошо здраве)</td><td class="done">✓ готово</td></tr>
+<tr lang="en"><td>L5 — Retirement dividend (healthy years after retirement)</td><td class="done">✓ done</td></tr>
+<tr lang="bg"><td>L5 — Пенсионен дивидент (здрави години след пенсиониране)</td><td class="done">✓ готово</td></tr>
+<tr lang="en"><td>L6 — Open horizons (longevity → labour → macroeconomy, growth accounting)</td><td class="done">✓ done</td></tr>
+<tr lang="bg"><td>L6 — Отворени хоризонти (дълголетие → труд → макроикономика, растежно счетоводство)</td><td class="done">✓ готово</td></tr>
 </tbody></table>
 
-<p class="foot">Reproducible pipeline in <code>src/</code> · data in <code>data/</code> ·
+<p class="foot" lang="en">Reproducible pipeline in <code>src/</code> · data in <code>data/</code> ·
 see <a href="https://github.com/rossikeh-ops/longevity-labour-market">the repository</a> and
 <code>docs/</code> for assumptions and definitions.</p>
+<p class="foot" lang="bg">Възпроизводим поток в <code>src/</code> · данни в <code>data/</code> ·
+вижте <a href="https://github.com/rossikeh-ops/longevity-labour-market">хранилището</a> и
+<code>docs/</code> за допускания и дефиниции.</p>
 
 </div>
 <script>
 (function(){
+  var r=document.documentElement;
+  var L=localStorage.getItem('site-lang')||'en';r.dataset.lang=L;
+  var b=document.getElementById('langtoggle');
+  function u(){b.textContent=r.dataset.lang==='en'?'БГ':'EN';}
+  b.onclick=function(){var n=r.dataset.lang==='en'?'bg':'en';r.dataset.lang=n;localStorage.setItem('site-lang',n);u();};u();
+})();
+(function(){
   // Inline preview shows the guided STORY directly (no tabs). The full report
   // lives on the merged page (level{n}.html), reachable via "open full-screen".
   const LV={
-    1:{label:"1 · Supply",  story:"outputs/supply_story.html",   page:"outputs/level1.html"},
-    2:{label:"2 · Demand",  story:"outputs/demand_story.html",   page:"outputs/level2.html"},
-    3:{label:"3 · Balance", story:"outputs/balance_story.html",  page:"outputs/level3.html"},
-    4:{label:"4 · Cost",    story:"outputs/cost_story.html",     page:"outputs/level4.html"},
-    5:{label:"5 · Dividend",story:"outputs/dividend_story.html", page:"outputs/level5.html"},
-    6:{label:"6 · Macro",   story:"outputs/macro_story.html",    page:"outputs/level6.html"}
+    1:{en:"1 · Supply",  bg:"1 · Предлагане", story:"outputs/supply_story.html",   page:"outputs/level1.html"},
+    2:{en:"2 · Demand",  bg:"2 · Търсене",    story:"outputs/demand_story.html",   page:"outputs/level2.html"},
+    3:{en:"3 · Balance", bg:"3 · Баланс",     story:"outputs/balance_story.html",  page:"outputs/level3.html"},
+    4:{en:"4 · Cost",    bg:"4 · Цена",       story:"outputs/cost_story.html",     page:"outputs/level4.html"},
+    5:{en:"5 · Dividend",bg:"5 · Дивидент",   story:"outputs/dividend_story.html", page:"outputs/level5.html"},
+    6:{en:"6 · Macro",   bg:"6 · Макро",      story:"outputs/macro_story.html",    page:"outputs/level6.html"}
   };
   const frame=document.getElementById('vframe'), bts=document.getElementById('lvbtns'),
         vopen=document.getElementById('vopen');
   let lvl=1;
+  function lbl(k){return document.documentElement.dataset.lang==='bg'?LV[k].bg:LV[k].en;}
   Object.keys(LV).forEach(k=>{
-    const b=document.createElement('button'); b.className='lvbtn'; b.textContent=LV[k].label;
-    b.dataset.lvl=k; b.onclick=()=>{lvl=+k; render();};
-    bts.appendChild(b);
+    const b=document.createElement('button'); b.className='lvbtn'; b.dataset.lvl=k;
+    b.onclick=()=>{lvl=+k; render();}; bts.appendChild(b);
   });
   function render(){
     const cfg=LV[lvl];
     if(frame.getAttribute('src')!==cfg.story) frame.src=cfg.story;
     vopen.href=cfg.page;
-    [...bts.children].forEach(b=>b.classList.toggle('on',+b.dataset.lvl===lvl));
+    [...bts.children].forEach(b=>{b.textContent=lbl(b.dataset.lvl);b.classList.toggle('on',+b.dataset.lvl===lvl);});
   }
   render();
+  document.getElementById('langtoggle').addEventListener('click',()=>setTimeout(render,0));
 })();
 </script>
 </body></html>
