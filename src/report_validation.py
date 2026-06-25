@@ -18,6 +18,30 @@ OUT = ROOT / "outputs"
 val = json.loads((OUT / "validation_metrics.json").read_text(encoding="utf-8"))
 metrics, show = val["metrics"], val["show"]
 
+# ---- hover-tooltip glossary: an ⓘ next to every metric explains what it is ----
+METRIC_INFO = {
+    "Accuracy": "1 − MAPE. 1.000 is a perfect forecast; 0.97 means the prediction is on average 3% off the actual value.",
+    "MAPE": "Mean Absolute Percentage Error on held-out years — the average size of the forecast error as a % of the actual value. Lower is better.",
+    "RMSE": "Root Mean Squared Error, in the series' own units. Like an average error but penalises large misses more heavily.",
+    "Bias": "Mean signed % error. Positive = the model over-forecasts on average, negative = under-forecasts. Near 0 means unbiased.",
+    "Skill": "Improvement over a naive last-value guess: 1 − MAPE_model / MAPE_naive. Above 0 beats naive, 0 ties it, below 0 is worse.",
+    "Coverage": "Calibration check: the share of held-out actual values that fell inside the model's 80% uncertainty band. Close to 80% means the bands are honest.",
+    "Train": "In-sample fit error — the model scored on the very history it was fitted to. Optimistic by construction.",
+    "Backtest": "Out-of-sample error — a rolling-origin forecast of held-out future years the model never saw while fitting. The realistic number.",
+    "Deviation": "Backtest − Train: the generalisation gap. A small value means the model is not overfitting; a large one means it does much worse on unseen years.",
+    "Metric": "The error measure shown in this row — MAPE (% error) or RMSE (error in native units).",
+    "medAPE": "The median absolute % error — the typical error, less inflated by a few extreme misses than the mean (MAPE).",
+    "naive": "MAPE of a naive last-value forecast (next year = this year) — the baseline every model must beat.",
+    "horizon": "How many years ahead the forecast is. Error generally grows the further out you predict.",
+    "Balance error": "Average absolute error of the supply − demand balance, in million person-years. The balance is a small difference of two large forecasts, so its relative error is amplified.",
+}
+
+
+def info(key, tip=None):
+    """Return an ⓘ icon with a hover tooltip explaining the metric `key`."""
+    t = (tip or METRIC_INFO.get(key, "")).replace('"', "'")
+    return f'<span class="info" data-tip="{t}">i</span>' if t else ""
+
 p = pd.read_parquet(ROOT / "data" / "processed" / "panel_common.parquet")
 v = p[p.year == 2024]
 emp = v["employed_ths"].sum() * 1000
@@ -105,8 +129,9 @@ honest ceiling</b>, not a failure. Covariates and trend/seasonal models all did 
 the level bias of a fitted curve) and adds a <b>damped Beveridge response</b> to unemployment (shared
 slope {bf["slope"]}, so vacancies still fall when unemployment rises — keeping it scenario-able).
 The count is rebuilt from the vacancy-rate identity.</p>
-<table style="max-width:680px"><thead><tr><th>Vacancy model</th><th>MAPE</th><th>median APE</th>
-<th>vs naive</th><th>Skill</th><th>Bias</th></tr></thead><tbody>
+<table style="max-width:680px"><thead><tr><th>Vacancy model</th><th>MAPE{info("MAPE")}</th>
+<th>median APE{info("medAPE")}</th><th>vs naive{info("naive")}</th><th>Skill{info("Skill")}</th>
+<th>Bias{info("Bias")}</th></tr></thead><tbody>
 {_vrow("OLD — direct trend ensemble", o)}
 {_vrow("NEW — anchored Beveridge", nw, hl=True)}
 </tbody></table>
@@ -332,7 +357,8 @@ def _pmtable(k):
     return (
         f'<div class="pmcard"><div class="pmh">{m["label"]}'
         f'<span class="pmn">n={m["n"]}</span></div>'
-        f'<table class="pm"><thead><tr><th>Metric</th><th>Train</th><th>Backtest</th><th>Deviation</th></tr></thead><tbody>'
+        f'<table class="pm"><thead><tr><th>Metric{info("Metric")}</th><th>Train{info("Train")}</th>'
+        f'<th>Backtest{info("Backtest")}</th><th>Deviation{info("Deviation")}</th></tr></thead><tbody>'
         f'<tr><td>MAPE</td><td>{m["train_mape"]}%</td><td>{m["mape_ens"]}%</td>'
         f'<td style="color:{_devcol(m["dev_mape"])};font-weight:600">{g(m["dev_mape"])} pp</td></tr>'
         f'<tr><td>RMSE</td><td>{m["train_rmse"]:g}</td><td>{m["rmse"]:g}</td>'
@@ -382,6 +408,17 @@ code{background:#F5F5F4;border:1px solid #E7E5E4;border-radius:5px;padding:1px 6
 color:#475569;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace}
 .lgd{display:flex;gap:16px;color:var(--mut);font-size:12px;margin:4px 0 0;flex-wrap:wrap}
 .sw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.info{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;
+border:1px solid var(--mut);color:var(--mut);font:700 9px/1 Georgia,serif;font-style:italic;cursor:help;
+margin-left:5px;position:relative;vertical-align:middle;user-select:none}
+.info:hover{border-color:var(--ok);color:var(--ok)}
+.info:hover::after{content:attr(data-tip);position:absolute;left:50%;bottom:150%;transform:translateX(-50%);
+background:#292524;color:#fff;font:400 12px/1.45 -apple-system,Segoe UI,Roboto,Arial,sans-serif;font-style:normal;
+text-align:left;padding:9px 11px;border-radius:8px;width:250px;max-width:60vw;white-space:normal;z-index:60;
+box-shadow:0 6px 20px rgba(0,0,0,.22);pointer-events:none}
+.info:hover::before{content:'';position:absolute;left:50%;bottom:150%;transform:translateX(-50%) translateY(99%);
+border:6px solid transparent;border-top-color:#292524;z-index:60;pointer-events:none}
+th .info{border-color:#a8a29e}
 .pmgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
 .pmcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
 .pmh{font-weight:650;font-size:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:baseline}
@@ -412,8 +449,9 @@ Uncertainty bands cover 84–89% of reality (target 80%) — honest, slightly co
 <p class="sub"><b>Accuracy = 1 − MAPE</b> (1.000 = perfect). MAPE = mean abs % error on held-out years;
 RMSE in native units; Bias = signed error (+ = over-forecast); Skill = improvement over a naive
 last-value forecast; Coverage = share of actuals inside the 80% band.</p>
-<table><thead><tr><th>Driver</th><th>Accuracy</th><th>MAPE</th><th>RMSE</th><th>Bias</th>
-<th>Skill</th><th>Cover 80%</th><th>Verdict</th></tr></thead><tbody>{table_html}</tbody></table>
+<table><thead><tr><th>Driver</th><th>Accuracy{info("Accuracy")}</th><th>MAPE{info("MAPE")}</th>
+<th>RMSE{info("RMSE")}</th><th>Bias{info("Bias")}</th><th>Skill{info("Skill")}</th>
+<th>Cover 80%{info("Coverage")}</th><th>Verdict</th></tr></thead><tbody>{table_html}</tbody></table>
 <div style="margin-top:14px">{mape_svg}</div>
 
 <h2>Train vs backtest, by model — the generalisation gap</h2>
@@ -491,8 +529,9 @@ tracks income. See the <a href="level5_dividend_report.html">Level 5 report</a>.
 {denom_html}
 <h2>Error by forecast horizon</h2>
 <p class="sub">How accuracy decays with how far ahead we forecast (1–4 years out), for the composed levels.</p>
-<table style="max-width:620px"><thead><tr><th>Years ahead</th><th>Supply MAPE</th><th>Demand MAPE</th>
-<th>Burden MAPE</th><th>Balance error</th></tr></thead><tbody>{hz_rows}</tbody></table>
+<table style="max-width:620px"><thead><tr><th>Years ahead{info("horizon")}</th><th>Supply MAPE{info("MAPE")}</th>
+<th>Demand MAPE{info("MAPE")}</th><th>Burden MAPE{info("MAPE")}</th>
+<th>Balance error{info("Balance error")}</th></tr></thead><tbody>{hz_rows}</tbody></table>
 
 <h2>Accuracy by country</h2>
 <p class="sub">Average forecast accuracy (1 − MAPE) across the five drivers, per country.</p>
