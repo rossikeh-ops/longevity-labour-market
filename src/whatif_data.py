@@ -70,6 +70,9 @@ for c in COUNTRIES:
     retire0 = sum(g["pop"] * max(0.0, g["le"] - g["ret"]) for g in segs)
     work0 = sum(g["work0"] for g in segs)
     P = sum(g["pop"] for g in segs)
+    # job listings (vacancies): latest observed whole-economy vacancy count
+    _vc = panel[panel.country == c].dropna(subset=["vacancy_count"]).sort_values("year")
+    vac0 = float(_vc["vacancy_count"].iloc[-1]) if len(_vc) else 0.0
 
     base[c] = {
         "name": NAME[c], "region": REGION[c],
@@ -77,7 +80,7 @@ for c in COUNTRIES:
         "HLY": round(sum(g["hly"] * g["pop"] for g in segs) / P, 1),
         "ret": round(sum(g["ret"] * g["pop"] for g in segs) / P, 1),
         "work0": round(work0), "care0": round(care0),
-        "culture0": round(culture0), "retire0": round(retire0),
+        "culture0": round(culture0), "retire0": round(retire0), "vac0": round(vac0),
         "seg": [{kk: (round(vv, 4) if isinstance(vv, float) else vv) for kk, vv in g.items()} for g in segs],
     }
     check.append((c, culture0, float(div33[c])))

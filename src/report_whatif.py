@@ -43,6 +43,9 @@ select{background:var(--bg);color:var(--ink);border:1px solid var(--line);border
 .sl .val{font-weight:700;color:var(--acc);font-size:15px}
 input[type=range]{width:100%;accent-color:var(--acc);margin:6px 0 2px}
 .scale{display:flex;justify-content:space-between;color:var(--mut);font-size:11px}
+.jobchips{display:flex;gap:8px;margin-top:12px}
+.jc{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:8px 10px;text-align:center}
+.jc .jv{font-size:16px;font-weight:700}.jc .jl{color:var(--mut);font-size:10.5px;margin-top:2px}
 .presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .preset{border:1px solid var(--line);background:var(--bg);border-radius:20px;padding:7px 14px;font-size:13px;
 font-weight:600;cursor:pointer;color:var(--ink)}.preset:hover{border-color:var(--acc)}
@@ -101,7 +104,11 @@ who retires, who needs healthcare, and who fills the concert halls and the adult
       <div class="d">Do more of them work? Shift the employment rate of healthy working-age people.</div>
       <div class="val"><span id="vP">+0</span> pp</div>
       <input type="range" id="sP" min="-5" max="12" step="1" value="0">
-      <div class="scale"><span>−5</span><span>base</span><span>+12</span></div></div>
+      <div class="scale"><span>−5</span><span>base</span><span>+12</span></div>
+      <div class="jobchips">
+        <div class="jc"><div class="jv" id="occJobs">—</div><div class="jl">💼 Occupied jobs</div></div>
+        <div class="jc"><div class="jv" id="jobList">—</div><div class="jl">📋 Job listings (vacancies)</div></div>
+      </div></div>
   </div>
   <div class="presets">
     <button class="preset" data-h="3" data-r="0" data-p="0">Healthy ageing (+3 HLY)</button>
@@ -151,6 +158,7 @@ Generated from outputs/whatif_base.json · src/whatif_data.py, report_whatif.py<
 <script>
 const C={up:'#15803D',down:'#B91C1C',mut:'#78716C'};
 const M=1e6, fmt=v=>Math.round(v/M).toLocaleString();
+const fmtM=v=>{const m=v/M;return (m>=10?m.toFixed(1):m.toFixed(2))+'M';};
 const ceq=document.getElementById('country');
 const ALL={name:'All 8 countries'};
 const codes=Object.keys(BASE.countries);
@@ -189,6 +197,14 @@ function render(){
   document.getElementById('vH').textContent=(state.h>=0?'+':'')+state.h.toFixed(1);
   document.getElementById('vR').textContent=(state.r>=0?'+':'')+state.r.toFixed(1);
   document.getElementById('vP').textContent=(state.p>=0?'+':'')+state.p;
+  // occupied jobs (employed = participation × working-age people) and job listings (vacancies):
+  // raising participation fills the open listings, so occupied ↑ and listings ↓.
+  const segs=segsFor(state.c);
+  const occ0=segs.reduce((a,g)=>a+g.part*g.pwa,0);
+  const occ=segs.reduce((a,g)=>a+clip(g.part+state.p/100,0,1)*g.pwa,0);
+  const vac0=state.c==='ALL'?codes.reduce((a,k)=>a+BASE.countries[k].vac0,0):BASE.countries[state.c].vac0;
+  document.getElementById('occJobs').textContent=fmtM(occ);
+  document.getElementById('jobList').textContent=fmtM(Math.max(0,vac0-(occ-occ0)));
   const now=compute(state.c,state.h,state.r,state.p);
   const base=compute(state.c,0,0,0);
   document.getElementById('wWork').textContent=fmt(now.work);
