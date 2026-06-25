@@ -69,17 +69,13 @@ adult-education courses</b>. Built on the Level 1/4/5 identities.</p></a>
 </div>
 
 <h2>Explore by level — guided story &amp; full report, together</h2>
-<p class="tag" style="margin:-6px 0 16px">Pick a level and switch between the <b>guided presentation</b> and the
-<b>full report</b> (maps, bands, data appendix + Excel) right here — or open any level full-screen below.</p>
+<p class="tag" style="margin:-6px 0 16px">Pick a level and explore it right here — each opens on its
+<b>guided presentation</b> with the <b>full report</b> a tab away — or open any level full-screen below.</p>
 
 <div class="viewer">
   <div class="vbar">
     <span class="vtitle">Level</span>
     <div class="lvbtns" id="lvbtns"></div>
-    <div class="vtabs">
-      <button class="vtab" data-tab="story" id="tabStory">▶ Guided story</button>
-      <button class="vtab" data-tab="report" id="tabReport">📄 Full report</button>
-    </div>
   </div>
   <iframe id="vframe" title="Level viewer" loading="lazy"></iframe>
   <p class="tag" style="margin:10px 2px 0;font-size:13px"><a class="vopen" id="vopen" href="outputs/level1.html">Open this level full-screen ↗</a></p>
@@ -156,37 +152,30 @@ see <a href="https://github.com/rossikeh-ops/longevity-labour-market">the reposi
 </div>
 <script>
 (function(){
+  // Each level embeds its MERGED page (level{n}.html), which carries its own
+  // guided-story / full-report tabs — so the home no longer duplicates them.
   const LV={
-    1:{label:"1 · Supply",  story:"outputs/supply_story.html",   report:"outputs/level1_supply_report.html",  page:"outputs/level1.html"},
-    2:{label:"2 · Demand",  story:"outputs/demand_story.html",   report:"outputs/level2_demand_report.html",  page:"outputs/level2.html"},
-    3:{label:"3 · Balance", story:"outputs/balance_story.html",  report:"outputs/level3_balance_report.html", page:"outputs/level3.html"},
-    4:{label:"4 · Cost",    story:"outputs/cost_story.html",     report:"outputs/level4_cost_report.html",    page:"outputs/level4.html"},
-    5:{label:"5 · Dividend",story:"outputs/dividend_story.html", report:"outputs/level5_dividend_report.html",page:"outputs/level5.html"},
-    6:{label:"6 · Macro",   story:"outputs/macro_story.html",    report:"outputs/level6_macro_report.html",   page:"outputs/level6.html"}
+    1:{label:"1 · Supply",  page:"outputs/level1.html"},
+    2:{label:"2 · Demand",  page:"outputs/level2.html"},
+    3:{label:"3 · Balance", page:"outputs/level3.html"},
+    4:{label:"4 · Cost",    page:"outputs/level4.html"},
+    5:{label:"5 · Dividend",page:"outputs/level5.html"},
+    6:{label:"6 · Macro",   page:"outputs/level6.html"}
   };
   const frame=document.getElementById('vframe'), bts=document.getElementById('lvbtns'),
-        tStory=document.getElementById('tabStory'), tReport=document.getElementById('tabReport'),
         vopen=document.getElementById('vopen');
-  let state={lvl:1, tab:'story'};
+  let lvl=1;
   Object.keys(LV).forEach(k=>{
     const b=document.createElement('button'); b.className='lvbtn'; b.textContent=LV[k].label;
-    b.dataset.lvl=k; b.onclick=()=>{state.lvl=+k; if(!LV[k].story) state.tab='report'; render();};
+    b.dataset.lvl=k; b.onclick=()=>{lvl=+k; render();};
     bts.appendChild(b);
   });
   function render(){
-    const cfg=LV[state.lvl];
-    const hasStory=!!cfg.story;
-    tStory.disabled=!hasStory;
-    if(state.tab==='story' && !hasStory) state.tab='report';
-    const src=state.tab==='story'?cfg.story:cfg.report;
-    if(frame.getAttribute('src')!==src) frame.src=src;
+    const cfg=LV[lvl];
+    if(frame.getAttribute('src')!==cfg.page) frame.src=cfg.page;
     vopen.href=cfg.page;
-    [...bts.children].forEach(b=>b.classList.toggle('on',+b.dataset.lvl===state.lvl));
-    tStory.classList.toggle('on',state.tab==='story');
-    tReport.classList.toggle('on',state.tab==='report');
+    [...bts.children].forEach(b=>b.classList.toggle('on',+b.dataset.lvl===lvl));
   }
-  tStory.onclick=()=>{if(LV[state.lvl].story){state.tab='story';render();}};
-  tReport.onclick=()=>{state.tab='report';render();};
   render();
 })();
 </script>
