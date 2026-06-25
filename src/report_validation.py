@@ -151,6 +151,37 @@ if jc_path.exists():
         bsv.append(f'<rect x="{x0}" y="{y}" width="{w:.1f}" height="{bh}" rx="5" fill="{col}" opacity="0.88"/>')
         bsv.append(f'<text x="{x0+w+9:.1f}" y="{y+bh/2+5:.0f}" font-size="15" font-weight="700" fill="{col}">{v}%</text>')
     bar_svg = f'<svg viewBox="0 0 {BW} {BH}" width="100%" xmlns="http://www.w3.org/2000/svg">{"".join(bsv)}</svg>'
+
+    # second comparison: LFS (residence) vs NA (domestic-concept) employment base
+    na_table_html = ""
+    na_path = OUT / "na_employment_compare.json"
+    if na_path.exists():
+        na = json.loads(na_path.read_text(encoding="utf-8"))
+        vL, vN = na["vacancy_backtest"]["lfs"], na["vacancy_backtest"]["na"]
+        dL, dN = na["denominator_vs_jobocc"]["lfs"], na["denominator_vs_jobocc"]["na"]
+        win = lambda a, b: ("#15803D", "#78716C") if a <= b else ("#78716C", "#15803D")
+        c1 = win(vL["mape"], vN["mape"])      # lower vacancy MAPE is better
+        c2 = win(dL["mape"], dN["mape"])      # lower JOBOCC gap is better
+        na_table_html = f"""
+<p class="sub" style="margin-top:22px"><b>A third source — National-Accounts <i>domestic-concept</i> employment</b>
+(<code>nama_10_a64_e</code>, EMP_DC, THS_PER): it counts jobs <i>in the territory</i> (incl. cross-border commuters),
+so it should be a truer occupied-jobs base than LFS residence-concept employment — especially for CH, NO, FR. Does it help?</p>
+<table style="max-width:680px"><thead><tr><th>Occupied-jobs base for the denominator</th>
+<th>Vacancy-count backtest MAPE</th><th>Tracks real JOBOCC</th></tr></thead><tbody>
+<tr><td>LFS employment — residence concept <b>(current)</b></td>
+<td style="color:{c1[0]};font-weight:700">{vL['mape']}%</td>
+<td style="color:{c2[0]}">{dL['mape']}%</td></tr>
+<tr><td>NA employment — domestic concept</td>
+<td style="color:{c1[1]};font-weight:700">{vN['mape']}%</td>
+<td style="color:{c2[1]};font-weight:700">{dN['mape']}%</td></tr>
+</tbody></table>
+<div class="note"><b>Tracks JOBOCC tighter, but forecasts no better.</b> The domestic concept is the truer occupied-jobs
+level — it matches the real <code>JOBOCC</code> to <b>{dN['mape']}%</b> vs LFS's {dL['mape']}% (exactly as theory predicts).
+But it does <b>not</b> improve the vacancy <i>forecast</i> ({vN['mape']}% vs <b>{vL['mape']}%</b>): the dominant error is the
+Beveridge <i>rate</i>, and the annual, revision-prone NA series adds noise the smoother LFS doesn't. Even the cross-border
+cases don't pay off — only France improves; CH and NO are slightly worse. <b>So we keep LFS residence-concept employment.</b>
+Reproducible in <code>src/compare_na_employment.py</code>.</div>"""
+
     denom_html = f"""
 <h2>Does the real occupied-posts series help? (denominator test)</h2>
 <p class="sub">The vacancy count is rebuilt from the forecast rate via the identity
@@ -170,6 +201,7 @@ gives a <b>lower</b> backtest error ({cb["mape"]}% vs {rl["mape"]}%): the domina
 employment-calibration is the better engineering choice — it matches the real series to ~{dn["mape"]}% while being
 smoother, so it reconstructs vacancies <b>as well or better</b>. We keep the calibration and document the test here.
 Reproducible in <code>src/compare_jobocc.py</code>.</div>
+{na_table_html}
 """
 
 # fixed train/test split (train <=2019, predict 2020-2024) section
