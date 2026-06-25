@@ -15,6 +15,9 @@ h1{font-size:27px;margin:0 0 4px}h2{font-size:19px;margin:34px 0 10px}
 .swatch{display:inline-block;width:11px;height:11px;border-radius:2px;margin:0 4px -1px 0}
 .note{color:var(--mut);font-size:14.5px;background:var(--card);border:1px solid var(--line);
 border-radius:12px;padding:16px 18px;margin:14px 0}.note b{color:var(--ink)}
+.formula{background:#F0FDF4;border:1px solid #166534;border-left:5px solid #166534;border-radius:12px;
+padding:14px 20px;margin:14px 0;font-size:19px;font-weight:600;text-align:center;line-height:1.45}
+.formula b{color:#166534}.formula .u{display:block;font-size:13px;color:var(--mut);font-weight:400;margin-top:5px}
 p{margin:12px 0}b{color:var(--ink)}code{color:var(--acc)}
 ol{color:var(--ink)}li{margin:4px 0}
 a{color:var(--acc)}.foot{color:var(--mut);font-size:13px;margin-top:30px}
@@ -44,7 +47,8 @@ border-radius:8px;font-size:16px;font-weight:800;color:#FFFFFF;margin-right:10px
 a.dlink{display:inline-block;margin:2px 0 16px;font-size:13px;font-weight:600;color:var(--acc,#166534);text-decoration:none;border:1px solid var(--line,#E7E5E4);border-radius:20px;padding:6px 15px;background:var(--card,#FFFFFF)}a.dlink:hover{border-color:var(--acc,#166534)}button.dlbtn{display:inline-block;margin:2px 0 14px;font-size:13px;font-weight:600;color:#fff;background:var(--acc,#166534);border:1px solid var(--acc,#166534);border-radius:20px;padding:7px 16px;cursor:pointer}button.dlbtn:hover{filter:brightness(1.08)}details.data{margin:12px 0;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:0 16px}details.data>summary{cursor:pointer;font-weight:600;padding:14px 2px;list-style:none}details.data>summary::-webkit-details-marker{display:none}details.data>summary::before{content:'\25B8  ';color:var(--acc)}details.data[open]>summary::before{content:'\25BE  '}.dscroll{max-height:440px;overflow:auto;margin:0 0 16px;border-top:1px solid var(--line)}.dscroll table{font-size:12.5px}.dscroll thead th{position:sticky;top:0;background:var(--card);z-index:1}</style></head><body><div class="wrap">
 <h1>Methodology — how the model works</h1>
 <p class="sub">A transparent ensemble of simple statistical models + Monte-Carlo — deliberately
-<b>no neural networks</b> (short series, defensibility required). Three diagrams describe the whole model.</p>
+<b>no neural networks</b> (short series, defensibility required). Three diagrams describe the core model
+(Levels 0–3); Levels 4–6 reuse the same engine for the health, retirement and macroeconomic extensions.</p>
 <a class="dlink" href="#data-behind">📋 Data sources behind the model &darr;</a> <button type="button" class="dlbtn">⬇ Excel (.xlsx)</button>
 
 <h2>Method in one paragraph</h2>
@@ -111,7 +115,7 @@ calibrated to the observed 2024 value.</p>
 <h2><span class="hnum" style="background:#475569">3</span>Building labour supply</h2>
 <p>The same logic as demand, but with two health–demographic multipliers. Both multipliers —
 the <b>healthy-years share (HLY ÷ LE)</b> and <b>expected working life</b> — are forecast with the
-<b>same 4-model ensemble</b> from the first diagram. The result is in <b>person-years</b>, exactly
+<b>same 5-model ensemble</b> from the first diagram. The result is in <b>person-years</b>, exactly
 like demand — which is why the two are directly comparable.</p>
 <div class="fig"><svg viewBox="0 0 680 300" width="100%" style="font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif" xmlns="http://www.w3.org/2000/svg"><defs><marker id="a3" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#78716C" stroke-width="1.3"/></marker></defs><rect x="150" y="24" width="380" height="56" rx="8" fill="#EEF2F6" stroke="#166534" stroke-width="1.2"/><text x="340.0" y="47.0" fill="#292524" font-size="14" font-weight="600" text-anchor="middle" dominant-baseline="middle">Population 15–64</text><text x="340.0" y="65.0" fill="#78716C" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Eurostat proj_23np · calibrated to 2024</text><line x1="340" y1="80" x2="340" y2="120" stroke="#78716C" stroke-width="1.3" marker-end="url(#a3)"/><rect x="150" y="124" width="380" height="56" rx="8" fill="#ECFDF3" stroke="#4ADE80" stroke-width="1.2"/><text x="340.0" y="147.0" fill="#292524" font-size="14" font-weight="600" text-anchor="middle" dominant-baseline="middle">Healthy working-age people</text><text x="340.0" y="165.0" fill="#78716C" font-size="11.5" text-anchor="middle" dominant-baseline="middle">= population × healthy-years share (HLY ÷ LE)</text><line x1="340" y1="180" x2="340" y2="220" stroke="#78716C" stroke-width="1.3" marker-end="url(#a3)"/><rect x="150" y="224" width="380" height="56" rx="8" fill="#ECFDF3" stroke="#15803D" stroke-width="1.2"/><text x="340.0" y="247.0" fill="#292524" font-size="14" font-weight="600" text-anchor="middle" dominant-baseline="middle">Potential labour supply — person-years</text><text x="340.0" y="265.0" fill="#78716C" font-size="11.5" text-anchor="middle" dominant-baseline="middle">= healthy people × expected working life</text></svg></div>
 
@@ -123,6 +127,32 @@ like demand — which is why the two are directly comparable.</p>
 </ol>
 <p><b>Level 3</b> simply subtracts: <b>Balance = Supply − Demand</b> (in human-working-years) — the
 headline result, visualised in the balance report.</p>
+
+<h2>Levels 4–6 — open horizons (the same engine, reused)</h2>
+<p>The three extension levels forecast different health–demographic quantities with the <b>same 5-model
+ensemble</b>, then test — <b>honestly and descriptively</b> — whether each drives an economic outcome. These are
+<b>relationships and an identity decomposition, not causal predictors</b>: where the link turns out to be ≈ 0,
+we say so plainly rather than pretend to forecast it.</p>
+
+<h2><span class="hnum" style="background:#B91C1C">4</span>Cost of unhealthy years</h2>
+<p>The poor-health burden is population × the years lived in poor health (life expectancy minus healthy-life
+years), by sex, summed and forecast to 2033. We then relate it to the <b>NACE-Q health &amp; social-work
+sector's</b> value added: across countries it co-moves (mostly country size), but <b>within</b> a country over
+time the elasticity is ≈ 0 — the sector tracks GDP, not the demographic burden.</p>
+<div class="formula"><b>Burden</b> = Population × (LE − HLY)<span class="u">person-years lived in poor health</span></div>
+
+<h2><span class="hnum" style="background:#D97706">5</span>Healthy retirement dividend</h2>
+<p>Healthy years lived <i>beyond</i> the statutory retirement age (floored at zero), population-scaled, by sex,
+forecast to 2033. Tested against <b>leisure / education / culture consumption</b> (COICOP CP09–11): cross-country
+it co-moves, but within-country the link is ≈ 0 — consumption tracks household income, not the dividend.</p>
+<div class="formula"><b>Dividend</b> = Population × max(0, HLY − retirement age)<span class="u">healthy person-years after retirement</span></div>
+
+<h2><span class="hnum" style="background:#166534">6</span>Longevity in the macroeconomy</h2>
+<p>Real GDP is decomposed by the identity <b>GDP = employment × productivity</b>; growth accounting splits each
+country's projected growth into a <b>labour</b> channel (where longevity acts) and a <b>productivity</b> channel.
+The reverse arrow — does <i>healthy</i> longevity lift productivity? — is absent: cross-country the correlation
+has the wrong sign (a self-perceived-health / GALI artifact) and within a country it is ≈ 0.</p>
+<div class="formula"><b>Real GDP</b> = Employment × Productivity<span class="u">growth = labour + productivity</span></div>
 
 <h2 id="data-behind">Data behind this report</h2>
 <button type="button" class="dlbtn" id="dl-xlsx">⬇ Download as Excel (.xlsx)</button>

@@ -224,6 +224,9 @@ h1{font-size:27px;margin:0 0 4px}h2{font-size:19px;margin:34px 0 10px}
 .swatch{display:inline-block;width:11px;height:11px;border-radius:2px;margin:0 4px -1px 0}
 .note{color:var(--mut);font-size:14.5px;background:var(--card);border:1px solid var(--line);
 border-radius:12px;padding:16px 18px;margin:14px 0}.note b{color:var(--ink)}
+.formula{background:#F0FDF4;border:1px solid #166534;border-left:5px solid #166534;border-radius:12px;
+padding:14px 20px;margin:14px 0;font-size:19px;font-weight:600;text-align:center;line-height:1.45}
+.formula b{color:#166534}.formula .u{display:block;font-size:13px;color:var(--mut);font-weight:400;margin-top:5px}
 p{margin:12px 0}b{color:var(--ink)}code{color:var(--acc)}
 ol{color:var(--ink)}li{margin:4px 0}
 a{color:var(--acc)}.foot{color:var(--mut);font-size:13px;margin-top:30px}
@@ -257,7 +260,8 @@ HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <title>Methodology — how the model works</title><style>{CSS}{APPENDIX_CSS}</style></head><body><div class="wrap">
 <h1>Methodology — how the model works</h1>
 <p class="sub">A transparent ensemble of simple statistical models + Monte-Carlo — deliberately
-<b>no neural networks</b> (short series, defensibility required). Three diagrams describe the whole model.</p>
+<b>no neural networks</b> (short series, defensibility required). Three diagrams describe the core model
+(Levels 0–3); Levels 4–6 reuse the same engine for the health, retirement and macroeconomic extensions.</p>
 {DLINK}
 
 <h2>Method in one paragraph</h2>
@@ -324,7 +328,7 @@ calibrated to the observed 2024 value.</p>
 <h2><span class="hnum" style="background:#475569">3</span>Building labour supply</h2>
 <p>The same logic as demand, but with two health–demographic multipliers. Both multipliers —
 the <b>healthy-years share (HLY ÷ LE)</b> and <b>expected working life</b> — are forecast with the
-<b>same 4-model ensemble</b> from the first diagram. The result is in <b>person-years</b>, exactly
+<b>same 5-model ensemble</b> from the first diagram. The result is in <b>person-years</b>, exactly
 like demand — which is why the two are directly comparable.</p>
 <div class="fig">{svg3}</div>
 
@@ -336,6 +340,32 @@ like demand — which is why the two are directly comparable.</p>
 </ol>
 <p><b>Level 3</b> simply subtracts: <b>Balance = Supply − Demand</b> (in human-working-years) — the
 headline result, visualised in the balance report.</p>
+
+<h2>Levels 4–6 — open horizons (the same engine, reused)</h2>
+<p>The three extension levels forecast different health–demographic quantities with the <b>same 5-model
+ensemble</b>, then test — <b>honestly and descriptively</b> — whether each drives an economic outcome. These are
+<b>relationships and an identity decomposition, not causal predictors</b>: where the link turns out to be ≈ 0,
+we say so plainly rather than pretend to forecast it.</p>
+
+<h2><span class="hnum" style="background:#B91C1C">4</span>Cost of unhealthy years</h2>
+<p>The poor-health burden is population × the years lived in poor health (life expectancy minus healthy-life
+years), by sex, summed and forecast to 2033. We then relate it to the <b>NACE-Q health &amp; social-work
+sector's</b> value added: across countries it co-moves (mostly country size), but <b>within</b> a country over
+time the elasticity is ≈ 0 — the sector tracks GDP, not the demographic burden.</p>
+<div class="formula"><b>Burden</b> = Population × (LE − HLY)<span class="u">person-years lived in poor health</span></div>
+
+<h2><span class="hnum" style="background:#D97706">5</span>Healthy retirement dividend</h2>
+<p>Healthy years lived <i>beyond</i> the statutory retirement age (floored at zero), population-scaled, by sex,
+forecast to 2033. Tested against <b>leisure / education / culture consumption</b> (COICOP CP09–11): cross-country
+it co-moves, but within-country the link is ≈ 0 — consumption tracks household income, not the dividend.</p>
+<div class="formula"><b>Dividend</b> = Population × max(0, HLY − retirement age)<span class="u">healthy person-years after retirement</span></div>
+
+<h2><span class="hnum" style="background:#166534">6</span>Longevity in the macroeconomy</h2>
+<p>Real GDP is decomposed by the identity <b>GDP = employment × productivity</b>; growth accounting splits each
+country's projected growth into a <b>labour</b> channel (where longevity acts) and a <b>productivity</b> channel.
+The reverse arrow — does <i>healthy</i> longevity lift productivity? — is absent: cross-country the correlation
+has the wrong sign (a self-perceived-health / GALI artifact) and within a country it is ≈ 0.</p>
+<div class="formula"><b>Real GDP</b> = Employment × Productivity<span class="u">growth = labour + productivity</span></div>
 
 {APPENDIX}
 <p class="foot">See also the <a href="model_validation_report.html">“Model trust”</a> report for the
