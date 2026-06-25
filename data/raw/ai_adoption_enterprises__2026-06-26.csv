@@ -1,0 +1,85 @@
+indic_is,unit,country,year,value,indicator
+E_AI_TANY,PC_ENT,BG,2021,3.29,any AI technology
+E_AI_TANY,PC_ENT,BG,2023,3.62,any AI technology
+E_AI_TANY,PC_ENT,BG,2024,6.47,any AI technology
+E_AI_TANY,PC_ENT,BG,2025,8.55,any AI technology
+E_AI_TML,PC_ENT,BG,2021,0.94,machine learning
+E_AI_TML,PC_ENT,BG,2023,0.94,machine learning
+E_AI_TML,PC_ENT,BG,2024,2.11,machine learning
+E_AI_TML,PC_ENT,BG,2025,2.26,machine learning
+E_AI_TNLG,PC_ENT,BG,2021,0.36,natural-language generation
+E_AI_TNLG,PC_ENT,BG,2023,1.16,natural-language generation
+E_AI_TNLG,PC_ENT,BG,2024,2.29,natural-language generation
+E_AI_TNLG,PC_ENT,BG,2025,3.22,natural-language generation
+E_AI_TANY,PC_ENT,PL,2021,2.86,any AI technology
+E_AI_TANY,PC_ENT,PL,2023,3.67,any AI technology
+E_AI_TANY,PC_ENT,PL,2024,5.9,any AI technology
+E_AI_TANY,PC_ENT,PL,2025,8.36,any AI technology
+E_AI_TML,PC_ENT,PL,2021,0.74,machine learning
+E_AI_TML,PC_ENT,PL,2023,1.02,machine learning
+E_AI_TML,PC_ENT,PL,2024,1.56,machine learning
+E_AI_TML,PC_ENT,PL,2025,1.83,machine learning
+E_AI_TNLG,PC_ENT,PL,2021,0.33,natural-language generation
+E_AI_TNLG,PC_ENT,PL,2023,0.91,natural-language generation
+E_AI_TNLG,PC_ENT,PL,2024,2.37,natural-language generation
+E_AI_TNLG,PC_ENT,PL,2025,5.23,natural-language generation
+E_AI_TANY,PC_ENT,CZ,2021,4.46,any AI technology
+E_AI_TANY,PC_ENT,CZ,2023,5.9,any AI technology
+E_AI_TANY,PC_ENT,CZ,2024,11.26,any AI technology
+E_AI_TANY,PC_ENT,CZ,2025,17.6,any AI technology
+E_AI_TML,PC_ENT,CZ,2021,1.4,machine learning
+E_AI_TML,PC_ENT,CZ,2023,2.32,machine learning
+E_AI_TML,PC_ENT,CZ,2024,4.53,machine learning
+E_AI_TML,PC_ENT,CZ,2025,6.91,machine learning
+E_AI_TNLG,PC_ENT,CZ,2021,0.79,natural-language generation
+E_AI_TNLG,PC_ENT,CZ,2023,0.67,natural-language generation
+E_AI_TNLG,PC_ENT,CZ,2024,5.94,natural-language generation
+E_AI_TNLG,PC_ENT,CZ,2025,12.78,natural-language generation
+E_AI_TANY,PC_ENT,RO,2021,1.38,any AI technology
+E_AI_TANY,PC_ENT,RO,2023,1.51,any AI technology
+E_AI_TANY,PC_ENT,RO,2024,3.07,any AI technology
+E_AI_TANY,PC_ENT,RO,2025,5.21,any AI technology
+E_AI_TML,PC_ENT,RO,2021,0.51,machine learning
+E_AI_TML,PC_ENT,RO,2023,0.6,machine learning
+E_AI_TML,PC_ENT,RO,2024,1.26,machine learning
+E_AI_TML,PC_ENT,RO,2025,2.69,machine learning
+E_AI_TNLG,PC_ENT,RO,2021,0.34,natural-language generation
+E_AI_TNLG,PC_ENT,RO,2023,0.75,natural-language generation
+E_AI_TNLG,PC_ENT,RO,2024,1.48,natural-language generation
+E_AI_TNLG,PC_ENT,RO,2025,3.12,natural-language generation
+E_AI_TANY,PC_ENT,DE,2021,10.56,any AI technology
+E_AI_TANY,PC_ENT,DE,2023,11.55,any AI technology
+E_AI_TANY,PC_ENT,DE,2024,19.75,any AI technology
+E_AI_TANY,PC_ENT,DE,2025,25.97,any AI technology
+E_AI_TML,PC_ENT,DE,2021,2.87,machine learning
+E_AI_TML,PC_ENT,DE,2023,2.97,machine learning
+E_AI_TML,PC_ENT,DE,2024,5.26,machine learning
+E_AI_TML,PC_ENT,DE,2025,6.04,machine learning
+E_AI_TNLG,PC_ENT,DE,2021,1.57,natural-language generation
+E_AI_TNLG,PC_ENT,DE,2023,2.99,natural-language generation
+E_AI_TNLG,PC_ENT,DE,2024,6.63,natural-language generation
+E_AI_TNLG,PC_ENT,DE,2025,9.02,natural-language generation
+E_AI_TANY,PC_ENT,FR,2021,6.67,any AI technology
+E_AI_TANY,PC_ENT,FR,2023,5.88,any AI technology
+E_AI_TANY,PC_ENT,FR,2024,9.91,any AI technology
+E_AI_TANY,PC_ENT,FR,2025,18.16,any AI technology
+E_AI_TML,PC_ENT,FR,2021,2.41,machine learning
+E_AI_TML,PC_ENT,FR,2023,2.65,machine learning
+E_AI_TML,PC_ENT,FR,2024,4.04,machine learning
+E_AI_TML,PC_ENT,FR,2025,4.23,machine learning
+E_AI_TNLG,PC_ENT,FR,2021,1.06,natural-language generation
+E_AI_TNLG,PC_ENT,FR,2023,1.09,natural-language generation
+E_AI_TNLG,PC_ENT,FR,2024,3.18,natural-language generation
+E_AI_TNLG,PC_ENT,FR,2025,7.82,natural-language generation
+E_AI_TANY,PC_ENT,NO,2021,10.82,any AI technology
+E_AI_TANY,PC_ENT,NO,2023,9.17,any AI technology
+E_AI_TANY,PC_ENT,NO,2024,20.77,any AI technology
+E_AI_TANY,PC_ENT,NO,2025,28.89,any AI technology
+E_AI_TML,PC_ENT,NO,2021,4.31,machine learning
+E_AI_TML,PC_ENT,NO,2023,4.72,machine learning
+E_AI_TML,PC_ENT,NO,2024,8.95,machine learning
+E_AI_TML,PC_ENT,NO,2025,9.46,machine learning
+E_AI_TNLG,PC_ENT,NO,2021,1.26,natural-language generation
+E_AI_TNLG,PC_ENT,NO,2023,2.03,natural-language generation
+E_AI_TNLG,PC_ENT,NO,2024,10.31,natural-language generation
+E_AI_TNLG,PC_ENT,NO,2025,15.09,natural-language generation
