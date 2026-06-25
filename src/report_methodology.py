@@ -289,6 +289,10 @@ single model — we average <b>5 simple models</b>: <b>linear trend</b>, <b>damp
 not grow linearly forever), while AR(1) pulls cyclical series back toward their long-run mean — and the member
 weights adapt by forecast horizon (see below).</p>
 <div class="fig">{svg1}</div>
+<div class="note" style="border-left:4px solid #166534">👉 <b>Try it live:</b> the
+<a href="ensemble_visualizer.html">interactive ensemble uncertainty visualizer</a> — drag the ensemble size and
+sampling noise and watch a cloud of simple models (and their average) form the uncertainty band, exactly as
+described here. No neural nets, just simple models + Monte-Carlo.</div>
 <p>The uncertainty band (the amber area in the reports) is assembled from <b>three sources</b>, combined
 in quadrature: (1) the <b>disagreement between the models</b>; (2) the <b>real out-of-sample
 error from backtesting</b> — we re-forecast history and measure how far off we are; and (3) the
