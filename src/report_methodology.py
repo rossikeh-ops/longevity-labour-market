@@ -222,6 +222,8 @@ h1{font-size:27px;margin:0 0 4px}h2{font-size:19px;margin:34px 0 10px}
 .g2 .fig{margin:0}.g2 .ft{font-weight:650;font-size:13.5px;margin-bottom:4px}
 @media(max-width:680px){.g2{grid-template-columns:1fr}}
 .swatch{display:inline-block;width:11px;height:11px;border-radius:2px;margin:0 4px -1px 0}
+.note{color:var(--mut);font-size:14.5px;background:var(--card);border:1px solid var(--line);
+border-radius:12px;padding:16px 18px;margin:14px 0}.note b{color:var(--ink)}
 p{margin:12px 0}b{color:var(--ink)}code{color:var(--acc)}
 ol{color:var(--ink)}li{margin:4px 0}
 a{color:var(--acc)}.foot{color:var(--mut);font-size:13px;margin-top:30px}
@@ -257,6 +259,14 @@ HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <p class="sub">A transparent ensemble of simple statistical models + Monte-Carlo — deliberately
 <b>no neural networks</b> (short series, defensibility required). Three diagrams describe the whole model.</p>
 {DLINK}
+
+<h2>Method in one paragraph</h2>
+<div class="note">Each driver series is forecast on its full history by an <b>ensemble of simple
+models</b> (linear trend, damped Holt, drift, naive, AR(1)) — damping and the naive anchor stop saturating
+rates from over-extrapolating, and the member weights adapt by forecast horizon. <b>Population</b> uses
+Eurostat's projection <code>proj_23np</code>, calibrated to observed 2024. <b>Supply</b> = healthy working-age
+people × expected working life; <b>demand</b> = (employed + vacancies) × required service. <b>Monte-Carlo bands</b>
+combine model disagreement, out-of-sample backtest error and demographic uncertainty.</div>
 
 <h2>The pipeline — Levels 0 → 3</h2>
 <p class="sub">Where each step sits and what it produces. Levels 1–2 run every driver through the
