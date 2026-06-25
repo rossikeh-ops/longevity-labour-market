@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from data_appendix import appendix_css, data_link, data_section  # noqa: E402
+from data_appendix import appendix_css, data_link, data_section, info_css, info_icon  # noqa: E402
 from map_section import build_map_section  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -224,7 +224,7 @@ APPENDIX = data_section(
 
 HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Level 5 — Healthy Retirement Dividend</title><style>{CSS}{appendix_css()}</style></head><body><div class="wrap">
+<title>Level 5 — Healthy Retirement Dividend</title><style>{CSS}{appendix_css()}{info_css()}</style></head><body><div class="wrap">
 <h1>Level 5 — Healthy Retirement Dividend</h1>
 <p class="sub">Healthy years lived <b>after</b> retirement, and whether they drive leisure, education &amp;
 culture consumption · 8 countries · observed → forecast to 2033.</p>
@@ -238,10 +238,10 @@ self-reported health declines <i>before</i> the retirement age. The aggregate di
 ({div24:,}→{div33:,}M person-years) as healthy-life years rise. But tested against leisure/education/culture
 spending, the link is <b>statistically negligible within a country</b> — consumption tracks income.</div>
 <div class="kpis">
-<div class="kpi"><div class="v" style="color:var(--up)">+{pp[order_pp[-1]]} yrs</div><div class="l">Healthiest retirement — {NAME[order_pp[-1]]}</div></div>
-<div class="kpi"><div class="v" style="color:var(--down)">{pp[order_pp[0]]} yrs</div><div class="l">Health declines first — {NAME[order_pp[0]]}</div></div>
-<div class="kpi"><div class="v">{div24:,} → {div33:,}M</div><div class="l">Dividend person-years (2024 → 2033)</div></div>
-<div class="kpi"><div class="v">{rel['elasticity_within_diff']}</div><div class="l">Within-country dividend→consumption elasticity (≈ 0)</div></div>
+<div class="kpi"><div class="v" style="color:var(--up)">+{pp[order_pp[-1]]} yrs</div><div class="l">Healthiest retirement — {NAME[order_pp[-1]]}{info_icon("Country with the most healthy years lived after the statutory retirement age (HLY − retirement age).")}</div></div>
+<div class="kpi"><div class="v" style="color:var(--down)">{pp[order_pp[0]]} yrs</div><div class="l">Health declines first — {NAME[order_pp[0]]}{info_icon("Country where self-reported health declines before the retirement age is reached — negative healthy years after retirement (HLY is self-perceived, Eurostat GALI).")}</div></div>
+<div class="kpi"><div class="v">{div24:,} → {div33:,}M</div><div class="l">Dividend person-years (2024 → 2033){info_icon("Population × healthy years after retirement (HLY − retirement age, floored at 0), summed over sex — the healthy-retirement dividend.")}</div></div>
+<div class="kpi"><div class="v">{rel['elasticity_within_diff']}</div><div class="l">Within-country dividend→consumption elasticity (≈ 0){info_icon("How much leisure/education/culture spending moves with the dividend, within a country over time. ≈ 0 means no link — consumption tracks income.")}</div></div>
 </div>
 {map_html}
 <h2>Healthy years after retirement, by country (2024)</h2>

@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from data_appendix import appendix_css, data_link, data_section  # noqa: E402
+from data_appendix import appendix_css, data_link, data_section, info_css, info_icon  # noqa: E402
 from map_section import build_map_section  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -219,7 +219,7 @@ rows_html = "".join(
 
 HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Level 4 — Cost of Unhealthy Years</title><style>{CSS}{appendix_css()}</style></head><body><div class="wrap">
+<title>Level 4 — Cost of Unhealthy Years</title><style>{CSS}{appendix_css()}{info_css()}</style></head><body><div class="wrap">
 <h1>Level 4 — Cost of Unhealthy Years</h1>
 <p class="sub">The <b>poor-health burden</b> in person-years and whether it drives the health &amp; social-work
 sector's cost · 8 countries · observed → forecast to 2033.</p>
@@ -231,10 +231,10 @@ ageing pushes it up, but rising healthy-life years pull it down — a second fac
 And testing it against the <b>NACE-Q</b> (human health &amp; social work) sector, the honest result is that
 <b>the burden does not drive the sector's cost in the short run</b> — that sector tracks the economy.</div>
 <div class="kpis">
-<div class="kpi"><div class="v">{tot24:,} → {tot33:,}M</div><div class="l">Poor-health person-years (2024 → 2033)</div></div>
-<div class="kpi"><div class="v">{pp24} yrs</div><div class="l">Lived in poor health per person (LE − HLY), 2024</div></div>
-<div class="kpi"><div class="v">{rel['q_real_growth_pct']}%/yr</div><div class="l">NACE-Q value-added real growth (economy-driven)</div></div>
-<div class="kpi"><div class="v">{rel['elasticity_within_diff']}</div><div class="l">Within-country burden→cost elasticity (≈ 0)</div></div>
+<div class="kpi"><div class="v">{tot24:,} → {tot33:,}M</div><div class="l">Poor-health person-years (2024 → 2033){info_icon("Population × years lived in poor health (life expectancy − healthy life years), summed over sex — the demographic poor-health burden.")}</div></div>
+<div class="kpi"><div class="v">{pp24} yrs</div><div class="l">Lived in poor health per person (LE − HLY), 2024{info_icon("Years an average person lives in poor health = life expectancy at birth − healthy life years at birth (HLY is self-perceived, Eurostat GALI).")}</div></div>
+<div class="kpi"><div class="v">{rel['q_real_growth_pct']}%/yr</div><div class="l">NACE-Q value-added real growth (economy-driven){info_icon("Annual real growth of the health & social-work sector (NACE section Q) value added — driven by GDP, not the demographic poor-health burden.")}</div></div>
+<div class="kpi"><div class="v">{rel['elasticity_within_diff']}</div><div class="l">Within-country burden→cost elasticity (≈ 0){info_icon("How much the health-sector cost moves when the poor-health burden changes, within a country over time. ≈ 0 means no link — the sector tracks GDP, not the burden.")}</div></div>
 </div>
 {map_html}
 <h2>Poor-health burden by country, to 2033</h2>

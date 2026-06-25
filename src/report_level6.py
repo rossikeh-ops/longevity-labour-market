@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from data_appendix import appendix_css, data_link, data_section  # noqa: E402
+from data_appendix import appendix_css, data_link, data_section, info_css, info_icon  # noqa: E402
 from map_section import build_map_section  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -231,7 +231,7 @@ APPENDIX = data_section(
 corr, within = rel["cross_corr"], rel["within_elasticity"]
 HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Level 6 — Longevity in the Macroeconomy</title><style>{CSS}{appendix_css()}</style></head><body><div class="wrap">
+<title>Level 6 — Longevity in the Macroeconomy</title><style>{CSS}{appendix_css()}{info_css()}</style></head><body><div class="wrap">
 <h1>Level 6 — The longevity dividend in the macroeconomy</h1>
 <p class="sub">Open horizons · how longevity and the labour force feed real GDP — and whether <i>healthy</i>
 longevity lifts productivity · 8 countries · observed → growth-accounted forecast to 2033.</p>
@@ -247,10 +247,10 @@ arrow is absent: across countries, self-reported <i>healthy</i> share and produc
 <b style="color:var(--down)">{corr:+.2f}</b> (the wrong sign — a GALI artifact), and within a country the link is
 <b>nil</b> (slope {within:+.2f}, R²&nbsp;{rel['within_r2']}).</div>
 <div class="kpis">
-<div class="kpi"><div class="v">€{gdp24:.1f} → €{gdp33:.1f}T</div><div class="l">Real GDP 2024 → 2033 (8 countries)</div></div>
-<div class="kpi"><div class="v">{cagr_agg:.1f}%/yr</div><div class="l">Aggregate real growth, mostly productivity</div></div>
-<div class="kpi"><div class="v" style="color:var(--down)">{corr:+.2f}</div><div class="l">Cross-country corr: healthy share vs productivity</div></div>
-<div class="kpi"><div class="v">{within:+.2f}</div><div class="l">Within-country health→productivity slope (≈ 0)</div></div>
+<div class="kpi"><div class="v">€{gdp24:.1f} → €{gdp33:.1f}T</div><div class="l">Real GDP 2024 → 2033 (8 countries){info_icon("Combined real GDP (chain-linked volumes, 2015 prices) across the 8 countries, rebuilt as employment × productivity.")}</div></div>
+<div class="kpi"><div class="v">{cagr_agg:.1f}%/yr</div><div class="l">Aggregate real growth, mostly productivity{info_icon("Average annual real GDP growth to 2033. Most of it comes from the productivity channel (output per worker), not the labour channel.")}</div></div>
+<div class="kpi"><div class="v" style="color:var(--down)">{corr:+.2f}</div><div class="l">Cross-country corr: healthy share vs productivity{info_icon("Correlation across countries between self-perceived healthy share (HLY/LE) and GDP per worker. Negative = the wrong sign — a GALI self-reporting artifact.")}</div></div>
+<div class="kpi"><div class="v">{within:+.2f}</div><div class="l">Within-country health→productivity slope (≈ 0){info_icon("How much productivity moves with healthy share, within a country over time. ≈ 0 means longevity reaches GDP through the number of healthy workers, not a per-worker premium.")}</div></div>
 </div>
 {map_html}
 <h2>What drives projected growth: labour vs productivity (2024 → 2033)</h2>

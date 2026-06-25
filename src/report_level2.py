@@ -13,7 +13,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from map_section import build_map_section  # noqa: E402
-from data_appendix import appendix_css, data_link, data_section  # noqa: E402
+from data_appendix import appendix_css, data_link, data_section, info_css, info_icon  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "outputs"
@@ -194,7 +194,7 @@ border-radius:10px;padding:14px;margin-top:10px}
 
 HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Level 2 — Labour Demand to 2033</title><style>{CSS}{APPENDIX_CSS}</style></head><body><div class="wrap">
+<title>Level 2 — Labour Demand to 2033</title><style>{CSS}{APPENDIX_CSS}{info_css()}</style></head><body><div class="wrap">
 <h1>Level 2 — Labour Demand to 2033</h1>
 <p class="sub">Potential labour demand in <b>career person-years</b> (jobs × required length of service),
 8 countries, by sex · model 2011–2024, forecast to 2033 · Eurostat + MISSOC.</p>
@@ -206,10 +206,10 @@ HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <span><span class="sw" style="background:var(--band)"></span>80% uncertainty band</span>
 <span><span class="sw" style="background:#fff;border:1px dashed #888"></span>Participation-plateau 2033</span></div>
 <div class="kpis">
-<div class="kpi"><div class="v">{tot24:,} → {tot35:,}M</div><div class="l">Total demand, career person-years (2024 → 2033)</div></div>
-<div class="kpi"><div class="v" style="color:{totcol}">{totchg:+.1f}%</div><div class="l">Change to 2033 (broadly flat, ageing-tilted)</div></div>
-<div class="kpi"><div class="v">{jobs24:.0f} → {jobs35:.0f}M</div><div class="l">Jobs (employed + vacancies), people</div></div>
-<div class="kpi"><div class="v">{sexF:,} / {sexM:,}M</div><div class="l">2033 demand by sex (F / M)</div></div>
+<div class="kpi"><div class="v">{tot24:,} → {tot35:,}M</div><div class="l">Total demand, career person-years (2024 → 2033){info_icon("(Employed + vacancies) × required length of service, summed over country and sex — the career-years the economy's jobs require.")}</div></div>
+<div class="kpi"><div class="v" style="color:{totcol}">{totchg:+.1f}%</div><div class="l">Change to 2033 (broadly flat, ageing-tilted){info_icon("Percent change in total demand from 2024 to 2033. Demand does not run away; the imbalance comes from where the workers are, not an explosion in labour needs.")}</div></div>
+<div class="kpi"><div class="v">{jobs24:.0f} → {jobs35:.0f}M</div><div class="l">Jobs (employed + vacancies), people{info_icon("Number of filled and open posts — employment (lfsa_egan) plus job vacancies (jvs_q_r21).")}</div></div>
+<div class="kpi"><div class="v">{sexF:,} / {sexM:,}M</div><div class="l">2033 demand by sex (F / M){info_icon("Career person-years of labour demand in 2033, split by sex (female / male).")}</div></div>
 </div>
 {map_html}
 <h2>Demand predictions by country</h2><div class="grid">{charts_html}</div>

@@ -12,7 +12,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from map_section import build_map_section  # noqa: E402
-from data_appendix import appendix_css, data_link, data_section  # noqa: E402
+from data_appendix import appendix_css, data_link, data_section, info_css, info_icon  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "outputs"
@@ -220,7 +220,7 @@ border-radius:10px;padding:14px;margin-top:10px}.note b{color:var(--ink)}
 
 HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Level 3 — Labour-Market Balance to 2033</title><style>{CSS}{APPENDIX_CSS}</style></head><body><div class="wrap">
+<title>Level 3 — Labour-Market Balance to 2033</title><style>{CSS}{APPENDIX_CSS}{info_css()}</style></head><body><div class="wrap">
 <h1>Level 3 — Labour-Market Balance to 2033</h1>
 <p class="sub">The headline: <b>balance = potential supply − potential demand</b>, in
 <b>human-working-years</b>, by country · observed 2011–2024, forecast to 2033 · 8 countries.</p>
@@ -233,9 +233,9 @@ shortage of {deficit35:+}M</b> while the East holds a <b style="color:var(--up)"
 Poland's reserve alone roughly offsets Germany's, France's and Switzerland's shortages combined — the
 demographic basis of West-bound migration.</div>
 <div class="kpis">
-<div class="kpi"><div class="v">{tot35:+,}M</div><div class="l">Net balance 2033 (human-working-years)</div></div>
-<div class="kpi"><div class="v" style="color:var(--down)">{deficit35:+,}M</div><div class="l">West/EFTA shortage (DE, FR, CH, NO)</div></div>
-<div class="kpi"><div class="v" style="color:var(--up)">{surplus35:+,}M</div><div class="l">East surplus (PL, RO, CZ, BG)</div></div>
+<div class="kpi"><div class="v">{tot35:+,}M</div><div class="l">Net balance 2033 (human-working-years){info_icon("Supply − demand in human-working-years, summed across the 8 countries. Positive = surplus, negative = shortage. A small difference of two large forecasts, so read the direction, not the exact level.")}</div></div>
+<div class="kpi"><div class="v" style="color:var(--down)">{deficit35:+,}M</div><div class="l">West/EFTA shortage (DE, FR, CH, NO){info_icon("Combined supply − demand for the four Western / EFTA countries — a labour shortage (negative balance).")}</div></div>
+<div class="kpi"><div class="v" style="color:var(--up)">{surplus35:+,}M</div><div class="l">East surplus (PL, RO, CZ, BG){info_icon("Combined supply − demand for the four Eastern-EU countries — a labour surplus (positive balance).")}</div></div>
 </div>
 {map_html}
 <h2>Balance by country, 2033</h2>

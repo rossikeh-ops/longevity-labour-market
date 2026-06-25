@@ -12,7 +12,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from map_section import build_map_section  # noqa: E402
-from data_appendix import appendix_css, data_link, data_section  # noqa: E402
+from data_appendix import appendix_css, data_link, data_section, info_css, info_icon  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "outputs"
@@ -184,7 +184,7 @@ border-radius:10px;padding:14px;margin-top:10px}.note b{color:var(--ink)}
 
 HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Level 1 — Labour Supply to 2033</title><style>{CSS}{APPENDIX_CSS}</style></head><body><div class="wrap">
+<title>Level 1 — Labour Supply to 2033</title><style>{CSS}{APPENDIX_CSS}{info_css()}</style></head><body><div class="wrap">
 <h1>Level 1 — Labour Supply to 2033</h1>
 <p class="sub">Potential labour supply in <b>human-working-years</b> = health-adjusted working-age
 people × expected working life · observed 2011–2024, forecast to 2033 · 8 countries, by sex.</p>
@@ -196,10 +196,10 @@ people × expected working life · observed 2011–2024, forecast to 2033 · 8 c
 working lives offset the loss. The split is demographic: <b>Romania −13%, Bulgaria −9%</b> (emigration +
 ageing) vs <b>Germany, France, Norway +3–5%</b> (participation + health gains outweigh population decline).</div>
 <div class="kpis">
-<div class="kpi"><div class="v">{tot24:,} → {tot35:,}M</div><div class="l">Realized supply, career person-years (2024→2033)</div></div>
-<div class="kpi"><div class="v" style="color:{totcol}">{totchg:+.1f}%</div><div class="l">Change to 2033 (longevity offsets shrinkage)</div></div>
-<div class="kpi"><div class="v">{ceil24:,}M</div><div class="l">Ceiling supply if all healthy years worked</div></div>
-<div class="kpi"><div class="v">{realiz} · {unused}% idle</div><div class="l">Realization ratio (working-life ÷ max span)</div></div>
+<div class="kpi"><div class="v">{tot24:,} → {tot35:,}M</div><div class="l">Realized supply, career person-years (2024→2033){info_icon("Healthy working-age people × expected working life, summed over country and sex — the labour the population can actually supply, in human-working-years.")}</div></div>
+<div class="kpi"><div class="v" style="color:{totcol}">{totchg:+.1f}%</div><div class="l">Change to 2033 (longevity offsets shrinkage){info_icon("Percent change in realized supply from 2024 to 2033 — near-flat because longer healthy working lives offset shrinking working-age populations.")}</div></div>
+<div class="kpi"><div class="v">{ceil24:,}M</div><div class="l">Ceiling supply if all healthy years worked{info_icon("The maximum possible supply if every healthy working-age year were spent in work — before participation and working-life limits.")}</div></div>
+<div class="kpi"><div class="v">{realiz} · {unused}% idle</div><div class="l">Realization ratio (working-life ÷ max span){info_icon("Share of the available healthy working-age span actually spent in work (expected working life ÷ maximum span). The remainder is the idle gap.")}</div></div>
 </div>
 {map_html}
 <h2>Supply predictions by country</h2><div class="grid">{charts_html}</div>

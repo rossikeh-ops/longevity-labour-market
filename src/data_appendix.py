@@ -43,6 +43,31 @@ def appendix_css() -> str:
     )
 
 
+def info_css() -> str:
+    """Shared CSS for the ⓘ hover-tooltip info icon used on metric labels."""
+    return (
+        ".info{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;"
+        "border-radius:50%;border:1px solid var(--mut,#78716C);color:var(--mut,#78716C);"
+        "font:700 9px/1 Georgia,serif;font-style:italic;cursor:help;margin-left:5px;position:relative;"
+        "vertical-align:middle;user-select:none}"
+        ".info:hover{border-color:var(--acc,#166534);color:var(--acc,#166534)}"
+        ".info:hover::after{content:attr(data-tip);position:absolute;left:50%;bottom:150%;"
+        "transform:translateX(-50%);background:#292524;color:#fff;"
+        "font:400 12px/1.45 -apple-system,Segoe UI,Roboto,Arial,sans-serif;text-align:left;"
+        "padding:9px 11px;border-radius:8px;width:240px;max-width:60vw;white-space:normal;z-index:60;"
+        "box-shadow:0 6px 20px rgba(0,0,0,.22);pointer-events:none}"
+        ".info:hover::before{content:'';position:absolute;left:50%;bottom:150%;"
+        "transform:translateX(-50%) translateY(99%);border:6px solid transparent;"
+        "border-top-color:#292524;z-index:60;pointer-events:none}"
+    )
+
+
+def info_icon(tip: str) -> str:
+    """An ⓘ icon with a hover tooltip. Use inside a KPI label / metric name."""
+    t = (tip or "").replace('"', "'")
+    return f'<span class="info" data-tip="{t}">i</span>' if t else ""
+
+
 def data_link(label: str = "Data behind this report") -> str:
     return (f'<a class="dlink" href="#{ANCHOR}">\U0001F4CB {label} &darr;</a> '
             f'<button type="button" class="dlbtn">⬇ Excel (.xlsx)</button>')
