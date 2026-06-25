@@ -32,7 +32,7 @@ def lang_toggle() -> str:
     return (
         '<button class="langtoggle" id="langtoggle" aria-label="switch language">БГ</button>'
         "<script>(function(){var r=document.documentElement;"
-        "var L=localStorage.getItem('site-lang')||'en';r.dataset.lang=L;"
+        "var L=localStorage.getItem('site-lang')||'bg';r.dataset.lang=L;"
         "var b=document.getElementById('langtoggle');"
         "function u(){b.textContent=r.dataset.lang==='en'?'БГ':'EN';}"
         "b.onclick=function(){var n=r.dataset.lang==='en'?'bg':'en';r.dataset.lang=n;"

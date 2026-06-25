@@ -108,7 +108,7 @@ a.card .lk{margin-top:12px;color:var(--acc);font-weight:600;font-size:13px}
 .foot{color:var(--mut);font-size:13px;margin-top:26px}a{color:var(--acc)}
 """
 
-HTML = f"""<!doctype html><html lang="en" data-lang="en"><head><meta charset="utf-8">
+HTML = f"""<!doctype html><html lang="bg" data-lang="bg"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Practical applications — longevity &amp; the labour market</title>
 <style>{CSS}{lang_css()}</style></head><body>{lang_toggle()}<div class="wrap">

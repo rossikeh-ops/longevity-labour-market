@@ -101,7 +101,7 @@ text-decoration:none;font-size:14px;font-weight:600}.links a:hover{border-color:
 """
 
 netcol = "var(--up)" if net >= 0 else "var(--down)"
-HTML = f"""<!doctype html><html lang="en" data-lang="en"><head><meta charset="utf-8">
+HTML = f"""<!doctype html><html lang="bg" data-lang="bg"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Introduction — balancing longevity &amp; the labour market by 2033</title>
 <style>{CSS}{lang_css()}</style></head><body>{lang_toggle()}<div class="wrap">
