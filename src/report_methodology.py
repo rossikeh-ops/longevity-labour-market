@@ -275,11 +275,16 @@ ensemble engine (§1), then combine via the identities below; Level 3 subtracts 
 
 <h2><span class="hnum" style="background:#166534">1</span>Ensemble forecast engine</h2>
 <p>For each time series (for every country × sex, over its full history) we do not rely on a
-single model — we average <b>4 simple models</b>. Damped Holt and the naive anchor guard against
-over-extrapolation: socio-economic rates saturate, they do not grow linearly forever.</p>
+single model — we average <b>5 simple models</b>: <b>linear trend</b>, <b>damped Holt</b>, <b>drift</b>,
+<b>naive</b> (last value held flat) and <b>AR(1)</b> mean-reversion. In the code that is exactly one line:</p>
+<div class="note" style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;color:var(--acc)">
+DEFAULT_MEMBERS = ("linear", "holt", "drift", "naive", "ar1")</div>
+<p>Damped Holt and the naive anchor guard against over-extrapolation (socio-economic rates saturate, they do
+not grow linearly forever), while AR(1) pulls cyclical series back toward their long-run mean — and the member
+weights adapt by forecast horizon (see below).</p>
 <div class="fig">{svg1}</div>
 <p>The uncertainty band (the amber area in the reports) is assembled from <b>three sources</b>, combined
-in quadrature: (1) the <b>disagreement between the four models</b>; (2) the <b>real out-of-sample
+in quadrature: (1) the <b>disagreement between the models</b>; (2) the <b>real out-of-sample
 error from backtesting</b> — we re-forecast history and measure how far off we are; and (3) the
 <b>demographic uncertainty</b> of the population. That is why the bands are a realistic <b>12–43%</b>
 wide, not a falsely narrow ±5%.</p>
