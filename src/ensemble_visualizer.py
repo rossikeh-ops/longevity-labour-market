@@ -14,7 +14,7 @@ from pathlib import Path
 
 OUT = Path(__file__).resolve().parents[1] / "outputs"
 
-HTML = r"""<!doctype html><html lang="en"><head><meta charset="utf-8">
+HTML = r"""<!doctype html><html lang="en" data-lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ensemble Uncertainty Visualizer</title>
 <style>
@@ -48,27 +48,38 @@ button.gen{width:100%;margin-top:14px;background:#1b2336;color:var(--ink);border
 border-radius:14px;padding:15px;font-size:15px;font-weight:600;cursor:pointer;transition:background .15s}
 button.gen:hover{background:#243049}
 .foot{color:var(--mut);font-size:12px;margin-top:14px;text-align:center}.foot a{color:var(--accent)}
+html[data-lang='en'] [lang='bg']{display:none!important}html[data-lang='bg'] [lang='en']{display:none!important}
+.langtoggle{position:fixed;top:14px;right:14px;z-index:9999;background:var(--card);border:1px solid var(--line);
+border-radius:20px;padding:7px 15px;cursor:pointer;font:700 13px/1 inherit;color:var(--accent);box-shadow:0 2px 10px rgba(0,0,0,.3)}
+.langtoggle:hover{border-color:var(--accent)}
 </style></head><body>
+<button class="langtoggle" id="langtoggle" aria-label="switch language">БГ</button>
 <div class="card">
-  <h1>Ensemble Uncertainty Visualizer</h1>
-  <p class="sub">No neural nets — a <b>simple ensemble + Monte-Carlo</b>. Each faint line is one simple model
+  <h1 lang="en">Ensemble Uncertainty Visualizer</h1><h1 lang="bg">Визуализатор на несигурността на ансамбъла</h1>
+  <p class="sub" lang="en">No neural nets — a <b>simple ensemble + Monte-Carlo</b>. Each faint line is one simple model
   fitted to a noise-perturbed copy of the data; the bold line is their average. Where they fan apart, we're
   uncertain. This is exactly how the forecasts in this project get their bands.</p>
+  <p class="sub" lang="bg">Без невронни мрежи — <b>прост ансамбъл + Монте Карло</b>. Всяка бледа линия е един прост модел,
+  напаснат към зашумено копие на данните; удебелената линия е тяхната средна. Където се разтварят ветрилообразно,
+  сме несигурни. Точно така прогнозите в този проект получават лентите си.</p>
   <div class="chartwrap"><canvas id="cv"></canvas></div>
   <div class="stats">
-    <div><div class="lab">Models</div><div class="val" id="mval">21</div></div>
-    <div><div class="lab">Confidence</div><div class="val conf" id="cval">—</div></div>
+    <div><div class="lab"><span lang="en">Models</span><span lang="bg">Модели</span></div><div class="val" id="mval">21</div></div>
+    <div><div class="lab"><span lang="en">Confidence</span><span lang="bg">Увереност</span></div><div class="val conf" id="cval">—</div></div>
   </div>
-  <div class="ctrl"><label>Ensemble Size</label>
+  <div class="ctrl"><label><span lang="en">Ensemble Size</span><span lang="bg">Размер на ансамбъла</span></label>
     <input type="range" id="size" min="2" max="80" step="1" value="21">
     <span class="box" id="sizeBox">21</span></div>
-  <div class="ctrl"><label>Sampling Noise</label>
+  <div class="ctrl"><label><span lang="en">Sampling Noise</span><span lang="bg">Шум при извадката</span></label>
     <input type="range" id="noise" min="0" max="0.5" step="0.01" value="0.15">
     <span class="box" id="noiseBox">0.15</span></div>
-  <button class="gen" id="gen">Generate Ensemble</button>
-  <p class="foot">Illustrative · <a href="methodology_report.html">how the model actually works →</a></p>
+  <button class="gen" id="gen"><span lang="en">Generate Ensemble</span><span lang="bg">Генерирай ансамбъл</span></button>
+  <p class="foot"><span lang="en">Illustrative · <a href="methodology_report.html">how the model actually works →</a></span><span lang="bg">Илюстративно · <a href="methodology_report.html">как всъщност работи моделът →</a></span></p>
 </div>
 <script>
+(function(){var r=document.documentElement;var L=localStorage.getItem('site-lang')||'en';r.dataset.lang=L;
+var b=document.getElementById('langtoggle');function u(){b.textContent=r.dataset.lang==='en'?'БГ':'EN';}
+b.onclick=function(){var n=r.dataset.lang==='en'?'bg':'en';r.dataset.lang=n;localStorage.setItem('site-lang',n);u();};u();})();
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 const sizeS=document.getElementById('size'),noiseS=document.getElementById('noise');
 const sizeBox=document.getElementById('sizeBox'),noiseBox=document.getElementById('noiseBox');
