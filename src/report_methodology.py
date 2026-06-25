@@ -4,13 +4,73 @@ Methodology report — how the model works (3 diagrams + English narrative).
 Static, self-contained HTML+SVG. -> outputs/methodology_report.html
 """
 import sys
+import json
 from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from data_appendix import appendix_css, data_link, data_section  # noqa: E402
 
-OUT = Path(__file__).resolve().parents[1] / "outputs"
+ROOT = Path(__file__).resolve().parents[1]
+OUT = ROOT / "outputs"
+
+# ---- empirical test: one horizon-aware ensemble vs separate per-horizon models ----
+# (the answer to "wouldn't separate 3/6/9-year models be more accurate?")
+HZ = json.loads((OUT / "horizon_models_compare.json").read_text(encoding="utf-8"))
+_HS = HZ["horizons"]
+_ENS = [HZ["ensemble_mape"][str(h)] for h in _HS]
+_DIR = [HZ["direct_mape"][str(h)] for h in _HS]
+_NAI = [HZ["naive_mape"][str(h)] for h in _HS]
+_PAIRS = [HZ["direct_pairs_med"][str(h)] for h in _HS]
+
+
+def _hz_mape_svg():
+    W, H, L, R, T, B = 460, 250, 40, 14, 16, 42
+    ymax = max(_ENS + _DIR + _NAI) * 1.12
+    X = lambda h: L + (h - 1) / (len(_HS) - 1) * (W - L - R)
+    Y = lambda v: H - B - v / ymax * (H - T - B)
+    grid = "".join(
+        f'<line x1="{L}" y1="{Y(g):.1f}" x2="{W-R}" y2="{Y(g):.1f}" stroke="#E7E5E4"/>'
+        f'<text x="{L-6}" y="{Y(g)+3:.1f}" font-size="10" fill="#78716C" text-anchor="end">{g}%</text>'
+        for g in (0, 2, 4, 6))
+
+    def line(vals, col, dash="", dots=True):
+        pts = " ".join(f"{X(h):.1f},{Y(vals[i]):.1f}" for i, h in enumerate(_HS))
+        d = f' stroke-dasharray="{dash}"' if dash else ""
+        c = f'<polyline points="{pts}" fill="none" stroke="{col}" stroke-width="2.4"{d}/>'
+        if dots:
+            c += "".join(f'<circle cx="{X(h):.1f}" cy="{Y(vals[i]):.1f}" r="3" fill="{col}"/>' for i, h in enumerate(_HS))
+        return c
+    xlab = "".join(f'<text x="{X(h):.1f}" y="{H-22}" font-size="10" fill="#78716C" text-anchor="middle">{h}</text>' for h in _HS)
+    return (f'<svg viewBox="0 0 {W} {H}" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">{grid}'
+            f'{line(_NAI, "#A8A29E", dash="4 3", dots=False)}{line(_DIR, "#B91C1C")}{line(_ENS, "#166534")}'
+            f'{xlab}<text x="{(L+W-R)/2:.0f}" y="{H-6}" font-size="11" fill="#78716C" text-anchor="middle">forecast horizon (years ahead) →</text>'
+            f'</svg>')
+
+
+def _pairs_svg():
+    W, H, L, R, T, B = 460, 250, 40, 14, 16, 42
+    hl = {3, 6, 9}
+    nmax = max(_PAIRS) * 1.15
+    bw = (W - L - R) / len(_HS) * 0.62
+    X = lambda h: L + (h - 0.5) / len(_HS) * (W - L - R)
+    Y = lambda n: H - B - n / nmax * (H - T - B)
+    bars = []
+    for i, h in enumerate(_HS):
+        n = _PAIRS[i]
+        col = "#B91C1C" if h in hl else "#A8A29E"
+        bars.append(f'<rect x="{X(h)-bw/2:.1f}" y="{Y(n):.1f}" width="{bw:.1f}" height="{H-B-Y(n):.1f}" rx="2" fill="{col}"/>')
+        bars.append(f'<text x="{X(h):.1f}" y="{Y(n)-4:.1f}" font-size="10" fill="{"#B91C1C" if h in hl else "#78716C"}" font-weight="700" text-anchor="middle">{n}</text>')
+        bars.append(f'<text x="{X(h):.1f}" y="{H-22}" font-size="10" fill="#78716C" text-anchor="middle">{h}</text>')
+    yax = "".join(f'<text x="{L-6}" y="{Y(g)+3:.1f}" font-size="10" fill="#78716C" text-anchor="end">{g}</text>' for g in (0, 5, 10, 15))
+    return (f'<svg viewBox="0 0 {W} {H}" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">'
+            f'<line x1="{L}" y1="{H-B}" x2="{W-R}" y2="{H-B}" stroke="#E7E5E4"/>{yax}{"".join(bars)}'
+            f'<text x="{(L+W-R)/2:.0f}" y="{H-6}" font-size="11" fill="#78716C" text-anchor="middle">training pairs a direct h-year model gets →</text>'
+            f'</svg>')
+
+
+HZ_MAPE_SVG = _hz_mape_svg()
+PAIRS_SVG = _pairs_svg()
 
 C = {  # fill, stroke
     "blue": ("#EEF2F6", "#166534"), "teal": ("#ECFDF3", "#4ADE80"),
@@ -158,6 +218,10 @@ h1{font-size:27px;margin:0 0 4px}h2{font-size:19px;margin:34px 0 10px}
 .sub{color:var(--mut);margin:0 0 8px}
 .fig{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:16px 0}
 .cap{color:var(--mut);font-size:13px;margin-top:8px;text-align:center}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.g2 .fig{margin:0}.g2 .ft{font-weight:650;font-size:13.5px;margin-bottom:4px}
+@media(max-width:680px){.g2{grid-template-columns:1fr}}
+.swatch{display:inline-block;width:11px;height:11px;border-radius:2px;margin:0 4px -1px 0}
 p{margin:12px 0}b{color:var(--ink)}code{color:var(--acc)}
 ol{color:var(--ink)}li{margin:4px 0}
 a{color:var(--acc)}.foot{color:var(--mut);font-size:13px;margin-top:30px}
@@ -214,6 +278,27 @@ wide, not a falsely narrow ±5%.</p>
 combined into healthy person-years.</p>
 <div class="formula"><b>Supply</b> = healthy working-age people × expected working life
 <span class="u">person-years</span></div>
+
+<h2><span class="hnum" style="background:#166534">1b</span>Wouldn't separate 3/6/9-year models be more accurate? We tested it — no.</h2>
+<p>A natural question: surely a model <i>dedicated</i> to the 9-year forecast would beat one general model? We
+checked it directly. In a rolling-origin backtest over the smooth supply drivers, we compared our single
+<b style="color:#166534">horizon-aware ensemble</b> against <b style="color:#B91C1C">separate "direct" models</b> —
+one fitted specifically for each horizon (an OLS of the value h years ahead on today's value). The ensemble wins
+at <b>every</b> horizon, and the gap <b>widens</b> the further out you go.</p>
+<div class="g2">
+<div class="fig"><div class="ft">Forecast error by horizon — ensemble vs separate models</div>{HZ_MAPE_SVG}
+<div class="cap"><span class="swatch" style="background:#166534"></span>one horizon-aware ensemble
+<span class="swatch" style="background:#B91C1C;margin-left:8px"></span>separate per-horizon models
+<span class="swatch" style="background:#A8A29E;margin-left:8px"></span>naive floor — lower MAPE is better</div></div>
+<div class="fig"><div class="ft">…because a dedicated long-horizon model <i>starves</i></div>{PAIRS_SVG}
+<div class="cap">A separate <b>9-year</b> model can only learn from <b>{_PAIRS[8]}</b> (year, year+9) training pairs —
+far too few, so it overfits and does worse exactly where you hoped it would help.</div></div>
+</div>
+<p>The reason is data, not cleverness: every extra year of horizon throws away another year of usable training
+pairs ({_PAIRS[0]} → {_PAIRS[-1]}), so a long-horizon specialist is estimated from almost nothing and overfits.
+The single ensemble pools the full history and stays close to the naive floor (the best achievable on these
+near-random-walk drivers). One horizon-aware ensemble is the more accurate <i>and</i> more honest choice.
+(See the <a href="model_validation_report.html">Model trust</a> report for the full error-by-horizon.)</p>
 
 <h2><span class="hnum" style="background:#D97706">2</span>Building labour demand</h2>
 <p>From the forecast components we build demand using the formula from the case brief. Population is
