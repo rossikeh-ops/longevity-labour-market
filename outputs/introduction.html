@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8">
+<!doctype html><html lang="en" data-lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Introduction — balancing longevity &amp; the labour market by 2033</title>
 <style>
@@ -27,70 +27,104 @@ a{color:var(--acc)}.links{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
 .links a{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:8px 15px;
 text-decoration:none;font-size:14px;font-weight:600}.links a:hover{border-color:var(--acc)}
 .foot{color:var(--mut);font-size:13px;margin-top:30px}code{color:var(--acc)}
-</style></head><body><div class="wrap">
-<h1>Introduction — can Europe balance its labour market by 2033?</h1>
-<p class="sub">Europe is ageing: populations are growing older and, across much of the East, shrinking. As
+html[data-lang='en'] [lang='bg']{display:none!important}html[data-lang='bg'] [lang='en']{display:none!important}.langtoggle{position:fixed;top:14px;right:14px;z-index:9999;background:var(--card,#fff);border:1px solid var(--line,#E7E5E4);border-radius:20px;padding:7px 15px;cursor:pointer;font:700 13px/1 -apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--acc,#166534);box-shadow:0 2px 10px rgba(0,0,0,.08)}.langtoggle:hover{border-color:var(--acc,#166534)}</style></head><body><button class="langtoggle" id="langtoggle" aria-label="switch language">БГ</button><script>(function(){var r=document.documentElement;var L=localStorage.getItem('site-lang')||'en';r.dataset.lang=L;var b=document.getElementById('langtoggle');function u(){b.textContent=r.dataset.lang==='en'?'БГ':'EN';}b.onclick=function(){var n=r.dataset.lang==='en'?'bg':'en';r.dataset.lang=n;localStorage.setItem('site-lang',n);u();};u();})();</script><div class="wrap">
+<h1 lang="en">Introduction — can Europe balance its labour market by 2033?</h1>
+<h1 lang="bg">Въведение — може ли Европа да балансира пазара си на труда до 2033 г.?</h1>
+<p class="sub" lang="en">Europe is ageing: populations are growing older and, across much of the East, shrinking. As
 that happens, can each economy still supply the labour its jobs require? This study answers that by turning
 demographic averages into <b>human-working-years</b> — a stock comparable with jobs — for 8 countries, by sex,
 to 2033.</p>
+<p class="sub" lang="bg">Европа застарява: населението остарява и в голяма част от Изтока намалява. При това положение
+може ли всяка икономика да осигури труда, който работните ѝ места изискват? Това изследване отговаря, като
+превръща демографските средни стойности в <b>човеко-работни години</b> — величина, съпоставима с работните места —
+за 8 държави, по пол, до 2033 г.</p>
 
-<div class="hero"><b>The challenge.</b> Headcounts and life-expectancy averages can't be weighed against jobs,
+<div class="hero" lang="en"><b>The challenge.</b> Headcounts and life-expectancy averages can't be weighed against jobs,
 so we build a <b>person-year engine</b>: <b>supply</b> = healthy working-age people × expected working life;
 <b>demand</b> = jobs × required length of service; <b>balance</b> = the difference, in human-working-years. The
 question is whether that balance holds — and if not, where it breaks and what moves it.</div>
+<div class="hero" lang="bg"><b>Предизвикателството.</b> Броят на хората и средната продължителност на живота не могат да се
+претеглят спрямо работните места, затова изграждаме <b>двигател на човеко-години</b>: <b>предлагане</b> = здрави
+хора в трудоспособна възраст × очакван трудов живот; <b>търсене</b> = работни места × изискван стаж; <b>баланс</b>
+= разликата, в човеко-работни години. Въпросът е дали този баланс се запазва — и ако не, къде се къса и какво го движи.</div>
 
-<h2>How we measure it</h2>
-<p class="sub">Each driver is forecast on its full history by a small ensemble of transparent models
+<h2><span lang="en">How we measure it</span><span lang="bg">Как го измерваме</span></h2>
+<p class="sub" lang="en">Each driver is forecast on its full history by a small ensemble of transparent models
 (deliberately <b>no neural networks</b>) with Monte-Carlo uncertainty, then combined through the identities
 below. Population uses Eurostat's own projection, calibrated to observed 2024.</p>
+<p class="sub" lang="bg">Всеки показател се прогнозира върху цялата си история от малък ансамбъл от прозрачни модели
+(умишлено <b>без невронни мрежи</b>) с Монте-Карло несигурност, после се комбинира чрез тъждествата по-долу.
+Населението използва собствената прогноза на Eurostat, калибрирана към наблюдаваната 2024 г.</p>
 <div class="lever">
-<div class="lv" style="--c:var(--up)"><h3>1 · Supply</h3><p>Healthy working-age people × expected working life — the longevity dividend in person-years.</p></div>
-<div class="lv" style="--c:var(--mustard)"><h3>2 · Demand</h3><p>(Employed + vacancies) × required length of service — the career-years jobs require.</p></div>
-<div class="lv" style="--c:var(--slate)"><h3>3 · Balance</h3><p>Supply − demand, by country × sex, to 2033 with honest bands — the headline.</p></div>
+<div class="lv" style="--c:var(--up)"><h3 lang="en">1 · Supply</h3><h3 lang="bg">1 · Предлагане</h3><p lang="en">Healthy working-age people × expected working life — the longevity dividend in person-years.</p><p lang="bg">Здрави хора в трудоспособна възраст × очакван трудов живот — дивидентът от дълголетие в човеко-години.</p></div>
+<div class="lv" style="--c:var(--mustard)"><h3 lang="en">2 · Demand</h3><h3 lang="bg">2 · Търсене</h3><p lang="en">(Employed + vacancies) × required length of service — the career-years jobs require.</p><p lang="bg">(Заети + свободни места) × изискван стаж — кариерните години, които работните места изискват.</p></div>
+<div class="lv" style="--c:var(--slate)"><h3 lang="en">3 · Balance</h3><h3 lang="bg">3 · Баланс</h3><p lang="en">Supply − demand, by country × sex, to 2033 with honest bands — the headline.</p><p lang="bg">Предлагане − търсене, по държава × пол, до 2033 г. с честни ленти — заглавието.</p></div>
 </div>
-<p class="sub" style="margin-top:14px">Two further levels read the human side of longevity, reported <b>descriptively</b> — patterns, not
+<p class="sub" style="margin-top:14px" lang="en">Two further levels read the human side of longevity, reported <b>descriptively</b> — patterns, not
 causal mechanisms: <b>Level 4</b> measures the <b>poor-health burden</b> (population × the years lived in
 poor health, LE − HLY) and tests whether it drives the health sector; <b>Level 5</b> measures the
 <b>healthy-retirement dividend</b> (population × healthy years left after the retirement age, HLY − retire)
 and tests whether it lifts leisure, education &amp; culture spending. In both, the within-country link is
 ≈ 0 — they track GDP and income, not demography.</p>
+<p class="sub" style="margin-top:14px" lang="bg">Още две нива четат човешката страна на дълголетието, представени <b>описателно</b> — закономерности,
+не причинно-следствени механизми: <b>Ниво 4</b> измерва <b>тежестта от лошо здраве</b> (население × годините,
+изживени в лошо здраве, ОПЖ − ЗГЖ) и проверява дали тя движи здравния сектор; <b>Ниво 5</b> измерва
+<b>дивидента от здраво пенсиониране</b> (население × здравите години след пенсионната възраст, ЗГЖ − пенс.) и
+проверява дали повишава разходите за свободно време, образование и култура. И при двете връзката в рамките на
+държавата е ≈ 0 — следват БВП и доходите, не демографията.</p>
 
-<h2>The headline, previewed</h2>
-<div class="hero" style="border-left-color:var(--up)"><b>Roughly balanced in aggregate — but not where it's
+<h2><span lang="en">The headline, previewed</span><span lang="bg">Заглавието, накратко</span></h2>
+<div class="hero" style="border-left-color:var(--up)" lang="en"><b>Roughly balanced in aggregate — but not where it's
 needed.</b> Total supply and demand both stay near 4,386M and 4,310M human-working-years (a net balance
 of <b style="color:var(--up)">+89M</b>), hiding a sharp <b>East–West divide</b>: a West/EFTA shortage of
 <b style="color:var(--down)">-280M</b> against an East surplus of
 <b style="color:var(--up)">+369M</b>.</div>
+<div class="hero" style="border-left-color:var(--up)" lang="bg"><b>Сумарно горе-долу балансиран — но не там, където
+трябва.</b> Общото предлагане и търсене остават близо до 4,386 млн. и 4,310 млн. човеко-работни години
+(нетен баланс от <b style="color:var(--up)">+89 млн.</b>), скривайки рязко <b>разделение Изток–Запад</b>:
+недостиг Запад/ЕАСТ от <b style="color:var(--down)">-280 млн.</b> срещу излишък на Изток от
+<b style="color:var(--up)">+369 млн.</b></div>
 
 <div class="kpis">
-<div class="kpi"><div class="v" style="color:var(--up)">+89M</div><div class="l">Net balance 2033 (human-working-years)</div></div>
-<div class="kpi"><div class="v" style="color:var(--down)">-280M</div><div class="l">West/EFTA shortage — deepest in Germany</div></div>
-<div class="kpi"><div class="v" style="color:var(--up)">+369M</div><div class="l">East surplus — largest in Poland</div></div>
+<div class="kpi"><div class="v" style="color:var(--up)">+89M</div><div class="l"><span lang="en">Net balance 2033 (human-working-years)</span><span lang="bg">Нетен баланс 2033 (човеко-работни години)</span></div></div>
+<div class="kpi"><div class="v" style="color:var(--down)">-280M</div><div class="l"><span lang="en">West/EFTA shortage — deepest in Germany</span><span lang="bg">Недостиг Запад/ЕАСТ — най-дълбок в Germany</span></div></div>
+<div class="kpi"><div class="v" style="color:var(--up)">+369M</div><div class="l"><span lang="en">East surplus — largest in Poland</span><span lang="bg">Излишък на Изток — най-голям в Poland</span></div></div>
 </div>
 
-<h2>What we find</h2>
+<h2><span lang="en">What we find</span><span lang="bg">Какво откриваме</span></h2>
 <div class="cards">
-<div class="find"><div class="t" style="color:var(--acc)">The headline</div>
-<h3>A balanced total, an unbalanced map</h3>
-<p>Net supply ≈ demand for the 8 countries combined, but Poland's reserve roughly offsets
-Germany's, France's and Switzerland's shortfalls — the demographic basis of West-bound migration.</p></div>
-<div class="find"><div class="t" style="color:var(--acc)">Supply</div>
-<h3>The longevity dividend holds the line</h3>
-<p>Working-age populations shrink, yet supply is near-flat (4,492→4,386M, -2.4%): healthier,
-longer working lives and rising participation offset the loss. It is the supply lever already in motion.</p></div>
-<div class="find"><div class="t" style="color:var(--acc)">Demand</div>
-<h3>Broadly flat, ageing-tilted</h3>
-<p>Jobs × required service stays close to 4,419→4,310M (-2.5%). Demand doesn't run away;
-the imbalance comes from where the working-age people are, not from an explosion in labour needs.</p></div>
-<div class="find"><div class="t" style="color:var(--acc)">Honesty</div>
-<h3>The balance is a direction, not a point</h3>
-<p>It is a small difference of two large forecasts, so its relative error is amplified. Read it as a
-<b>structural East-surplus / West-shortage signal with wide bands</b> — validated by a leakage-safe backtest.</p></div>
+<div class="find"><div class="t" style="color:var(--acc)"><span lang="en">The headline</span><span lang="bg">Заглавно</span></div>
+<h3 lang="en">A balanced total, an unbalanced map</h3><h3 lang="bg">Балансиран сбор, небалансирана карта</h3>
+<p lang="en">Net supply ≈ demand for the 8 countries combined, but Poland's reserve roughly offsets
+Germany's, France's and Switzerland's shortfalls — the demographic basis of West-bound migration.</p>
+<p lang="bg">Нетно предлагане ≈ търсене за 8-те държави заедно, но резервът на Poland горе-долу компенсира
+недостига на Germany, Франция и Швейцария — демографската основа на миграцията на Запад.</p></div>
+<div class="find"><div class="t" style="color:var(--acc)"><span lang="en">Supply</span><span lang="bg">Предлагане</span></div>
+<h3 lang="en">The longevity dividend holds the line</h3><h3 lang="bg">Дивидентът от дълголетие държи фронта</h3>
+<p lang="en">Working-age populations shrink, yet supply is near-flat (4,492→4,386M, -2.4%): healthier,
+longer working lives and rising participation offset the loss. It is the supply lever already in motion.</p>
+<p lang="bg">Населението в трудоспособна възраст намалява, но предлагането е почти равно (4,492→4,386 млн.,
+-2.4%): по-здравият, по-дълъг трудов живот и нарастващото участие компенсират загубата. Това е лостът на
+предлагането, който вече е задействан.</p></div>
+<div class="find"><div class="t" style="color:var(--acc)"><span lang="en">Demand</span><span lang="bg">Търсене</span></div>
+<h3 lang="en">Broadly flat, ageing-tilted</h3><h3 lang="bg">Като цяло равно, с уклон към застаряване</h3>
+<p lang="en">Jobs × required service stays close to 4,419→4,310M (-2.5%). Demand doesn't run away;
+the imbalance comes from where the working-age people are, not from an explosion in labour needs.</p>
+<p lang="bg">Работни места × изискван стаж остава близо до 4,419→4,310 млн. (-2.5%). Търсенето не
+избягва; дисбалансът идва от това къде са хората в трудоспособна възраст, не от взрив в нуждата от труд.</p></div>
+<div class="find"><div class="t" style="color:var(--acc)"><span lang="en">Honesty</span><span lang="bg">Честност</span></div>
+<h3 lang="en">The balance is a direction, not a point</h3><h3 lang="bg">Балансът е посока, не точка</h3>
+<p lang="en">It is a small difference of two large forecasts, so its relative error is amplified. Read it as a
+<b>structural East-surplus / West-shortage signal with wide bands</b> — validated by a leakage-safe backtest.</p>
+<p lang="bg">Той е малка разлика на две големи прогнози, затова относителната му грешка е усилена. Четете го като
+<b>структурен сигнал излишък-Изток / недостиг-Запад с широки ленти</b> — валидиран чрез бектест без изтичане.</p></div>
 </div>
 
-<h2>Three levers that could balance the market</h2>
-<p class="sub">Whatever the gap turns out to be, only three families of policy move it — each maps to a term in
+<h2><span lang="en">Three levers that could balance the market</span><span lang="bg">Три лоста, които биха могли да балансират пазара</span></h2>
+<p class="sub" lang="en">Whatever the gap turns out to be, only three families of policy move it — each maps to a term in
 the supply–demand identity. This study quantifies how much each lever would have to do.</p>
+<p class="sub" lang="bg">Каквато и да се окаже разликата, само три семейства политики я движат — всяко съответства на член
+от тъждеството предлагане–търсене. Това изследване количествено определя колко трябва да направи всеки лост.</p>
 
 <svg viewBox="0 0 960 384" width="100%" style="display:block;margin:6px 0 10px;font-family:inherit" xmlns="http://www.w3.org/2000/svg">
   <path d="M480,184 V342" fill="none" stroke="#475569" stroke-width="2.5"/>
@@ -125,25 +159,35 @@ the supply–demand identity. This study quantifies how much each lever would ha
   <text x="704" y="257" text-anchor="start" font-size="13" fill="#78716C">align skills with market needs.</text>
 </svg>
 <div class="lever">
-<div class="lv" style="--c:var(--up)"><h3>Increase supply</h3><p>Raise participation (esp. women &amp; older
-workers), retain healthy 55–70s, and use net migration — the fastest dials, and where the East's surplus sits.</p></div>
-<div class="lv" style="--c:var(--slate)"><h3>Ease demand</h3><p>Automation and productivity lower the human
-hours each job needs — the slow, structural lever that reduces required labour rather than adding workers.</p></div>
-<div class="lv" style="--c:var(--mustard)"><h3>Maintain balance</h3><p>Education, training and retirement-age /
-service-length policy align skills and careers with need — and convert a geographic surplus into usable supply.</p></div>
+<div class="lv" style="--c:var(--up)"><h3 lang="en">Increase supply</h3><h3 lang="bg">Увеличи предлагането</h3><p lang="en">Raise participation (esp. women &amp; older
+workers), retain healthy 55–70s, and use net migration — the fastest dials, and where the East's surplus sits.</p><p lang="bg">Повиши участието (особено жени и по-възрастни
+работници), задръж здравите 55–70-годишни и използвай нетна миграция — най-бързите лостове, и там, където е излишъкът на Изтока.</p></div>
+<div class="lv" style="--c:var(--slate)"><h3 lang="en">Ease demand</h3><h3 lang="bg">Намали търсенето</h3><p lang="en">Automation and productivity lower the human
+hours each job needs — the slow, structural lever that reduces required labour rather than adding workers.</p><p lang="bg">Автоматизацията и производителността намаляват човешките
+часове, които всяко работно място изисква — бавният, структурен лост, който намалява нужния труд, вместо да добавя работници.</p></div>
+<div class="lv" style="--c:var(--mustard)"><h3 lang="en">Maintain balance</h3><h3 lang="bg">Поддържай баланс</h3><p lang="en">Education, training and retirement-age /
+service-length policy align skills and careers with need — and convert a geographic surplus into usable supply.</p><p lang="bg">Образованието, обучението и политиката за пенсионна
+възраст / дължина на стажа съгласуват уменията и кариерите с нуждата — и превръщат географския излишък в използваемо предлагане.</p></div>
 </div>
 
-<h2>What to keep in mind</h2>
-<div class="note">
+<h2><span lang="en">What to keep in mind</span><span lang="bg">Какво да имаме предвид</span></h2>
+<div class="note" lang="en">
 • Forecasts run to <b>2033</b> — a policy baseline, shorter than a full pension/ageing horizon.<br>
 • <b>Supply is a potential ceiling</b> (net of health and working-life length, before skills mismatch and frictions).<br>
 • <b>Healthy-life years</b> (HLY) and <b>vacancies</b> are the weak drivers — both near-random-walk; modelled honestly at their accuracy ceiling.<br>
 • Population is Eurostat's own projection (<code>proj_23np</code>), calibrated to 2024; migration is the biggest swing factor.<br>
 • Levels 4–6 (health-cost, retirement-dividend, and the macroeconomy) are descriptive relationships and an
 identity decomposition, not causal mechanisms.</div>
+<div class="note" lang="bg">
+• Прогнозите стигат до <b>2033 г.</b> — политическа база, по-къса от пълен пенсионен/застаряващ хоризонт.<br>
+• <b>Предлагането е потенциален таван</b> (нето от здраве и дължина на трудовия живот, преди несъответствие на уменията и фрикции).<br>
+• <b>Здравите години живот</b> (ЗГЖ) и <b>свободните места</b> са слабите показатели — и двете близо до случаен ход; моделирани честно при тавана на точността им.<br>
+• Населението е собствената прогноза на Eurostat (<code>proj_23np</code>), калибрирана към 2024 г.; миграцията е най-големият променлив фактор.<br>
+• Нива 4–6 (цена на здравето, пенсионен дивидент и макроикономиката) са описателни връзки и
+декомпозиция на тъждество, не причинно-следствени механизми.</div>
 
-<h2>Explore the analysis</h2>
-<p class="sub" style="margin-bottom:8px">Each level opens its guided story with a one-tab switch to the full report.</p>
+<h2><span lang="en">Explore the analysis</span><span lang="bg">Разгледайте анализа</span></h2>
+<p class="sub" style="margin-bottom:8px"><span lang="en">Each level opens its guided story with a one-tab switch to the full report.</span><span lang="bg">Всяко ниво отваря водената си презентация с превключване с един раздел към пълния доклад.</span></p>
 <div class="links">
 <a href="level1.html">👥 L1 Supply</a>
 <a href="level2.html">💼 L2 Demand</a>
@@ -155,5 +199,5 @@ identity decomposition, not causal mechanisms.</div>
 <a href="model_validation_report.html">🔍 Model trust</a>
 <a href="methodology_report.html">🧭 Methodology</a>
 </div>
-<p class="foot"><a href="../index.html">← Back to overview</a> · Generated from outputs/balance_forecast.csv · src/report_intro.py</p>
+<p class="foot"><a href="../index.html"><span lang="en">← Back to overview</span><span lang="bg">← Обратно към обзора</span></a> · src/report_intro.py</p>
 </div></body></html>
