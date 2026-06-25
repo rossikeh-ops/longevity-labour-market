@@ -452,7 +452,6 @@ last-value forecast; Coverage = share of actuals inside the 80% band.</p>
 <table><thead><tr><th>Driver</th><th>Accuracy{info("Accuracy")}</th><th>MAPE{info("MAPE")}</th>
 <th>RMSE{info("RMSE")}</th><th>Bias{info("Bias")}</th><th>Skill{info("Skill")}</th>
 <th>Cover 80%{info("Coverage")}</th><th>Verdict</th></tr></thead><tbody>{table_html}</tbody></table>
-<div style="margin-top:14px">{mape_svg}</div>
 
 <h2>Train vs backtest, by model — the generalisation gap</h2>
 <p class="sub">For every driver model: <b>Train</b> = in-sample fit error (the model scored on the history it was
