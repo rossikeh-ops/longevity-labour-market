@@ -28,7 +28,7 @@ LEVELS = [
     (5, "Healthy retirement dividend", "Healthy years after retirement (HLY − retirement age) and whether they fund leisure.",
      "dividend_story.html", "level5_dividend_report.html"),
     (6, "Longevity in the macroeconomy", "Growth accounting: real GDP to 2033 split into labour and productivity channels.",
-     None, "level6_macro_report.html"),
+     "macro_story.html", "level6_macro_report.html"),
 ]
 
 PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">

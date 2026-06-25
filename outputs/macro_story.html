@@ -1,0 +1,165 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Longevity in the Macroeconomy — a guided story</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+:root{--bg:#FAFAF9;--card:#FFFFFF;--ink:#292524;--mut:#78716C;--line:#E7E5E4;--acc:#166534;
+--slate:#475569;--mustard:#D97706;--sage:#4ADE80;--terra:#B91C1C;}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+display:flex;flex-direction:column;min-height:100vh}
+header{padding:18px 28px 8px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+header h1{font-size:19px;margin:0;font-weight:650}header .who{color:var(--mut);font-size:13px}.spacer{flex:1}
+select{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px}
+.track{display:flex;align-items:center;gap:0;padding:6px 28px 12px;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:9px;cursor:pointer;color:var(--mut);font-size:13px;font-weight:600}
+.step .dot{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:var(--card);
+display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--mut);transition:.2s}
+.step.active .dot,.step.done .dot{border-color:var(--acc);background:var(--acc);color:#fff}.step.active{color:var(--ink)}
+.link{flex:0 0 46px;height:3px;background:var(--line);margin:0 6px;border-radius:2px}.link.done{background:var(--acc)}
+main{flex:1;padding:6px 28px 20px;max-width:1080px;margin:0 auto;width:100%}
+.slide{display:none;animation:fade .35s ease}.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kick{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--acc);font-weight:700}
+.slide h2{font-size:24px;margin:4px 0 6px}.slide p.lead{color:var(--mut);margin:0 0 14px;max-width:780px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:12px 0}
+.chwrap{position:relative;height:430px}
+.kpis{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;min-width:150px}
+.kpi .v{font-size:22px;font-weight:700}.kpi .l{color:var(--mut);font-size:12px;margin-top:2px}
+.note{color:var(--mut);font-size:13px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:10px}code{color:var(--acc)}
+footer{display:flex;align-items:center;justify-content:space-between;padding:14px 28px 26px;max-width:1080px;margin:0 auto;width:100%}
+button.nav{background:var(--acc);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer}
+button.nav:disabled{background:var(--line);color:var(--mut);cursor:default}button.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+a{color:var(--acc)}
+</style></head><body>
+<header>
+  <h1>Longevity in the Macroeconomy — a guided story</h1>
+  <span class="who">8 European countries · to 2033</span><span class="spacer"></span>
+  <label class="who" for="country">Country&nbsp;</label><select id="country"></select>
+</header>
+<nav class="track" id="track"></nav>
+<main>
+  <section class="slide" data-i="0">
+    <div class="kick">Step 1 · The identity</div><h2>Real GDP = employment × productivity</h2>
+    <p class="lead">Where does growth come from? Every euro of output is <b>someone working</b> times
+    <b>how much each worker produces</b>. We forecast both and rebuild GDP to 2033 with an uncertainty band.</p>
+    <div class="panel"><div class="chwrap"><canvas id="gdp"></canvas></div></div>
+    <div class="kpis" id="gKpis"></div>
+    <div class="note">Real GDP: <code>nama_10_gdp</code> (B1GQ, chain-linked 2015). Productivity = GDP ÷ employment.</div></section>
+  <section class="slide" data-i="1">
+    <div class="kick">Step 2 · Growth accounting</div><h2>Labour vs productivity, to 2033</h2>
+    <p class="lead">Splitting each country's projected growth: the <b>labour</b> channel (employment — where
+    longevity acts) and the <b>productivity</b> channel. The East grows on productivity catch-up; the West leans on labour.</p>
+    <div class="panel"><div class="chwrap"><canvas id="decomp"></canvas></div></div>
+    <div class="kpis" id="dKpis"></div>
+    <div class="note">A <b>negative labour</b> segment (Romania) is a demographic drag the productivity channel must offset.</div></section>
+  <section class="slide" data-i="2">
+    <div class="kick">Step 3 · The reverse arrow</div><h2>Does healthy longevity lift productivity?</h2>
+    <p class="lead">If longer <i>healthy</i> lives made workers more productive, healthy share and GDP-per-worker
+    would rise together across countries. Each point is a country.</p>
+    <div class="panel"><div class="chwrap"><canvas id="cross"></canvas></div></div>
+    <div class="kpis" id="cKpis"></div></section>
+  <section class="slide" data-i="3">
+    <div class="kick">Step 4 · Honest answer</div><h2>Within a country, no link</h2>
+    <p class="lead">Year-on-year, changes in healthy share explain none of the change in productivity. The
+    longevity dividend reaches GDP through the <b>number of healthy workers</b>, not a per-worker premium.</p>
+    <div class="panel"><div class="chwrap"><canvas id="diff"></canvas></div></div>
+    <div class="kpis" id="aKpis"></div>
+    <div class="note">Descriptive identity decomposition — no causal claim; productivity bundles capital &amp; technology.</div></section>
+</main>
+<footer>
+  <button class="nav ghost" id="prev">‹ Back</button>
+  <div style="display:flex;align-items:center;gap:14px"><button class="nav ghost" id="play">▶ Present</button>
+  <span class="who" id="counter"></span></div>
+  <button class="nav" id="next">Next ›</button>
+</footer>
+<script>const DATA = {"countries": {"ALL": "All 8 countries", "BG": "Bulgaria", "PL": "Poland", "CZ": "Czechia", "RO": "Romania", "DE": "Germany", "FR": "France", "NO": "Norway", "CH": "Switzerland"}, "gdp": {"ALL": {"oy": [1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "ov": [4.16, 4.66, 5.19, 5.32, 5.46, 5.68, 5.78, 5.81, 5.84, 5.98, 6.09, 6.32, 6.52, 6.61, 6.36, 6.55, 6.75, 6.79, 6.84, 6.97, 7.09, 7.22, 7.42, 7.57, 7.7, 7.34, 7.73, 7.93, 7.96, 8.02, 8.09], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [8.13, 8.19, 8.26, 8.33, 8.39, 8.45, 8.51, 8.57, 8.63], "lo": [7.99, 7.86, 7.84, 7.84, 7.83, 7.76, 7.72, 7.68, 7.67], "hi": [8.28, 8.54, 8.67, 8.8, 8.95, 9.1, 9.29, 9.48, 9.57]}, "BG": {"oy": [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "ov": [0.03, 0.03, 0.03, 0.03, 0.03, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.06, 0.06, 0.06, 0.06], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.07, 0.07], "lo": [0.06, 0.06, 0.06, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05], "hi": [0.06, 0.07, 0.07, 0.07, 0.08, 0.08, 0.08, 0.09, 0.09]}, "PL": {"oy": [1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "ov": [0.22, 0.23, 0.24, 0.26, 0.26, 0.26, 0.27, 0.29, 0.3, 0.31, 0.34, 0.35, 0.36, 0.37, 0.39, 0.4, 0.4, 0.41, 0.43, 0.45, 0.47, 0.5, 0.52, 0.51, 0.55, 0.57, 0.58, 0.59, 0.62], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [0.62, 0.62, 0.63, 0.64, 0.65, 0.66, 0.68, 0.69, 0.7], "lo": [0.59, 0.59, 0.59, 0.59, 0.58, 0.57, 0.57, 0.57, 0.56], "hi": [0.64, 0.66, 0.68, 0.7, 0.73, 0.75, 0.77, 0.8, 0.82]}, "CZ": {"oy": [1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "ov": [0.11, 0.11, 0.11, 0.12, 0.12, 0.12, 0.13, 0.13, 0.14, 0.15, 0.16, 0.16, 0.15, 0.16, 0.16, 0.16, 0.16, 0.16, 0.17, 0.17, 0.18, 0.19, 0.2, 0.19, 0.19, 0.2, 0.2, 0.2, 0.21], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [0.21, 0.21, 0.21, 0.22, 0.22, 0.22, 0.22, 0.23, 0.23], "lo": [0.21, 0.2, 0.2, 0.2, 0.21, 0.21, 0.2, 0.2, 0.2], "hi": [0.21, 0.22, 0.23, 0.23, 0.23, 0.24, 0.24, 0.25, 0.26]}, "RO": {"oy": [1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "ov": [0.09, 0.09, 0.09, 0.09, 0.1, 0.1, 0.11, 0.12, 0.12, 0.13, 0.14, 0.15, 0.15, 0.14, 0.15, 0.15, 0.15, 0.16, 0.16, 0.16, 0.18, 0.19, 0.2, 0.19, 0.2, 0.21, 0.21, 0.21, 0.22], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [0.21, 0.22, 0.22, 0.22, 0.22, 0.23, 0.23, 0.23, 0.23], "lo": [0.21, 0.2, 0.2, 0.19, 0.18, 0.18, 0.18, 0.18, 0.18], "hi": [0.22, 0.23, 0.24, 0.25, 0.26, 0.26, 0.27, 0.28, 0.28]}, "DE": {"oy": [1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "ov": [2.36, 2.38, 2.42, 2.48, 2.53, 2.6, 2.64, 2.64, 2.62, 2.65, 2.68, 2.78, 2.86, 2.89, 2.73, 2.84, 2.95, 2.96, 2.97, 3.04, 3.09, 3.16, 3.24, 3.28, 3.31, 3.18, 3.3, 3.36, 3.33, 3.31, 3.32], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [3.35, 3.37, 3.39, 3.41, 3.43, 3.44, 3.45, 3.47, 3.49], "lo": [3.3, 3.24, 3.23, 3.25, 3.25, 3.21, 3.15, 3.15, 3.14], "hi": [3.41, 3.5, 3.54, 3.57, 3.61, 3.67, 3.76, 3.84, 3.85]}, "FR": {"oy": [1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "ov": [1.58, 1.6, 1.64, 1.7, 1.75, 1.83, 1.86, 1.88, 1.9, 1.95, 1.99, 2.04, 2.1, 2.1, 2.04, 2.09, 2.14, 2.14, 2.16, 2.18, 2.2, 2.22, 2.27, 2.3, 2.35, 2.18, 2.33, 2.39, 2.43, 2.46, 2.48], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [2.49, 2.51, 2.52, 2.54, 2.55, 2.57, 2.58, 2.59, 2.61], "lo": [2.45, 2.4, 2.4, 2.38, 2.4, 2.39, 2.39, 2.37, 2.39], "hi": [2.53, 2.62, 2.63, 2.68, 2.71, 2.75, 2.78, 2.8, 2.83]}, "NO": {"oy": [1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "ov": [0.23, 0.24, 0.25, 0.26, 0.26, 0.27, 0.28, 0.28, 0.29, 0.3, 0.31, 0.32, 0.33, 0.33, 0.32, 0.33, 0.33, 0.34, 0.35, 0.35, 0.36, 0.37, 0.38, 0.38, 0.39, 0.38, 0.4, 0.41, 0.41, 0.42, 0.42], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [0.43, 0.43, 0.44, 0.44, 0.45, 0.45, 0.46, 0.46, 0.47], "lo": [0.42, 0.42, 0.42, 0.42, 0.42, 0.42, 0.42, 0.43, 0.43], "hi": [0.43, 0.44, 0.45, 0.46, 0.47, 0.48, 0.49, 0.49, 0.5]}, "CH": {"oy": [1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "ov": [0.44, 0.45, 0.46, 0.47, 0.49, 0.49, 0.49, 0.49, 0.51, 0.52, 0.54, 0.56, 0.58, 0.57, 0.59, 0.59, 0.6, 0.61, 0.63, 0.64, 0.65, 0.66, 0.68, 0.69, 0.67, 0.71, 0.74, 0.74, 0.75, 0.76], "fy": [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033], "fm": [0.77, 0.77, 0.78, 0.79, 0.8, 0.81, 0.82, 0.83, 0.84], "lo": [0.76, 0.75, 0.75, 0.75, 0.74, 0.74, 0.74, 0.74, 0.73], "hi": [0.78, 0.8, 0.82, 0.84, 0.86, 0.88, 0.9, 0.92, 0.94]}}, "decomp": {"codes": ["PL", "CZ", "BG", "NO", "CH", "RO", "FR", "DE"], "names": ["Poland", "Czechia", "Bulgaria", "Norway", "Switzerland", "Romania", "France", "Germany"], "labour": [0.25, 0.26, 0.07, 0.63, 0.45, -0.84, 0.54, 0.25], "prod": [1.59, 1.13, 1.27, 0.6, 0.73, 1.78, 0.1, 0.32], "gdp": [1.84, 1.39, 1.34, 1.23, 1.18, 0.93, 0.64, 0.57]}, "cross": [{"c": "BG", "name": "Bulgaria", "hs": 0.911, "prod": 20.9}, {"c": "CH", "name": "Switzerland", "hs": 0.689, "prod": 161.7}, {"c": "CZ", "name": "Czechia", "hs": 0.78, "prod": 40.1}, {"c": "DE", "name": "Germany", "hs": 0.768, "prod": 81.2}, {"c": "FR", "name": "France", "hs": 0.766, "prod": 86.9}, {"c": "NO", "name": "Norway", "hs": 0.778, "prod": 151.5}, {"c": "PL", "name": "Poland", "hs": 0.824, "prod": 35.4}, {"c": "RO", "name": "Romania", "hs": 0.849, "prod": 27.5}], "diff": [{"x": 1.58, "y": 2.08}, {"x": -9.41, "y": 2.95}, {"x": -0.41, "y": -0.29}, {"x": 1.42, "y": 6.92}, {"x": -1.89, "y": 5.74}, {"x": -0.31, "y": 1.87}, {"x": 0.17, "y": -0.36}, {"x": -0.15, "y": -0.36}, {"x": -1.24, "y": 1.78}, {"x": 3.12, "y": 3.63}, {"x": -1.61, "y": -1.24}, {"x": 1.49, "y": 2.45}, {"x": 0.62, "y": 7.81}, {"x": 0.79, "y": 0.71}, {"x": -0.55, "y": 9.25}, {"x": 1.29, "y": 2.04}, {"x": 0.68, "y": 2.34}, {"x": 0.59, "y": 3.36}, {"x": -4.78, "y": 2.44}, {"x": -1.56, "y": 2.05}, {"x": 1.38, "y": 0.62}, {"x": -0.69, "y": 2.12}, {"x": -0.67, "y": 5.69}, {"x": 0.61, "y": 4.6}, {"x": -0.31, "y": 1.32}, {"x": -0.26, "y": 0.86}, {"x": -0.22, "y": 2.05}, {"x": 0.67, "y": 2.93}, {"x": 1.26, "y": 2.42}, {"x": -1.05, "y": 3.92}, {"x": 0.6, "y": 5.72}, {"x": -0.18, "y": 1.93}, {"x": 1.21, "y": -2.1}, {"x": 1.54, "y": 5.58}, {"x": -2.03, "y": 4.72}, {"x": -0.37, "y": -0.07}, {"x": 1.94, "y": 3.75}, {"x": -0.78, "y": 5.16}, {"x": 4.19, "y": 3.55}, {"x": -0.31, "y": 0.99}, {"x": -0.68, "y": -3.36}, {"x": 1.55, "y": 3.67}, {"x": -0.83, "y": 2.03}, {"x": 0.17, "y": -1.07}, {"x": 0.09, "y": -0.78}, {"x": 0.41, "y": 1.45}, {"x": -1.21, "y": 3.8}, {"x": -0.07, "y": 0.91}, {"x": -2.3, "y": 3.5}, {"x": 1.6, "y": 1.76}, {"x": -1.02, "y": 3.42}, {"x": 0.43, "y": -4.2}, {"x": 1.47, "y": 4.36}, {"x": -2.04, "y": 3.69}, {"x": -0.58, "y": 2.7}, {"x": 0.35, "y": -1.18}, {"x": -0.44, "y": 8.45}, {"x": -1.18, "y": -4.8}, {"x": -4.69, "y": 1.84}, {"x": -0.88, "y": 6.43}, {"x": 0.52, "y": 0.88}, {"x": 0.48, "y": 0.8}, {"x": 0.9, "y": 3.12}, {"x": 0.19, "y": 3.34}, {"x": -0.06, "y": 3.66}, {"x": -0.82, "y": 5.49}, {"x": 0.76, "y": 5.03}, {"x": 0.86, "y": 3.57}, {"x": 0.98, "y": -2.04}, {"x": -1.36, "y": 13.03}, {"x": -0.82, "y": 3.31}, {"x": -1.08, "y": 3.73}, {"x": 7.5, "y": -1.14}, {"x": 4.44, "y": 1.62}, {"x": 0.15, "y": 0.78}, {"x": -2.29, "y": -0.46}, {"x": 0.55, "y": -5.45}, {"x": 0.69, "y": 5.3}, {"x": -0.13, "y": 1.81}, {"x": -0.83, "y": -0.26}, {"x": -0.26, "y": -0.43}, {"x": -1.64, "y": 1.47}, {"x": 12.71, "y": 0.96}, {"x": -0.47, "y": -0.3}, {"x": -0.49, "y": 1.97}, {"x": -0.14, "y": 0.75}, {"x": 0.27, "y": -0.08}, {"x": -0.37, "y": -1.98}, {"x": 0.07, "y": 5.47}, {"x": -5.43, "y": -0.46}, {"x": 1.42, "y": -1.89}, {"x": -0.34, "y": -0.48}, {"x": 0.69, "y": 0.26}, {"x": -0.44, "y": 1.97}, {"x": -0.29, "y": 0.88}, {"x": -0.04, "y": -0.92}, {"x": -0.8, "y": -1.9}, {"x": -0.91, "y": 1.84}, {"x": 0.25, "y": 2.47}, {"x": 0.19, "y": 0.17}, {"x": 0.31, "y": 0.86}, {"x": -0.28, "y": -1.18}, {"x": 0.12, "y": 0.96}, {"x": -0.49, "y": 0.46}, {"x": 0.37, "y": 1.32}, {"x": 0.21, "y": 0.83}, {"x": 0.1, "y": 1.76}, {"x": 1.16, "y": -7.18}, {"x": 1.8, "y": 4.02}, {"x": -1.94, "y": 0.71}, {"x": -1.45, "y": 0.92}, {"x": -0.33, "y": 0.25}, {"x": -0.75, "y": 2.5}, {"x": -0.98, "y": -0.04}, {"x": 2.1, "y": 0.14}, {"x": 3.72, "y": -2.24}, {"x": -1.52, "y": -0.81}, {"x": 1.5, "y": 1.24}, {"x": 6.22, "y": 0.19}, {"x": -4.91, "y": 0.97}, {"x": -1.95, "y": 0.7}, {"x": 1.1, "y": 1.41}, {"x": -1.0, "y": 1.71}, {"x": -0.63, "y": 1.28}, {"x": 0.96, "y": 2.44}, {"x": -0.74, "y": -0.37}, {"x": -1.1, "y": 0.37}, {"x": -1.5, "y": -0.97}, {"x": -0.73, "y": 2.06}, {"x": -0.12, "y": 1.35}, {"x": -3.41, "y": -0.51}, {"x": -0.43, "y": 0.89}, {"x": 0.61, "y": 0.14}, {"x": -1.31, "y": -2.65}, {"x": 0.03, "y": 4.5}, {"x": 1.19, "y": -0.59}, {"x": 3.14, "y": 0.04}, {"x": -9.92, "y": 1.07}, {"x": -1.9, "y": 1.09}, {"x": 1.22, "y": -0.03}, {"x": -0.73, "y": 0.7}, {"x": 1.54, "y": 0.71}, {"x": -0.3, "y": 2.49}, {"x": -0.14, "y": 0.26}, {"x": 1.94, "y": -2.07}, {"x": -0.88, "y": 5.87}, {"x": -2.5, "y": 2.3}, {"x": -2.31, "y": -0.71}, {"x": 0.56, "y": 0.94}], "rel": {"cross_year": 2024, "cross_corr": -0.873, "cross_elasticity": -10.275, "fe_elasticity": -0.243, "fe_r2": 0.004, "within_elasticity": -0.067, "within_r2": 0.003, "prod_real_growth_pct": 1.6, "n_within": 149, "verdict": "Self-perceived healthy-life years show no positive cross-country link with labour productivity (if anything negative, a GALI self-reporting artifact); within countries the link is statistically nil. The longevity dividend reaches the macroeconomy through the LABOUR channel, not a measurable productivity boost."}, "cyear": 2024};</script>
+<script>
+const STEPS=[["The identity","GDP build-up"],["Growth accounting","Labour vs productivity"],["Reverse arrow","Cross-country"],["Honest answer","Within-country"]];
+const C={slate:'#475569',mustard:'#D97706',sage:'#4ADE80',terra:'#B91C1C',acc:'#166534',ink:'#292524',mut:'#78716C',line:'#E7E5E4'};
+Chart.defaults.color=C.mut;Chart.defaults.font.family="-apple-system,Segoe UI,Roboto,Arial,sans-serif";Chart.defaults.borderColor=C.line;
+let state={country:'ALL',slide:0},charts={};
+const sel=document.getElementById('country');
+Object.entries(DATA.countries).forEach(([k,v])=>{const o=document.createElement('option');o.value=k;o.textContent=v;sel.appendChild(o);});
+sel.value=state.country;sel.onchange=()=>{state.country=sel.value;renderAll();};
+const track=document.getElementById('track');
+STEPS.forEach((s,i)=>{if(i>0){const l=document.createElement('span');l.className='link';l.dataset.link=i;track.appendChild(l);}
+  const el=document.createElement('div');el.className='step';el.dataset.step=i;
+  el.innerHTML=`<span class="dot">${i+1}</span><span>${s[0]}</span>`;el.onclick=()=>go(i);track.appendChild(el);});
+function go(i){state.slide=Math.max(0,Math.min(3,i));
+  document.querySelectorAll('.slide').forEach(s=>s.classList.toggle('active',+s.dataset.i===state.slide));
+  document.querySelectorAll('.step').forEach((s,idx)=>{s.classList.toggle('active',idx===state.slide);s.classList.toggle('done',idx<state.slide);});
+  document.querySelectorAll('.link').forEach(l=>l.classList.toggle('done',+l.dataset.link<=state.slide));
+  document.getElementById('prev').disabled=state.slide===0;
+  document.getElementById('next').textContent=state.slide===3?'Finish':'Next ›';
+  document.getElementById('counter').textContent=`Step ${state.slide+1} of 4 — ${STEPS[state.slide][1]}`;renderAll();}
+document.getElementById('prev').onclick=()=>go(state.slide-1);document.getElementById('next').onclick=()=>go(state.slide+1);
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')go(state.slide+1);if(e.key==='ArrowLeft')go(state.slide-1);});
+function destroy(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+const axis=(t,extra={})=>({title:{display:!!t,text:t,color:C.mut},grid:{color:C.line},...extra});
+function kpi(v,l){return `<div class="kpi"><div class="v">${v}</div><div class="l">${l}</div></div>`;}
+
+function drawGDP(){destroy('gdp');const d=DATA.gdp[state.country];const labels=d.oy.concat(d.fy);
+  const obs=d.ov.concat(Array(d.fy.length).fill(null));
+  const fcast=Array(d.oy.length-1).fill(null).concat([d.ov[d.ov.length-1]]).concat(d.fm);
+  const pad=a=>Array(d.oy.length).fill(null).concat(a);
+  charts.gdp=new Chart(document.getElementById('gdp'),{type:'line',data:{labels,datasets:[
+    {label:'80% band',data:pad(d.lo),borderColor:'transparent',backgroundColor:'rgba(217,119,6,.12)',pointRadius:0,fill:'+1'},
+    {label:'_hi',data:pad(d.hi),borderColor:'transparent',backgroundColor:'rgba(217,119,6,.12)',pointRadius:0,fill:false},
+    {label:'Observed',data:obs,borderColor:C.slate,backgroundColor:C.slate,tension:.2,pointRadius:0,borderWidth:2.5},
+    {label:'Forecast (L × productivity)',data:fcast,borderColor:C.mustard,backgroundColor:C.mustard,borderDash:[5,3],tension:.2,pointRadius:0,borderWidth:2.5}]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      scales:{y:{...axis('real GDP (€ trillion, CLV15)')},x:axis()},
+      plugins:{title:{display:true,text:`Real GDP — ${DATA.countries[state.country]}`,color:C.ink,font:{size:15}},
+        legend:{position:'bottom',labels:{filter:i=>!i.text.startsWith('_')}},
+        tooltip:{filter:i=>!i.dataset.label.startsWith('_'),callbacks:{label:c=>`${c.dataset.label}: €${c.raw}T`}}}}});
+  const a=d.ov[d.ov.length-1],b=d.fm[d.fm.length-1];
+  document.getElementById('gKpis').innerHTML=kpi('€'+a+'T','GDP 2024')+kpi('€'+b+'T','GDP 2033')+
+    kpi(((b/a)**(1/9)-1>=0?'+':'')+(((b/a)**(1/9)-1)*100).toFixed(1)+'%/yr','Real growth');}
+
+function drawDecomp(){destroy('decomp');const d=DATA.decomp;
+  charts.decomp=new Chart(document.getElementById('decomp'),{type:'bar',data:{labels:d.names,datasets:[
+    {label:'Productivity',data:d.prod,backgroundColor:C.acc,stack:'s',borderRadius:2},
+    {label:'Labour',data:d.labour,backgroundColor:C.slate,stack:'s',borderRadius:2}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      scales:{x:{stacked:true,...axis('contribution to projected GDP growth (pp/yr)')},y:{stacked:true,grid:{display:false}}},
+      plugins:{title:{display:true,text:'Projected growth split: labour vs productivity (2024–2033)',color:C.ink,font:{size:15}},
+        legend:{position:'bottom'},
+        tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw>=0?'+':''}${c.raw} pp/yr`,
+          footer:items=>`Total GDP: ${d.gdp[items[0].dataIndex]>=0?'+':''}${d.gdp[items[0].dataIndex]}%/yr`}}}}});
+  const i=d.codes.indexOf('RO');
+  document.getElementById('dKpis').innerHTML=
+    kpi('productivity-led','East (catch-up convergence)')+kpi('labour-tilted','West / EFTA')+
+    kpi((i>=0?d.labour[i]:0)+' pp/yr','Romania labour channel (drag)');}
+
+function drawCross(){destroy('cross');const s=DATA.cross;
+  charts.cross=new Chart(document.getElementById('cross'),{type:'scatter',
+    data:{datasets:[{label:'Country',data:s.map(p=>({x:p.hs,y:p.prod,name:p.name})),
+      backgroundColor:C.mustard,borderColor:C.acc,pointRadius:7,pointHoverRadius:9}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{x:{...axis(`healthy share (HLY / LE), ${DATA.cyear}`)},y:{...axis('productivity (GDP per worker, €000s)'),type:'logarithmic'}},
+      plugins:{title:{display:true,text:'Cross-country: healthier ≠ more productive',color:C.ink,font:{size:15}},legend:{display:false},
+        tooltip:{callbacks:{label:c=>`${c.raw.name}: healthy share ${c.raw.x} · €${c.raw.y}k/worker`}}}}});
+  document.getElementById('cKpis').innerHTML=kpi(DATA.rel.cross_corr,'Cross-country correlation (wrong sign)')+
+    kpi('GALI','self-perceived health, not output');}
+
+function drawDiff(){destroy('diff');
+  charts.diff=new Chart(document.getElementById('diff'),{type:'scatter',
+    data:{datasets:[{label:'Year-on-year',data:DATA.diff,backgroundColor:'rgba(71,85,105,.5)',borderColor:C.slate,pointRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{x:{...axis('Δ healthy share (pp / yr)')},y:{...axis('Δ productivity (% / yr)')}},
+      plugins:{title:{display:true,text:'Within-country, year-on-year — no relationship',color:C.ink,font:{size:15}},legend:{display:false},
+        tooltip:{callbacks:{label:c=>`Δhealthy ${c.raw.x}pp · Δprod ${c.raw.y}%`}}}}});
+  document.getElementById('aKpis').innerHTML=kpi(DATA.rel.within_elasticity,'Within slope (≈ 0)')+
+    kpi('R² '+DATA.rel.within_r2,'no explanatory power')+kpi(DATA.rel.prod_real_growth_pct+'%/yr','Productivity grows on capital & tech');}
+
+function renderAll(){if(state.slide===0)drawGDP();else if(state.slide===1)drawDecomp();else if(state.slide===2)drawCross();else drawDiff();}
+let timer=null;
+function setPlay(on){const b=document.getElementById('play');
+  if(on){b.textContent='⏸ Pause';b.classList.remove('ghost');timer=setInterval(()=>go(state.slide>=3?0:state.slide+1),7000);}
+  else{b.textContent='▶ Present';b.classList.add('ghost');clearInterval(timer);timer=null;}}
+document.getElementById('play').onclick=()=>setPlay(!timer);
+go(0);
+</script>
+</body></html>
