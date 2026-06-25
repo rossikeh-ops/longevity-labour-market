@@ -43,6 +43,10 @@ th{color:var(--mut);font-weight:600}.done{color:var(--ok)}.prog{color:var(--warn
 .note{color:var(--mut);font-size:14px;background:var(--card);border:1px solid var(--line);
 border-radius:10px;padding:16px;margin-top:12px}code{color:var(--acc)}
 a{color:var(--acc)}.foot{color:var(--mut);font-size:13px;margin-top:30px}
+.qr{display:flex;align-items:center;gap:16px;margin-top:30px;flex-wrap:wrap}
+.qr img{width:118px;height:118px;border:1px solid var(--line);border-radius:10px;padding:6px;background:#fff}
+.qr .qrt{font-weight:650;font-size:14px;margin-bottom:4px;color:var(--ink)}
+.qr .qrs{color:var(--mut);font-size:13px}
 html[data-lang='en'] [lang='bg']{display:none!important}
 html[data-lang='bg'] [lang='en']{display:none!important}
 .langtoggle{position:fixed;top:14px;right:14px;z-index:9999;background:var(--card);border:1px solid var(--line);
@@ -192,6 +196,13 @@ Silver Economy study.</p>
 <tr lang="en"><td>L6 — Open horizons (longevity → labour → macroeconomy, growth accounting)</td><td class="done">✓ done</td></tr>
 <tr lang="bg"><td>L6 — Отворени хоризонти (дълголетие → труд → макроикономика, растежно счетоводство)</td><td class="done">✓ готово</td></tr>
 </tbody></table>
+
+<div class="qr">
+<a href="https://github.com/rossikeh-ops/longevity-labour-market"><img src="outputs/qr_repo.svg" alt="QR code to the GitHub repository"></a>
+<div>
+<div class="qrt"><span lang="en">Scan to open the repository</span><span lang="bg">Сканирайте, за да отворите хранилището</span></div>
+<a class="qrs" href="https://github.com/rossikeh-ops/longevity-labour-market">github.com/rossikeh-ops/longevity-labour-market</a>
+</div></div>
 
 <p class="foot" lang="en">Reproducible pipeline in <code>src/</code> · data in <code>data/</code> ·
 see <a href="https://github.com/rossikeh-ops/longevity-labour-market">the repository</a> and
