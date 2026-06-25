@@ -16,6 +16,13 @@ a.card:hover{border-color:var(--acc);transform:translateY(-2px)}
 a.card .ic{font-size:26px}a.card h3{margin:8px 0 4px;font-size:17px;color:var(--ink)}
 a.card p{margin:0;color:var(--mut);font-size:14px}
 a.card p.modes{margin-top:10px;font-size:12.5px;font-weight:600;color:var(--acc);opacity:.85}
+.kgroup{color:var(--mut);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin:18px 0 8px}
+.kdash{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+a.ktile{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+text-decoration:none;color:inherit;transition:border-color .15s,transform .15s}
+a.ktile:hover{border-color:var(--acc);transform:translateY(-2px)}
+a.ktile .v{font-size:21px;font-weight:750;line-height:1.1}
+a.ktile .l{color:var(--mut);font-size:12px;margin-top:4px}
 .viewer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:8px 0 20px}
 .vbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
 .lvbtns{display:flex;gap:6px;flex-wrap:wrap}
@@ -73,6 +80,32 @@ assembled into human-working-years.</p></a>
 <div class="ic">🎲</div><h3>Ensemble uncertainty visualizer</h3>
 <p>Interactive: drag <b>ensemble size</b> and <b>sampling noise</b> and watch a cloud of simple models form the
 uncertainty band — the project's <b>no-neural-nets, ensemble + Monte-Carlo</b> method, live.</p></a>
+</div>
+
+<h2>KPIs at a glance</h2>
+<p class="tag" style="margin:-6px 0 6px">The headline numbers across every level, for 2033 — click any tile to open its report.</p>
+<div class="kgroup">Headline · labour-market balance 2033 (human-working-years)</div>
+<div class="kdash">
+<a class="ktile" href="outputs/level3.html"><div class="v" style="color:var(--ok)">+89M</div><div class="l">Net balance (≈ balanced in aggregate)</div></a>
+<a class="ktile" href="outputs/level3.html"><div class="v" style="color:var(--ok)">+369M</div><div class="l">East surplus (PL, RO, CZ, BG)</div></a>
+<a class="ktile" href="outputs/level3.html"><div class="v" style="color:#B91C1C">−280M</div><div class="l">West/EFTA shortage (DE, FR, CH, NO)</div></a>
+</div>
+<div class="kgroup">Building blocks · supply &amp; demand (2024 → 2033)</div>
+<div class="kdash">
+<a class="ktile" href="outputs/level1.html"><div class="v">4,386M</div><div class="l">Labour supply, human-working-years (−2.4%)</div></a>
+<a class="ktile" href="outputs/level2.html"><div class="v">4,310M</div><div class="l">Labour demand, human-working-years (−2.5%)</div></a>
+</div>
+<div class="kgroup">Open horizons · health, retirement &amp; macro (2033)</div>
+<div class="kdash">
+<a class="ktile" href="outputs/level4.html"><div class="v">4,263M</div><div class="l">Poor-health person-years (LE − HLY)</div></a>
+<a class="ktile" href="outputs/level5.html"><div class="v">438M</div><div class="l">Healthy-retirement dividend (+5.6 to −6.6 yrs/person)</div></a>
+<a class="ktile" href="outputs/level6.html"><div class="v">€8.6T</div><div class="l">Real GDP (≈0.8%/yr, productivity-led)</div></a>
+</div>
+<div class="kgroup">Can we trust it? · leakage-safe backtest accuracy (MAPE)</div>
+<div class="kdash">
+<a class="ktile" href="outputs/model_validation_report.html"><div class="v" style="color:var(--ok)">3.6%</div><div class="l">Supply forecast error</div></a>
+<a class="ktile" href="outputs/model_validation_report.html"><div class="v" style="color:var(--ok)">2.2%</div><div class="l">Demand forecast error</div></a>
+<a class="ktile" href="outputs/model_validation_report.html"><div class="v" style="color:var(--warn)">~23%</div><div class="l">Balance (a difference of two large stocks)</div></a>
 </div>
 
 <h2>Explore by level — guided story &amp; full report, together</h2>
