@@ -16,7 +16,7 @@ from pathlib import Path
 import json
 import numpy as np
 import pandas as pd
-from forecast import forecast_series, history, _ensemble_mean
+from forecast import forecast_series, history, _ensemble_mean, DEFAULT_MEMBERS
 from vacancy_model import fit_beveridge
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -81,9 +81,47 @@ def bias_pct(rows):           # signed: + means model over-forecasts
     return float(np.mean(e)) * 100 if e else np.nan
 
 
+def insample_rows(years, vals, members=DEFAULT_MEMBERS):
+    """One-step-ahead IN-SAMPLE fit of the (equal-weight) ensemble: each member is
+    fit on the full series and produces its in-sample fitted value for year t; we
+    compare to the actual. This is the optimistic 'train' error — the gap to the
+    rolling-origin backtest is the model's generalisation deviation."""
+    years = np.asarray(years, float)
+    vals = np.asarray(vals, float)
+    n = len(vals)
+    if n < 4:
+        return []
+    fits = []
+    for m in members:
+        if m == "linear":
+            b, a = np.polyfit(years, vals, 1)
+            fits.append((a + b * years)[1:])
+        elif m == "holt":
+            try:
+                from statsmodels.tsa.holtwinters import ExponentialSmoothing
+                fv = ExponentialSmoothing(vals, trend="add", damped_trend=True).fit().fittedvalues
+                fits.append(np.asarray(fv, float)[1:])
+            except Exception:
+                b, a = np.polyfit(years, vals, 1)
+                fits.append((a + b * years)[1:])
+        elif m == "drift":
+            fits.append(vals[:-1] + float(np.mean(np.diff(vals))))
+        elif m == "naive":
+            fits.append(vals[:-1])
+        elif m == "ar1":
+            phi, c0 = np.polyfit(vals[:-1], vals[1:], 1)
+            phi = min(max(phi, 0.0), 0.98)
+            mu = c0 / (1 - phi) if abs(1 - phi) > 1e-6 else float(np.mean(vals))
+            fits.append(mu + (vals[:-1] - mu) * phi)
+    pred = np.mean(np.vstack(fits), axis=0)
+    act = vals[1:]
+    return [{"actual": float(a), "pred": float(p)} for a, p in zip(act, pred)]
+
+
 metrics = {}
 for col, label in IND.items():
     allrows = []
+    trainrows = []
     per_country = {}
     for c in COUNTRIES:
         crows = []
@@ -91,6 +129,7 @@ for col, label in IND.items():
         for s in ["F", "M"]:
             y, v = history(panel, c, s, col)
             crows += backtest_series(y, v, **({"members": _mem} if _mem else {}))
+            trainrows += insample_rows(y, v, **({"members": _mem} if _mem else {}))
         if crows:
             per_country[c] = round((1 - mape(crows, "pred")), 3)   # accuracy 0-1
         allrows += crows
@@ -98,6 +137,8 @@ for col, label in IND.items():
         continue
     cov = float(np.mean([r["lo"] <= r["actual"] <= r["hi"] for r in allrows]))
     me, mn = mape(allrows, "pred"), mape(allrows, "naive")
+    tr_mape, tr_rmse = mape(trainrows, "pred"), rmse(trainrows, "pred")
+    bt_rmse = rmse(allrows, "pred")
     by_h = {}
     for h in sorted({r["h"] for r in allrows}):
         hr = [r for r in allrows if r["h"] == h]
@@ -106,12 +147,15 @@ for col, label in IND.items():
         "label": label, "n": len(allrows),
         "accuracy": round(1 - me, 3),                    # 0-1, e.g. 0.97
         "mape_ens": round(me * 100, 2), "mape_naive": round(mn * 100, 2),
-        "rmse": round(rmse(allrows, "pred"), 3),
+        "rmse": round(bt_rmse, 3),
         "bias_pct": round(bias_pct(allrows), 1),
         "skill": round(1 - me / mn, 3) if mn else None,
         "coverage80": round(cov, 3),
         "mape_by_h": by_h,
         "per_country_acc": per_country,
+        # train (in-sample) vs backtest (out-of-sample) -> deviation (generalisation gap)
+        "train_mape": round(tr_mape * 100, 2), "train_rmse": round(tr_rmse, 3),
+        "dev_mape": round((me - tr_mape) * 100, 2), "dev_rmse": round(bt_rmse - tr_rmse, 3),
     }
 
 # showcase observed-vs-predicted traces (last-origin forecast vs actual)

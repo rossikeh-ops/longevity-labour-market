@@ -25,7 +25,11 @@
     "FR": 0.996,
     "NO": 0.995,
     "CH": 0.996
-   }
+   },
+   "train_mape": 0.39,
+   "train_rmse": 0.504,
+   "dev_mape": 0.83,
+   "dev_rmse": 0.89
   },
   "healthy_share": {
    "label": "Healthy share (HLY/LE)",
@@ -52,7 +56,11 @@
     "FR": 0.978,
     "NO": 0.953,
     "CH": 0.963
-   }
+   },
+   "train_mape": 1.62,
+   "train_rmse": 0.02,
+   "dev_mape": 1.5,
+   "dev_rmse": 0.011
   },
   "emp_rate": {
    "label": "Employment rate",
@@ -79,7 +87,11 @@
     "FR": 0.985,
     "NO": 0.99,
     "CH": 0.991
-   }
+   },
+   "train_mape": 1.32,
+   "train_rmse": 0.011,
+   "dev_mape": 0.6,
+   "dev_rmse": 0.007
   },
   "working_life_yrs": {
    "label": "Working-life duration",
@@ -106,7 +118,11 @@
     "FR": 0.983,
     "NO": 0.992,
     "CH": 0.995
-   }
+   },
+   "train_mape": 1.2,
+   "train_rmse": 0.541,
+   "dev_mape": 0.64,
+   "dev_rmse": 0.327
   },
   "vacancy_count": {
    "label": "Job vacancies",
@@ -133,7 +149,11 @@
     "FR": 0.841,
     "NO": 0.844,
     "CH": 0.789
-   }
+   },
+   "train_mape": 16.27,
+   "train_rmse": 73041.214,
+   "dev_mape": 8.1,
+   "dev_rmse": 76528.067
   }
  },
  "show": {

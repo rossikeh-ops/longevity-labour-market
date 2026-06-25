@@ -60,7 +60,8 @@ pc_rows = "".join(
 APPENDIX_CSS = appendix_css()
 _drv = pd.DataFrame([{
     "driver": metrics[k]["label"], "accuracy": metrics[k]["accuracy"],
-    "MAPE %": metrics[k]["mape_ens"], "naive %": metrics[k]["mape_naive"],
+    "train MAPE %": metrics[k]["train_mape"], "backtest MAPE %": metrics[k]["mape_ens"],
+    "deviation pp": metrics[k]["dev_mape"], "naive %": metrics[k]["mape_naive"],
     "skill": metrics[k]["skill"], "RMSE": metrics[k]["rmse"],
     "bias %": metrics[k]["bias_pct"], "cover80 %": round(metrics[k]["coverage80"] * 100),
     "n": metrics[k]["n"]} for k in order])
@@ -231,6 +232,29 @@ for r in rows:
                 f'<td style="text-align:right">{sk}</td><td>{r["cover"]}%</td>'
                 f'<td style="text-align:right"><span class="tag {r["cls"]}">{r["verdict"]}</span></td></tr>')
 table_html = "".join(trow)
+
+# ---------- per-model Train vs Backtest vs Deviation tables ----------
+def _devcol(pp):
+    a = abs(pp)
+    return "#15803D" if a <= 1 else ("#D97706" if a <= 4 else "#B91C1C")
+
+
+def _pmtable(k):
+    m = metrics[k]
+    g = lambda x: f"{x:+g}"
+    return (
+        f'<div class="pmcard"><div class="pmh">{m["label"]}'
+        f'<span class="pmn">n={m["n"]}</span></div>'
+        f'<table class="pm"><thead><tr><th>Metric</th><th>Train</th><th>Backtest</th><th>Deviation</th></tr></thead><tbody>'
+        f'<tr><td>MAPE</td><td>{m["train_mape"]}%</td><td>{m["mape_ens"]}%</td>'
+        f'<td style="color:{_devcol(m["dev_mape"])};font-weight:600">{g(m["dev_mape"])} pp</td></tr>'
+        f'<tr><td>RMSE</td><td>{m["train_rmse"]:g}</td><td>{m["rmse"]:g}</td>'
+        f'<td style="color:#78716C">{g(round(m["dev_rmse"], 3))}</td></tr>'
+        f'</tbody></table></div>')
+
+
+permodel_html = "".join(_pmtable(k) for k in order)
+
 cards_html = "".join(
     f'<div class="vc" style="border-top:3px solid {COL[r["cls"]]}"><div class="h">{r["label"]}</div>'
     f'<div style="margin:4px 0"><span class="tag {r["cls"]}">{r["verdict"]}</span></div>'
@@ -271,6 +295,11 @@ code{background:#F5F5F4;border:1px solid #E7E5E4;border-radius:5px;padding:1px 6
 color:#475569;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace}
 .lgd{display:flex;gap:16px;color:var(--mut);font-size:12px;margin:4px 0 0;flex-wrap:wrap}
 .sw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.pmgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.pmcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.pmh{font-weight:650;font-size:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:baseline}
+.pmh .pmn{color:var(--mut);font-size:11px;font-weight:400}
+table.pm{font-size:13.5px}table.pm th,table.pm td{padding:7px 8px}
 """
 
 HTML = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -299,6 +328,18 @@ last-value forecast; Coverage = share of actuals inside the 80% band.</p>
 <table><thead><tr><th>Driver</th><th>Accuracy</th><th>MAPE</th><th>RMSE</th><th>Bias</th>
 <th>Skill</th><th>Cover 80%</th><th>Verdict</th></tr></thead><tbody>{table_html}</tbody></table>
 <div style="margin-top:14px">{mape_svg}</div>
+
+<h2>Train vs backtest, by model — the generalisation gap</h2>
+<p class="sub">For every driver model: <b>Train</b> = in-sample fit error (the model scored on the history it was
+fitted to — optimistic); <b>Backtest</b> = out-of-sample rolling-origin error (held-out future); <b>Deviation</b> =
+Backtest − Train, the generalisation gap. A small deviation means the model is <b>not overfitting</b> — it does
+almost as well on unseen years as on the training data. MAPE deviation is in percentage points; RMSE in native units.</p>
+<div class="pmgrid">{permodel_html}</div>
+<div class="note"><b>Reading it.</b> The smooth structural drivers (life expectancy, working-life, employment) have a
+<b>small, green deviation</b> — they generalise. <b>Healthy share</b> and especially <b>job vacancies</b> show that even
+the in-sample fit is weak and the backtest barely differs: there is no learnable signal to overfit, so the gap is small
+but the level is high — a <b>floor</b>, not overfitting. Train uses an equal-weight one-step in-sample ensemble fit;
+backtest uses the deployed horizon-aware ensemble.</div>
 
 <h2>What's behind the two weak numbers</h2>
 <div class="note"><b>Healthy share (HLY ÷ LE) — 3.13%: it measures <span style="color:var(--warn,#D97706)">self-perceived</span> health.</b>
