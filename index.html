@@ -65,8 +65,8 @@ adult-education courses</b>. Built on the Level 1/4/5 identities.</p></a>
 </div>
 
 <h2>Explore by level — guided story &amp; full report, together</h2>
-<p class="tag" style="margin:-6px 0 16px">Pick a level and explore it right here — each opens on its
-<b>guided presentation</b> with the <b>full report</b> a tab away — or open any level full-screen below.</p>
+<p class="tag" style="margin:-6px 0 16px">Pick a level to preview its <b>guided presentation</b> right here —
+then open it full-screen for the <b>full report</b> (maps, bands, data appendix + Excel).</p>
 
 <div class="viewer">
   <div class="vbar">
@@ -148,15 +148,15 @@ see <a href="https://github.com/rossikeh-ops/longevity-labour-market">the reposi
 </div>
 <script>
 (function(){
-  // Each level embeds its MERGED page (level{n}.html), which carries its own
-  // guided-story / full-report tabs — so the home no longer duplicates them.
+  // Inline preview shows the guided STORY directly (no tabs). The full report
+  // lives on the merged page (level{n}.html), reachable via "open full-screen".
   const LV={
-    1:{label:"1 · Supply",  page:"outputs/level1.html"},
-    2:{label:"2 · Demand",  page:"outputs/level2.html"},
-    3:{label:"3 · Balance", page:"outputs/level3.html"},
-    4:{label:"4 · Cost",    page:"outputs/level4.html"},
-    5:{label:"5 · Dividend",page:"outputs/level5.html"},
-    6:{label:"6 · Macro",   page:"outputs/level6.html"}
+    1:{label:"1 · Supply",  story:"outputs/supply_story.html",   page:"outputs/level1.html"},
+    2:{label:"2 · Demand",  story:"outputs/demand_story.html",   page:"outputs/level2.html"},
+    3:{label:"3 · Balance", story:"outputs/balance_story.html",  page:"outputs/level3.html"},
+    4:{label:"4 · Cost",    story:"outputs/cost_story.html",     page:"outputs/level4.html"},
+    5:{label:"5 · Dividend",story:"outputs/dividend_story.html", page:"outputs/level5.html"},
+    6:{label:"6 · Macro",   story:"outputs/macro_story.html",    page:"outputs/level6.html"}
   };
   const frame=document.getElementById('vframe'), bts=document.getElementById('lvbtns'),
         vopen=document.getElementById('vopen');
@@ -168,7 +168,7 @@ see <a href="https://github.com/rossikeh-ops/longevity-labour-market">the reposi
   });
   function render(){
     const cfg=LV[lvl];
-    if(frame.getAttribute('src')!==cfg.page) frame.src=cfg.page;
+    if(frame.getAttribute('src')!==cfg.story) frame.src=cfg.story;
     vopen.href=cfg.page;
     [...bts.children].forEach(b=>b.classList.toggle('on',+b.dataset.lvl===lvl));
   }
