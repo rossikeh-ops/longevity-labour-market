@@ -7,6 +7,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 import json
+import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -115,6 +116,60 @@ The count is rebuilt from the vacancy-rate identity.</p>
 unemployment for scenarios. <b>median APE is {nw["medape"]}%</b> — the honest central tendency
 (pooled MAPE is inflated by tiny, hyper-volatile series like CZ). Vacancies are only ~1.8% of jobs,
 so this barely moves the balance, but the driver is now at its achievable accuracy ceiling.</div>
+"""
+
+# ---------- occupied-posts denominator graph (real JOBOCC vs employment-calibration) ----------
+jc_path = OUT / "jobocc_compare.json"
+denom_html = ""
+if jc_path.exists():
+    jc = json.loads(jc_path.read_text(encoding="utf-8"))
+    cb, rl, dn = jc["vacancy_backtest"]["calib"], jc["vacancy_backtest"]["real"], jc["denominator"]
+    pts = jc["scatter"]
+    # left: scatter of calibrated O vs real JOBOCC (million), log-log, with y = x line
+    SW, SH = 470, 300
+    xs = [p["real"] for p in pts] + [p["calib"] for p in pts]
+    lo, hi = min(xs) * 0.9, max(xs) * 1.1
+    llo, lhi = np.log10(lo), np.log10(hi)
+    SX = lambda v: 58 + (np.log10(v) - llo) / (lhi - llo) * (SW - 84)
+    SY = lambda v: SH - 44 - (np.log10(v) - llo) / (lhi - llo) * (SH - 66)
+    diag = (f'<line x1="{SX(lo):.1f}" y1="{SY(lo):.1f}" x2="{SX(hi):.1f}" y2="{SY(hi):.1f}" '
+            f'stroke="#B91C1C" stroke-width="1.4" stroke-dasharray="4 3"/>')
+    dots = "".join(f'<circle cx="{SX(p["real"]):.1f}" cy="{SY(p["calib"]):.1f}" r="3.4" fill="rgba(71,85,105,.5)"/>' for p in pts)
+    scat_svg = (f'<svg viewBox="0 0 {SW} {SH}" width="100%" xmlns="http://www.w3.org/2000/svg">{diag}{dots}'
+                f'<text x="{SW/2:.0f}" y="{SH-8}" fill="#78716C" font-size="11" text-anchor="middle">real occupied posts — JOBOCC (million) →</text>'
+                f'<text x="14" y="{SH/2:.0f}" fill="#78716C" font-size="11" text-anchor="middle" transform="rotate(-90 14 {SH/2:.0f})">calibrated occ_scale × employment (million) →</text>'
+                f'<text x="{SX(hi)-6:.0f}" y="{SY(hi)+14:.0f}" fill="#B91C1C" font-size="10" text-anchor="end">y = x</text></svg>')
+    # right: vacancy-count backtest MAPE — calibrated vs real denominator
+    BW, BH, x0, bh, gap = 470, 300, 196, 50, 46
+    barlist = [("occ_scale × employment", cb["mape"], "#15803D"), ("real JOBOCC", rl["mape"], "#B91C1C")]
+    mx = max(b[1] for b in barlist) * 1.3
+    bsv = [f'<text x="{x0-12}" y="34" text-anchor="end" font-size="11" fill="#78716C">vacancy-count backtest MAPE (n={cb["n"]})</text>']
+    for i, (lab, v, col) in enumerate(barlist):
+        y = 70 + i * (bh + gap)
+        w = v / mx * (BW - x0 - 56)
+        bsv.append(f'<text x="{x0-12}" y="{y+bh/2-2:.0f}" text-anchor="end" font-size="12" fill="#292524">{lab}</text>')
+        bsv.append(f'<rect x="{x0}" y="{y}" width="{w:.1f}" height="{bh}" rx="5" fill="{col}" opacity="0.88"/>')
+        bsv.append(f'<text x="{x0+w+9:.1f}" y="{y+bh/2+5:.0f}" font-size="15" font-weight="700" fill="{col}">{v}%</text>')
+    bar_svg = f'<svg viewBox="0 0 {BW} {BH}" width="100%" xmlns="http://www.w3.org/2000/svg">{"".join(bsv)}</svg>'
+    denom_html = f"""
+<h2>Does the real occupied-posts series help? (denominator test)</h2>
+<p class="sub">The vacancy count is rebuilt from the forecast rate via the identity
+<code>V = O·r/(1−r)</code>, where <b>O = occupied posts</b>. We currently calibrate O as
+<code>occ_scale × employment</code>; Eurostat also publishes the real series (<code>JOBOCC</code> in
+<code>jvs_q_r21</code>, all 8 countries). Does swapping in the real series help? <b>No.</b></p>
+<div class="grid2">
+<div class="chart"><div class="t">Calibrated O tracks the real JOBOCC ({dn["mape"]}% MAPE)</div>{scat_svg}
+<div class="cap">Each point is a country-year ({dn["n"]} obs). The calibration sits tight on the <b>y = x</b> line —
+the employment-based denominator is within <b>{dn["mape"]}%</b> (median {dn["medape"]}%) of the genuine occupied-posts count.</div></div>
+<div class="chart"><div class="t">…and reconstructs vacancies no worse</div>{bar_svg}
+<div class="cap">Same anchored-Beveridge forecast rate, only the denominator swapped. The smooth calibrated O
+gives a <b>lower</b> backtest error ({cb["mape"]}% vs {rl["mape"]}%): the dominant error is the forecast
+<i>rate</i>, and raw JOBOCC adds quarterly/annualisation noise without buying accuracy.</div></div>
+</div>
+<div class="note"><b>Conclusion.</b> The standalone occupied-posts dataset exists and is fully available, but the
+employment-calibration is the better engineering choice — it matches the real series to ~{dn["mape"]}% while being
+smoother, so it reconstructs vacancies <b>as well or better</b>. We keep the calibration and document the test here.
+Reproducible in <code>src/compare_jobocc.py</code>.</div>
 """
 
 # fixed train/test split (train <=2019, predict 2020-2024) section
@@ -401,6 +456,7 @@ retirement line. Trust the <i>sign and ranking</i> (who has healthy retirement y
 link to leisure/education/culture consumption is also negligible within-country (elasticity ≈ 0) — consumption
 tracks income. See the <a href="level5_dividend_report.html">Level 5 report</a>.</div>
 {vac_test_html}
+{denom_html}
 <h2>Error by forecast horizon</h2>
 <p class="sub">How accuracy decays with how far ahead we forecast (1–4 years out), for the composed levels.</p>
 <table style="max-width:620px"><thead><tr><th>Years ahead</th><th>Supply MAPE</th><th>Demand MAPE</th>
