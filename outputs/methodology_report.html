@@ -18,6 +18,9 @@ border-radius:12px;padding:16px 18px;margin:14px 0}.note b{color:var(--ink)}
 .formula{background:#F0FDF4;border:1px solid #166534;border-left:5px solid #166534;border-radius:12px;
 padding:14px 20px;margin:14px 0;font-size:19px;font-weight:600;text-align:center;line-height:1.45}
 .formula b{color:#166534}.formula .u{display:block;font-size:13px;color:var(--mut);font-weight:400;margin-top:5px}
+.codebox{background:#1f2937;border-radius:10px;padding:16px 16px 14px;margin:14px 0;overflow-x:auto;position:relative}
+.codebox code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;color:#86efac;white-space:pre}
+.codebox .lbl{position:absolute;top:7px;right:12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#94a3b8}
 p{margin:12px 0}b{color:var(--ink)}code{color:var(--acc)}
 ol{color:var(--ink)}li{margin:4px 0}
 a{color:var(--acc)}.foot{color:var(--mut);font-size:13px;margin-top:30px}
@@ -68,8 +71,7 @@ ensemble engine (§1), then combine via the identities below; Level 3 subtracts 
 <p>For each time series (for every country × sex, over its full history) we do not rely on a
 single model — we average <b>5 simple models</b>: <b>linear trend</b>, <b>damped Holt</b>, <b>drift</b>,
 <b>naive</b> (last value held flat) and <b>AR(1)</b> mean-reversion. In the code that is exactly one line:</p>
-<div class="note" style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;color:var(--acc)">
-DEFAULT_MEMBERS = ("linear", "holt", "drift", "naive", "ar1")</div>
+<div class="codebox"><span class="lbl">src/forecast.py</span><code>DEFAULT_MEMBERS = ("linear", "holt", "drift", "naive", "ar1")</code></div>
 <p>Damped Holt and the naive anchor guard against over-extrapolation (socio-economic rates saturate, they do
 not grow linearly forever), while AR(1) pulls cyclical series back toward their long-run mean — and the member
 weights adapt by forecast horizon (see below).</p>
