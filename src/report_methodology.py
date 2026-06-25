@@ -156,6 +156,10 @@ _ICON = {
            '<path d="M9 7.5V6a2 2 0 012-2h2a2 2 0 012 2v1.5"/><path d="M3.5 12h17"/>',
     "scale": '<path d="M12 4v16"/><path d="M6 20h12"/><path d="M4 7h16"/>'
              '<path d="M4 7l-2.2 4.6a2.4 2.4 0 004.8 0z"/><path d="M20 7l-2.2 4.6a2.4 2.4 0 004.8 0z"/>',
+    "pulse": '<path d="M2 12h4l2.5-6 4 12 2.5-6H22"/>',
+    "sun": '<circle cx="12" cy="13" r="3.4"/><path d="M12 5.5V7M5.6 13H7M17 13h1.4M7.6 8.6l1 1'
+           'M16.4 8.6l-1 1"/><path d="M4 18.5h16"/>',
+    "trend": '<path d="M3 16l5-5 4 3 8-8"/><path d="M21 9V6h-3"/>',
 }
 STAGES = [
     dict(c="#475569", kick="Level 0", title="Data foundation", icon="db",
@@ -174,6 +178,18 @@ STAGES = [
          desc="Subtract the two stocks, by country × sex, to 2033 with Monte-Carlo uncertainty bands; "
               "surfaces the East-surplus / West-shortage divide.",
          chip='<b>Balance</b> = Supply − Demand &nbsp;→&nbsp; human-working-years'),
+    dict(c="#B91C1C", kick="Level 4 · open horizon", title="Cost of unhealthy years", icon="pulse",
+         desc="Reuses the same engine to forecast the poor-health burden — population × the years lived in "
+              "poor health — to 2033, then tests (descriptively) whether it drives the health-care sector.",
+         chip='<b>Burden</b> = Population × (LE − HLY)'),
+    dict(c="#D97706", kick="Level 5 · open horizon", title="Healthy retirement dividend", icon="sun",
+         desc="Healthy years lived beyond the statutory retirement age, population-scaled, forecast to 2033; "
+              "tested against leisure / education / culture consumption.",
+         chip='<b>Dividend</b> = Population × max(0, HLY − retire)'),
+    dict(c="#166534", kick="Level 6 · open horizon", title="Longevity in the macroeconomy", icon="trend",
+         desc="Decomposes real GDP into a labour channel (where longevity acts) and a productivity channel "
+              "via GDP = employment × productivity; growth accounting to 2033.",
+         chip='<b>Real GDP</b> = Employment × Productivity'),
 ]
 
 
@@ -283,9 +299,10 @@ Eurostat's projection <code>proj_23np</code>, calibrated to observed 2024. <b>Su
 people × expected working life; <b>demand</b> = (employed + vacancies) × required service. <b>Monte-Carlo bands</b>
 combine model disagreement, out-of-sample backtest error and demographic uncertainty.</div>
 
-<h2>The pipeline — Levels 0 → 3</h2>
+<h2>The pipeline — Levels 0 → 6</h2>
 <p class="sub">Where each step sits and what it produces. Levels 1–2 run every driver through the
-ensemble engine (§1), then combine via the identities below; Level 3 subtracts the two.</p>
+ensemble engine (§1), then combine via the identities below; Level 3 subtracts the two. Levels 4–6
+(<b>open horizons</b>) reuse the same engine for descriptive health, retirement and macroeconomic extensions.</p>
 {ENGINE}
 
 <h2><span class="hnum" style="background:#166534">1</span>Ensemble forecast engine</h2>
@@ -353,7 +370,9 @@ like demand — which is why the two are directly comparable.</p>
 <li><b>Supply</b> = healthy working-age people × expected working life.</li>
 </ol>
 <p><b>Level 3</b> simply subtracts: <b>Balance = Supply − Demand</b> (in human-working-years) — the
-headline result, visualised in the balance report.</p>
+headline result, visualised in the balance report. <b>Levels 4–6</b> then reuse the very same engine for three
+descriptive extensions — the <b>poor-health burden</b>, the <b>healthy-retirement dividend</b> and the
+<b>macroeconomic</b> labour-vs-productivity split — detailed below.</p>
 
 <h2>Levels 4–6 — open horizons (the same engine, reused)</h2>
 <p>The three extension levels forecast different health–demographic quantities with the <b>same 5-model
