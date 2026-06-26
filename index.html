@@ -37,6 +37,18 @@ font-weight:600;cursor:pointer;color:var(--ink)}
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
 .kpi .v{font-size:20px;font-weight:700}.kpi .l{color:var(--mut);font-size:12px;margin-top:3px}
+.track{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:8px 0 4px}
+@media(max-width:680px){.track{grid-template-columns:1fr}}
+.act{border:1px solid var(--line);border-radius:14px;padding:13px 14px 9px;background:var(--card)}
+.act-a{border-top:3px solid var(--acc)}.act-b{border-top:3px solid #475569}
+.acth{font-size:12.5px;font-weight:800;letter-spacing:.2px;margin-bottom:6px}
+.act-a .acth{color:var(--acc)}.act-b .acth{color:#475569}
+a.stop{display:flex;align-items:center;gap:10px;padding:7px 6px;border-radius:9px;text-decoration:none;color:var(--ink)}
+a.stop:hover{background:var(--bg)}
+a.stop .n{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:12.5px;color:#fff}
+.act-a a.stop .n{background:var(--acc)}.act-b a.stop .n{background:#475569}
+a.stop .ti{flex:1;font-weight:600;font-size:14px}
+a.stop .t{color:var(--mut);font-size:12px;font-variant-numeric:tabular-nums}
 table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
 td,th{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}
 th{color:var(--mut);font-weight:600}.done{color:var(--ok)}.prog{color:var(--warn)}
@@ -79,6 +91,25 @@ countries (BG, PL, CZ, RO, DE, FR, NO, CH), by sex. Solution to the
 <div class="kpi"><div class="v">→ 2033</div><div class="l"><span lang="en">forecast horizon</span><span lang="bg">хоризонт на прогнозата</span></div></div>
 </div>
 
+<h2><span lang="en">Presentation track — 30 min, 2 presenters</span><span lang="bg">Презентационен маршрут — 30 мин, 2-ма представящи</span></h2>
+<p class="tag" style="margin-bottom:10px"><span lang="en">A click-through running order. Presenter <b style="color:var(--acc)">A</b> tells the answer; presenter <b style="color:#475569">B</b> shows why to trust it. Numbers are minutes.</span><span lang="bg">Маршрут за щракване. Представящ <b style="color:var(--acc)">А</b> разказва отговора; представящ <b style="color:#475569">Б</b> показва защо да му вярваме. Числата са минути.</span></p>
+<div class="track">
+<div class="act act-a"><div class="acth"><span lang="en">Act 1 · Presenter A — “The answer” · ~15 min</span><span lang="bg">Действие 1 · Представящ А — „Отговорът“ · ~15 мин</span></div>
+<a class="stop" href="outputs/introduction.html"><span class="n">1</span><span class="ti"><span lang="en">Intro + KPIs</span><span lang="bg">Въведение + КПИ</span></span><span class="t">3′</span></a>
+<a class="stop" href="outputs/level1.html"><span class="n">2</span><span class="ti"><span lang="en">Supply</span><span lang="bg">Предлагане</span></span><span class="t">2.5′</span></a>
+<a class="stop" href="outputs/level2.html"><span class="n">3</span><span class="ti"><span lang="en">Demand</span><span lang="bg">Търсене</span></span><span class="t">2.5′</span></a>
+<a class="stop" href="outputs/level3.html"><span class="n">4</span><span class="ti"><span lang="en">Balance — the climax</span><span lang="bg">Баланс — кулминацията</span></span><span class="t">3′</span></a>
+<a class="stop" href="outputs/level4.html"><span class="n">5</span><span class="ti"><span lang="en">Open horizons (L4–6)</span><span lang="bg">Отворени хоризонти (Н4–6)</span></span><span class="t">2′</span></a>
+<a class="stop" href="outputs/implications.html"><span class="n">6</span><span class="ti"><span lang="en">Implications &amp; shocks</span><span lang="bg">Последици и сътресения</span></span><span class="t">2′</span></a>
+</div>
+<div class="act act-b"><div class="acth"><span lang="en">Act 2 · Presenter B — “Why believe it” · ~14 min</span><span lang="bg">Действие 2 · Представящ Б — „Защо да вярваме“ · ~14 мин</span></div>
+<a class="stop" href="outputs/methodology_report.html"><span class="n">7</span><span class="ti"><span lang="en">Methodology — how it works</span><span lang="bg">Методология — как работи</span></span><span class="t">3′</span></a>
+<a class="stop" href="outputs/playground.html"><span class="n">8</span><span class="ti"><span lang="en">Model playground</span><span lang="bg">Лаборатория на модела</span></span><span class="t">3′</span></a>
+<a class="stop" href="outputs/critique.html"><span class="n">9</span><span class="ti"><span lang="en">Trust &amp; critique</span><span lang="bg">Доверие и критика</span></span><span class="t">4′</span></a>
+<a class="stop" href="outputs/whatif.html"><span class="n">10</span><span class="ti"><span lang="en">What-if sandbox — finale</span><span lang="bg">Пясъчник „какво-ако“ — финал</span></span><span class="t">3.5′</span></a>
+</div>
+</div>
+
 <h2><span lang="en">Start here — introduction</span><span lang="bg">Започнете оттук — въведение</span></h2>
 <div class="cards">
 <a class="card" href="outputs/introduction.html" style="grid-column:1/-1;border-color:var(--acc)">
@@ -107,20 +138,13 @@ observed-vs-predicted charts, and honest failure points.</p>
 assembled into human-working-years.</p>
 <p lang="bg">Три диаграми: ансамбловият двигател от 5 модела и как предлагането и търсенето се сглобяват
 в човеко-работни години.</p></a>
-<a class="card" href="outputs/ensemble_visualizer.html">
-<div class="ic">🎲</div>
-<h3 lang="en">Ensemble uncertainty visualizer</h3><h3 lang="bg">Визуализатор на несигурността на ансамбъла</h3>
-<p lang="en">Interactive: drag <b>ensemble size</b> and <b>sampling noise</b> and watch a cloud of simple models form the
-uncertainty band — the project's <b>no-neural-nets, ensemble + Monte-Carlo</b> method, live.</p>
-<p lang="bg">Интерактивно: променете <b>размера на ансамбъла</b> и <b>шума при извадката</b> и вижте как облак от прости
-модели формира лентата на несигурност — методът на проекта <b>без невронни мрежи, ансамбъл + Монте Карло</b>, на живо.</p></a>
-<a class="card" href="outputs/flexibility.html">
+<a class="card" href="outputs/playground.html">
 <div class="ic">🎛️</div>
-<h3 lang="en">Model flexibility — bias–variance tradeoff</h3><h3 lang="bg">Гъвкавост на модела — отклонение срещу дисперсия</h3>
-<p lang="en">Interactive: drag one slider from <b>underfit → optimal → overfit</b> on a real Healthy-Life-Years series. The
-cross-validated optimum and the train-vs-CV U-curve are computed live — the tactile case for <b>simple models</b>.</p>
-<p lang="bg">Интерактивно: плъзнете един слайдер от <b>недонапасване → оптимум → пренапасване</b> върху реален ред за Здрави
-години живот. Крос-валидираният оптимум и U-кривата обучение-срещу-CV се изчисляват на живо — осезаемият аргумент за <b>прости модели</b>.</p></a>
+<h3 lang="en">Model playground — two interactives</h3><h3 lang="bg">Лаборатория на модела — две интерактивни</h3>
+<p lang="en">One page, drag live: the <b>ensemble uncertainty</b> band (size + noise) and the <b>flexibility / bias–variance</b>
+tradeoff (underfit → optimal → overfit, with the cross-validated optimum computed on a real series).</p>
+<p lang="bg">Една страница, плъзгайте на живо: лентата на <b>несигурност на ансамбъла</b> (размер + шум) и компромисът
+<b>гъвкавост / отклонение–дисперсия</b> (недонапасване → оптимум → пренапасване, с крос-валидиран оптимум върху реален ред).</p></a>
 <a class="card" href="outputs/critique.html">
 <div class="ic">⚖️</div>
 <h3 lang="en">Critical review — the model on the stand</h3><h3 lang="bg">Критичен преглед — моделът на изпит</h3>
@@ -169,28 +193,18 @@ adult-education courses</b>. Built on the Level 1/4/5 identities.</p>
 зали и курсовете за възрастни</b>. Базирано на тъждествата от Нива 1/4/5.</p></a>
 </div>
 
-<h2><span lang="en">Practical applications</span><span lang="bg">Практически приложения</span></h2>
+<h2><span lang="en">Implications &amp; shocks</span><span lang="bg">Последици и сътресения</span></h2>
 <div class="cards">
-<a class="card" href="outputs/applications.html" style="grid-column:1/-1;border-color:var(--acc)">
+<a class="card" href="outputs/implications.html" style="grid-column:1/-1;border-color:var(--acc)">
 <div class="ic">🧩</div>
-<h3 lang="en">Practical applications — who uses this, and why it matters</h3>
-<h3 lang="bg">Практически приложения — кой ги използва и защо са важни</h3>
-<p lang="en">Where this analysis is used in the real world — <b>pensions &amp; retirement</b>, <b>health &amp; long-term
-care</b>, <b>labour &amp; migration</b>, <b>macro &amp; fiscal sustainability</b>, <b>workforce planning</b> and
-the <b>silver economy</b> — each tied to the level that supports it, grounded in the EU Ageing Report and the
-Silver Economy study.</p>
-<p lang="bg">Къде се използва този анализ в реалния свят — <b>пенсии и пенсиониране</b>, <b>здравеопазване и дългосрочни
-грижи</b>, <b>труд и миграция</b>, <b>макро и фискална устойчивост</b>, <b>планиране на работната сила</b> и
-<b>сребърната икономика</b> — всяко свързано с подкрепящото го ниво, на база Доклада за застаряването на ЕС и
-проучването за сребърната икономика.</p></a>
-<a class="card" href="outputs/shocks.html" style="grid-column:1/-1;border-color:var(--acc)">
-<div class="ic">⚡</div>
-<h3 lang="en">Wars, pandemics &amp; AI — forces on the labour market</h3>
-<h3 lang="bg">Войни, пандемии и ИИ — сили върху пазара на труда</h3>
-<p lang="en">An empirical look from our own data: the <b>COVID vacancy collapse</b> and its V-shaped rebound, the
-Ukraine-war <b>refugee supply shock</b>, and <b>AI</b> as the slow structural force reshaping demand — mechanisms, charts, and the tie to 2033.</p>
-<p lang="bg">Емпиричен поглед от собствените ни данни: <b>сривът на свободните места при COVID</b> и V-образното му
-възстановяване, <b>бежанският шок</b> от войната в Украйна и <b>ИИ</b> като бавната структурна сила, преоформяща търсенето — механизми, графики и връзката с 2033.</p></a>
+<h3 lang="en">Implications &amp; shocks — applications, plus wars, pandemics &amp; AI</h3>
+<h3 lang="bg">Последици и сътресения — приложения, плюс войни, пандемии и ИИ</h3>
+<p lang="en">One page: where the analysis is used in the real world (<b>pensions, health &amp; long-term care, labour &amp;
+migration, fiscal sustainability, the silver economy</b>) — and the forces outside the slow demographics: the
+<b>COVID vacancy collapse</b>, the Ukraine-war <b>refugee supply shock</b>, and <b>AI</b> reshaping demand.</p>
+<p lang="bg">Една страница: къде анализът се използва в реалния свят (<b>пенсии, здравеопазване и дългосрочни грижи, труд и
+миграция, фискална устойчивост, сребърната икономика</b>) — и силите извън бавната демография: <b>сривът на
+свободните места при COVID</b>, <b>бежанският шок</b> от Украйна и <b>ИИ</b>, преоформящ търсенето.</p></a>
 </div>
 
 <h2><span lang="en">Progress by level</span><span lang="bg">Напредък по нива</span></h2>

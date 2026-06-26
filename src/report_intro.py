@@ -106,6 +106,7 @@ a{color:var(--acc)}.links{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
 .links a{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:8px 15px;
 text-decoration:none;font-size:14px;font-weight:600}.links a:hover{border-color:var(--acc)}
 .foot{color:var(--mut);font-size:13px;margin-top:30px}code{color:var(--acc)}
+iframe.embed{width:100%;height:1100px;border:1px solid var(--line);border-radius:14px;background:#fff;display:block;margin:6px 0}
 """
 
 # ---- "how we got here": the data-to-answer pipeline ----
@@ -233,6 +234,10 @@ of <b style="color:{netcol}">{net:+,}M</b>), hiding a sharp <b>East–West divid
 <div class="kpi"><div class="v" style="color:var(--up)">{east_sur:+,}M</div><div class="l"><span lang="en">East surplus — largest in {NAME[best]}</span><span lang="bg">Излишък на Изток — най-голям в {NAME[best]}</span></div></div>
 </div>
 
+<h2><span lang="en">KPIs at a glance</span><span lang="bg">Ключови показатели накратко</span></h2>
+<p class="sub" style="margin-bottom:8px"><span lang="en">The headline numbers across every level for 2033 — each tile links to the report that produces it.</span><span lang="bg">Основните числа по всички нива за 2033 г. — всяка плочка води към доклада, който я произвежда.</span></p>
+<iframe class="embed" src="kpis.html" loading="lazy" title="KPIs at a glance"></iframe>
+
 <h2><span lang="en">What we find</span><span lang="bg">Какво откриваме</span></h2>
 <div class="cards">
 <div class="find"><div class="t" style="color:var(--acc)"><span lang="en">The headline</span><span lang="bg">Заглавно</span></div>
@@ -310,7 +315,21 @@ identity decomposition, not causal mechanisms.</div>
 <a href="methodology_report.html">🧭 Methodology</a>
 </div>
 <p class="foot"><a href="../index.html"><span lang="en">← Back to overview</span><span lang="bg">← Обратно към обзора</span></a> · src/report_intro.py</p>
-</div></body></html>"""
+</div>
+<script>
+(function(){{
+  function frames(){{return Array.prototype.slice.call(document.querySelectorAll('iframe.embed'));}}
+  function fit(f){{try{{var h=f.contentDocument.body.scrollHeight;if(h>140)f.style.height=h+'px';}}catch(e){{}}}}
+  function prep(f){{try{{var t=f.contentDocument.getElementById('langtoggle');if(t)t.style.display='none';}}catch(e){{}}fit(f);}}
+  function hook(f){{f.addEventListener('load',function(){{prep(f);[300,800,1600].forEach(function(d){{setTimeout(function(){{fit(f);}},d);}});}});}}
+  document.addEventListener('DOMContentLoaded',function(){{frames().forEach(hook);}});
+  window.addEventListener('load',function(){{frames().forEach(prep);}});
+  window.addEventListener('resize',function(){{frames().forEach(fit);}});
+  var tg=document.getElementById('langtoggle');
+  if(tg)tg.addEventListener('click',function(){{setTimeout(function(){{frames().forEach(function(f){{try{{f.contentWindow.location.reload();}}catch(e){{}}}});}},50);}});
+}})();
+</script>
+</body></html>"""
 
 (OUT / "introduction.html").write_text(HTML, encoding="utf-8")
 print(f"wrote outputs/introduction.html  net {net:+}M (West {west_def:+}M, East {east_sur:+}M)")

@@ -35,6 +35,7 @@ a{color:var(--acc)}.links{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
 .links a{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:8px 15px;
 text-decoration:none;font-size:14px;font-weight:600}.links a:hover{border-color:var(--acc)}
 .foot{color:var(--mut);font-size:13px;margin-top:30px}code{color:var(--acc)}
+iframe.embed{width:100%;height:1100px;border:1px solid var(--line);border-radius:14px;background:#fff;display:block;margin:6px 0}
 html[data-lang='en'] [lang='bg']{display:none!important}html[data-lang='bg'] [lang='en']{display:none!important}.langtoggle{position:fixed;top:14px;right:14px;z-index:9999;background:var(--card,#fff);border:1px solid var(--line,#E7E5E4);border-radius:20px;padding:7px 15px;cursor:pointer;font:700 13px/1 -apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--acc,#166534);box-shadow:0 2px 10px rgba(0,0,0,.08)}.langtoggle:hover{border-color:var(--acc,#166534)}</style></head><body><button class="langtoggle" id="langtoggle" aria-label="switch language">БГ</button><script>(function(){var r=document.documentElement;var L=localStorage.getItem('site-lang')||'bg';r.dataset.lang=L;var b=document.getElementById('langtoggle');function u(){b.textContent=r.dataset.lang==='en'?'БГ':'EN';}b.onclick=function(){var n=r.dataset.lang==='en'?'bg':'en';r.dataset.lang=n;localStorage.setItem('site-lang',n);u();};u();})();</script><div class="wrap">
 <h1 lang="en">Introduction — can Europe balance its labour market by 2033?</h1>
 <h1 lang="bg">Въведение — може ли Европа да балансира пазара си на труда до 2033 г.?</h1>
@@ -105,6 +106,10 @@ of <b style="color:var(--up)">+89M</b>), hiding a sharp <b>East–West divide</b
 <div class="kpi"><div class="v" style="color:var(--down)">-280M</div><div class="l"><span lang="en">West/EFTA shortage — deepest in Germany</span><span lang="bg">Недостиг Запад/ЕАСТ — най-дълбок в Germany</span></div></div>
 <div class="kpi"><div class="v" style="color:var(--up)">+369M</div><div class="l"><span lang="en">East surplus — largest in Poland</span><span lang="bg">Излишък на Изток — най-голям в Poland</span></div></div>
 </div>
+
+<h2><span lang="en">KPIs at a glance</span><span lang="bg">Ключови показатели накратко</span></h2>
+<p class="sub" style="margin-bottom:8px"><span lang="en">The headline numbers across every level for 2033 — each tile links to the report that produces it.</span><span lang="bg">Основните числа по всички нива за 2033 г. — всяка плочка води към доклада, който я произвежда.</span></p>
+<iframe class="embed" src="kpis.html" loading="lazy" title="KPIs at a glance"></iframe>
 
 <h2><span lang="en">What we find</span><span lang="bg">Какво откриваме</span></h2>
 <div class="cards">
@@ -215,4 +220,18 @@ identity decomposition, not causal mechanisms.</div>
 <a href="methodology_report.html">🧭 Methodology</a>
 </div>
 <p class="foot"><a href="../index.html"><span lang="en">← Back to overview</span><span lang="bg">← Обратно към обзора</span></a> · src/report_intro.py</p>
-</div></body></html>
+</div>
+<script>
+(function(){
+  function frames(){return Array.prototype.slice.call(document.querySelectorAll('iframe.embed'));}
+  function fit(f){try{var h=f.contentDocument.body.scrollHeight;if(h>140)f.style.height=h+'px';}catch(e){}}
+  function prep(f){try{var t=f.contentDocument.getElementById('langtoggle');if(t)t.style.display='none';}catch(e){}fit(f);}
+  function hook(f){f.addEventListener('load',function(){prep(f);[300,800,1600].forEach(function(d){setTimeout(function(){fit(f);},d);});});}
+  document.addEventListener('DOMContentLoaded',function(){frames().forEach(hook);});
+  window.addEventListener('load',function(){frames().forEach(prep);});
+  window.addEventListener('resize',function(){frames().forEach(fit);});
+  var tg=document.getElementById('langtoggle');
+  if(tg)tg.addEventListener('click',function(){setTimeout(function(){frames().forEach(function(f){try{f.contentWindow.location.reload();}catch(e){}});},50);});
+})();
+</script>
+</body></html>
