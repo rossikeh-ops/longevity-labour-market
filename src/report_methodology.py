@@ -43,7 +43,7 @@ def _hz_mape_svg():
         return c
     xlab = "".join(f'<text x="{X(h):.1f}" y="{H-22}" font-size="10" fill="#78716C" text-anchor="middle">{h}</text>' for h in _HS)
     return (f'<svg viewBox="0 0 {W} {H}" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">{grid}'
-            f'{line(_NAI, "#A8A29E", dash="4 3", dots=False)}{line(_DIR, "#B91C1C")}{line(_ENS, "#166534")}'
+            f'{line(_NAI, "#A8A29E", dash="4 3", dots=True)}{line(_DIR, "#B91C1C")}{line(_ENS, "#166534")}'
             f'{xlab}<text x="{(L+W-R)/2:.0f}" y="{H-6}" font-size="11" fill="#78716C" text-anchor="middle">forecast horizon (years ahead) →</text>'
             f'</svg>')
 
@@ -336,16 +336,20 @@ combined into healthy person-years.</p>
 <p>A natural question: surely a model <i>dedicated</i> to the 9-year forecast would beat one general model? We
 checked it directly. In a rolling-origin backtest over the smooth supply drivers, we compared our single
 <b style="color:#166534">horizon-aware ensemble</b> against <b style="color:#B91C1C">separate "direct" models</b> —
-one fitted specifically for each horizon (an OLS of the value h years ahead on today's value). The ensemble wins
-at <b>every</b> horizon, and the gap <b>widens</b> the further out you go.</p>
+one fitted specifically for each horizon (an OLS of the value h years ahead on today's value). Among the models
+that actually <i>extrapolate</i>, the ensemble wins at <b>every</b> horizon and the gap <b>widens</b> the further
+out you go. But the honest caveat is the third line: the <b style="color:#78716C">naïve floor</b> (last value held
+flat) is the <b>lowest of all three</b> on these near-random-walk drivers — so the real win is horizon-aware
+<i>restraint</i> that hugs that floor, not a trend-hungry specialist that drifts off it.</p>
 <div class="g2">
 <div class="fig"><div class="ft">Forecast error by horizon — ensemble vs separate models</div>{HZ_MAPE_SVG}
-<div class="cap"><span class="swatch" style="background:#166534"></span>one horizon-aware ensemble
+<div class="cap"><span class="swatch" style="background:#166534"></span>horizon-aware ensemble
 <span class="swatch" style="background:#B91C1C;margin-left:8px"></span>separate per-horizon models
-<span class="swatch" style="background:#A8A29E;margin-left:8px"></span>naive floor — lower MAPE is better</div></div>
+<span class="swatch" style="background:#A8A29E;margin-left:8px"></span><b>naïve floor — lowest of the three</b>.
+At 9 years out: naïve <b>{_NAI[8]}%</b> &lt; ensemble <b>{_ENS[8]}%</b> &lt; direct <b>{_DIR[8]}%</b>.</div></div>
 <div class="fig"><div class="ft">…because a dedicated long-horizon model <i>starves</i></div>{PAIRS_SVG}
-<div class="cap">A separate <b>9-year</b> model can only learn from <b>{_PAIRS[8]}</b> (year, year+9) training pairs —
-far too few, so it overfits and does worse exactly where you hoped it would help.</div></div>
+<div class="cap"><b>Only {_PAIRS[8]} training pairs.</b> A separate <b>9-year</b> model can learn from just {_PAIRS[8]}
+(year, year+9) examples — far too few, so it overfits and does worse exactly where you hoped it would help.</div></div>
 </div>
 <p>The reason is data, not cleverness: every extra year of horizon throws away another year of usable training
 pairs ({_PAIRS[0]} → {_PAIRS[-1]}), so a long-horizon specialist is estimated from almost nothing and overfits.
