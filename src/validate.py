@@ -14,6 +14,7 @@ Writes outputs/validation_metrics.json.
 from __future__ import annotations
 from pathlib import Path
 import json
+import math
 import numpy as np
 import pandas as pd
 from forecast import forecast_series, history, _ensemble_mean, DEFAULT_MEMBERS
@@ -79,6 +80,22 @@ def rmse(rows, key):
 def bias_pct(rows):           # signed: + means model over-forecasts
     e = [(r["pred"] - r["actual"]) / r["actual"] for r in rows if r["actual"] != 0]
     return float(np.mean(e)) * 100 if e else np.nan
+
+
+Z80 = 1.2815515594        # standard normal 90th percentile (80% two-sided band)
+
+
+def crps_gauss(mu, sigma, y):
+    """Closed-form CRPS of a Gaussian predictive distribution N(mu, sigma) against
+    observation y — a PROPER scoring rule (lower is better) that rewards sharp AND
+    calibrated forecasts, not just the point error. A point forecast is the sigma->0
+    limit, where CRPS reduces to |y - mu| (the absolute error)."""
+    if sigma <= 1e-9:
+        return abs(y - mu)
+    z = (y - mu) / sigma
+    Phi = 0.5 * (1.0 + math.erf(z / math.sqrt(2.0)))
+    phi = math.exp(-0.5 * z * z) / math.sqrt(2.0 * math.pi)
+    return sigma * (z * (2.0 * Phi - 1.0) + 2.0 * phi - 1.0 / math.sqrt(math.pi))
 
 
 def block_ci(rows_by_country, key="pred", B=2000, seed=0):
@@ -161,6 +178,10 @@ for col, label in IND.items():
     if not allrows:
         continue
     cov = float(np.mean([r["lo"] <= r["actual"] <= r["hi"] for r in allrows]))
+    # proper scoring rule (CRPS): recover sigma from the 80% band, score the Gaussian
+    # predictive forecast; naive is scored as a point forecast (CRPS = |error|).
+    crps_e = float(np.mean([crps_gauss(r["pred"], max((r["hi"] - r["lo"]) / (2 * Z80), 1e-9), r["actual"]) for r in allrows]))
+    crps_n = float(np.mean([abs(r["naive"] - r["actual"]) for r in allrows]))
     me, mn = mape(allrows, "pred"), mape(allrows, "naive")
     tr_mape, tr_rmse = mape(trainrows, "pred"), rmse(trainrows, "pred")
     bt_rmse = rmse(allrows, "pred")
@@ -176,6 +197,8 @@ for col, label in IND.items():
         "rmse": round(bt_rmse, 3),
         "bias_pct": round(bias_pct(allrows), 1),
         "skill": round(1 - me / mn, 3) if mn else None,
+        "crps": round(crps_e, 4), "crps_naive": round(crps_n, 4),
+        "crps_skill": round(1 - crps_e / crps_n, 3) if crps_n else None,
         "coverage80": round(cov, 3),
         "mape_by_h": by_h,
         "per_country_acc": per_country,
@@ -378,11 +401,17 @@ hly_sensitivity = {
     "east_with": _sum(balw, EAST), "east_without": _sum(balwo, EAST),
 }
 
+_cks = [m["crps_skill"] for m in metrics.values() if m.get("crps_skill") is not None]
+crps_summary = {"by_driver": {col: metrics[col].get("crps_skill") for col in metrics},
+                "mean_skill": round(float(np.mean(_cks)), 3) if _cks else None}
 result = {"metrics": metrics, "show": show, "test_h": TEST_H, "level_acc": level_acc,
           "vacancy_model_test": vacancy_model_test, "hly_sensitivity": hly_sensitivity,
-          "beveridge_infold": True}
+          "crps": crps_summary, "beveridge_infold": True}
 (OUT / "validation_metrics.json").write_text(json.dumps(result, indent=1), encoding="utf-8")
 print("\n=== Fixes ===")
+print("CRPS skill vs naive (proper score): " + ", ".join(
+    f"{m['label'].split('(')[0].strip()} {m.get('crps_skill')}" for m in metrics.values())
+    + f"  | mean {crps_summary['mean_skill']}")
 print(f"driver MAPE CIs: " + ", ".join(f"{m['label'].split('(')[0].strip()} {m['mape_ens']}% {m.get('mape_ci')}" for m in metrics.values()))
 print(f"supply MAPE {level_acc['supply_mape']}% CI {level_acc['supply_ci']} | demand {level_acc['demand_mape']}% CI {level_acc['demand_ci']}")
 print(f"HLY sensitivity: supply +{hly_sensitivity['supply_lift_pct']}% if multiplier removed; "

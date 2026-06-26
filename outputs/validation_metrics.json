@@ -13,6 +13,9 @@
    "rmse": 1.394,
    "bias_pct": -0.8,
    "skill": 0.116,
+   "crps": 0.6472,
+   "crps_naive": 1.0763,
+   "crps_skill": 0.399,
    "coverage80": 0.912,
    "mape_by_h": {
     "1": 1.0,
@@ -48,6 +51,9 @@
    "rmse": 0.031,
    "bias_pct": 1.4,
    "skill": -0.083,
+   "crps": 0.0181,
+   "crps_naive": 0.0223,
+   "crps_skill": 0.19,
    "coverage80": 0.819,
    "mape_by_h": {
     "1": 2.1,
@@ -83,6 +89,9 @@
    "rmse": 0.018,
    "bias_pct": -0.5,
    "skill": 0.0,
+   "crps": 0.0108,
+   "crps_naive": 0.0136,
+   "crps_skill": 0.207,
    "coverage80": 0.919,
    "mape_by_h": {
     "1": 1.5,
@@ -118,6 +127,9 @@
    "rmse": 0.869,
    "bias_pct": -1.8,
    "skill": 0.051,
+   "crps": 0.4629,
+   "crps_naive": 0.6937,
+   "crps_skill": 0.333,
    "coverage80": 0.944,
    "mape_by_h": {
     "1": 1.1,
@@ -153,6 +165,9 @@
    "rmse": 149569.28,
    "bias_pct": 15.6,
    "skill": 0.0,
+   "crps": 50523.4731,
+   "crps_naive": 73056.9875,
+   "crps_skill": 0.308,
    "coverage80": 0.838,
    "mape_by_h": {
     "1": 15.6,
@@ -578,6 +593,16 @@
   "west_without": 642,
   "east_with": 363,
   "east_without": 642
+ },
+ "crps": {
+  "by_driver": {
+   "le_birth": 0.399,
+   "healthy_share": 0.19,
+   "emp_rate": 0.207,
+   "working_life_yrs": 0.333,
+   "vacancy_count": 0.308
+  },
+  "mean_skill": 0.287
  },
  "beveridge_infold": true
 }

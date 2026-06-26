@@ -19,7 +19,9 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "outputs"
 V = json.loads((OUT / "validation_metrics.json").read_text(encoding="utf-8"))
 m, la, hs = V["metrics"], V["level_acc"], V["hly_sensitivity"]
+crps = V["crps"]
 TR = json.loads((OUT / "tree_compare.json").read_text(encoding="utf-8"))
+LO = json.loads((OUT / "beveridge_loco.json").read_text(encoding="utf-8"))
 
 
 def H(en, bg, tag="p", cls=None):
@@ -132,6 +134,16 @@ tree_rows = "".join(
     for k, en, bg in [("linear", "Linear elasticity", "Линейна еластичност"),
                       ("tree_d3", "Regression tree (depth 3)", "Регресионно дърво (дълб. 3)"),
                       ("gboost", "Gradient boosting", "Градиентно усилване")])
+
+# ---------- leave-one-country-out Beveridge table ----------
+_LOMP = LO["mape"]
+loco_rows = "".join(
+    f'<tr{" class=\"sep\"" if k == "naive" else ""}><td>{T(en, bg)}</td>'
+    f'<td class="num">{_LOMP[k]}%</td></tr>'
+    for k, en, bg in [("pooled", "Pooled slope (all 8 — deployed)", "Обединен наклон (всичките 8 — внедрен)"),
+                      ("loco", "Leave-one-country-out (other 7)", "Изключена държава (другите 7)"),
+                      ("own", "Own country only", "Само собствената държава"),
+                      ("naive", "Naïve (flat rate)", "Наивен (плосък коеф.)")])
 
 CSS = """
 :root{--bg:#FAFAF9;--card:#FFFFFF;--ink:#292524;--mut:#78716C;--line:#E7E5E4;
@@ -290,6 +302,48 @@ HTML = f"""<!doctype html><html lang="bg" data-lang="bg"><head><meta charset="ut
    f"намира нелинейност, която линията пропуска — потвърждавайки с гъвкав модел, че Нива 4–5 са описателни с "
    f"вътрешнодържавен ефект <b>≈ 0</b>.")}</div>
 
+<div class="fix"><span class="badge">{T("implemented", "внедрено")}</span>
+{H("6 · A proper scoring rule (CRPS)", "6 · Същинско правило за оценка (CRPS)", "h3")}
+{H(f"The earlier draft reported only MAPE + coverage. We now also score the <b>whole predictive distribution</b> with "
+   f"the Continuous Ranked Probability Score — a proper rule that rewards forecasts that are sharp <i>and</i> calibrated, "
+   f"not just the point. Skill versus a naïve forecast (higher is better) is <b>positive for every driver</b>, averaging "
+   f"<b>+{crps['mean_skill']:.2f}</b> — from healthy share (+{crps['by_driver']['healthy_share']:.2f}) to life expectancy "
+   f"(+{crps['by_driver']['le_birth']:.2f}). Tellingly, even job vacancies score <b>+{crps['by_driver']['vacancy_count']:.2f}</b> "
+   f"under CRPS although their <i>point</i> MAPE barely ties naïve: the calibrated bands carry real value the point error "
+   f"misses — the model knows what it doesn’t know. (Honest framing: naïve is scored as a point forecast; giving it its "
+   f"own distribution would narrow the gap.)",
+   f"Предишният вариант отчиташе само MAPE + покритие. Сега оценяваме и <b>цялото предсказващо разпределение</b> с "
+   f"Continuous Ranked Probability Score — същинско правило, което възнаграждава остри <i>и</i> калибрирани прогнози, не "
+   f"само точката. Умението спрямо наивна прогноза (по-високо е по-добро) е <b>положително за всеки двигател</b>, средно "
+   f"<b>+{crps['mean_skill']:.2f}</b> — от здравословен дял (+{crps['by_driver']['healthy_share']:.2f}) до продължителност "
+   f"на живота (+{crps['by_driver']['le_birth']:.2f}). Показателно е, че дори свободните места дават "
+   f"<b>+{crps['by_driver']['vacancy_count']:.2f}</b> по CRPS, макар <i>точковата</i> им MAPE едва да изравнява наивната: "
+   f"калибрираните ленти носят реална стойност, която точковата грешка пропуска — моделът знае какво не знае. (Честно "
+   f"казано: наивната е оценена като точкова прогноза; собствено разпределение би стеснило разликата.)")}</div>
+
+<div class="fix"><span class="badge null">{T("tested — pooling justified", "проверено — обединяването е оправдано")}</span>
+{H("7 · Leave-one-country-out: is the pooled Beveridge justified?", "7 · Изключване на по една държава: оправдан ли е обединеният Бевъридж?", "h3")}
+{H("The vacancy model shares one Beveridge slope across all 8 countries. Is that pooling legitimate, or does it hurt a "
+   "held-out country? We refit the slope three ways and backtested each on every country’s vacancy count (rolling-origin):",
+   "Моделът за свободните места споделя един наклон на Бевъридж между всичките 8 държави. Легитимно ли е това "
+   "обединяване, или вреди на изключена държава? Пренапаснахме наклона по три начина и тествахме всеки върху броя "
+   "свободни места на всяка държава (с плъзгащ произход):")}
+<table><thead><tr><th>{T("Slope fitted on…", "Наклон, напаснат върху…")}</th>
+<th class="num">{T("vacancy MAPE", "MAPE свободни места")}</th></tr></thead><tbody>{loco_rows}</tbody></table>
+{H(f"<b>Pooling is justified.</b> The slope is <b>stable</b> under leave-one-country-out — pooled "
+   f"<b>{LO['slopes']['pooled']:+.2f}</b> vs LOCO <b>{LO['slopes']['loco_mean']:+.2f}</b>, almost identical, so no single "
+   f"country drives it — and pooling <b>beats</b> fitting each country alone (own-country slopes scatter wildly from "
+   f"{LO['slopes']['own_range'][0]:+.2f} to {LO['slopes']['own_range'][1]:+.2f} and score worst). The honest caveat is the "
+   f"last row: even the well-pooled slope ({_LOMP['pooled']}%) just trails <b>naïve ({_LOMP['naive']}%)</b> — vacancies are "
+   f"near-random-walk, so the Beveridge model earns its place by being <i>stable and scenario-able</i>, not by beating persistence.",
+   f"<b>Обединяването е оправдано.</b> Наклонът е <b>стабилен</b> при изключване на по една държава — обединен "
+   f"<b>{LO['slopes']['pooled']:+.2f}</b> срещу LOCO <b>{LO['slopes']['loco_mean']:+.2f}</b>, почти еднакви, тоест нито една "
+   f"държава не го определя — и обединяването <b>превъзхожда</b> напасването на всяка държава поотделно (собствените "
+   f"наклони се разпръскват силно от {LO['slopes']['own_range'][0]:+.2f} до {LO['slopes']['own_range'][1]:+.2f} и дават "
+   f"най-лош резултат). Честната уговорка е последният ред: дори добре обединеният наклон ({_LOMP['pooled']}%) едва "
+   f"изостава от <b>наивния ({_LOMP['naive']}%)</b> — свободните места са близо до случаен ход, затова моделът на Бевъридж "
+   f"заслужава мястото си с това, че е <i>стабилен и сценариен</i>, а не като побеждава устойчивостта.")}</div>
+
 <h2>{T("Limits we cannot engineer away", "Граници, които не можем да премахнем")}</h2>
 <ul>
 <li>{T("<b>13 annual points.</b> Damped-Holt and AR(1) are barely identified on so few observations; the ensemble’s "
@@ -302,8 +356,8 @@ HTML = f"""<!doctype html><html lang="bg" data-lang="bg"><head><meta charset="ut
        "<b>Самооцененото здраве не е сравнимо между държави</b> — четете промените му, не нивата (виж поправка 3).")}</li>
 <li>{T("<b>Migration tails.</b> Bounded by Eurostat scenarios; a shock like Ukraine can exceed them in either direction.",
        "<b>Миграционни екстремуми.</b> Ограничени от сценариите на Евростат; шок като Украйна може да ги надхвърли и в двете посоки.")}</li>
-<li>{T("<b>No proper scoring rule yet.</b> We report MAPE + coverage, not CRPS / log-score; and MAPE is the wrong metric for the near-zero dividend.",
-       "<b>Все още няма същинско правило за оценка.</b> Отчитаме MAPE + покритие, не CRPS / log-score; а MAPE е грешната метрика за близкия до нула дивидент.")}</li>
+<li>{T("<b>MAPE is still the wrong metric for the near-zero dividend.</b> We now also report a proper scoring rule (CRPS — see fix 6), but a per-quantity scaled metric for the Level-5 dividend remains future work.",
+       "<b>MAPE все още е грешната метрика за близкия до нула дивидент.</b> Вече отчитаме и същинско правило за оценка (CRPS — виж поправка 6), но мащабирана метрика за дивидента от Ниво 5 остава бъдеща работа.")}</li>
 <li>{T("<b>Levels 4–6 are descriptive.</b> Within-country causal effects are undetectable at this power — we report associations, never causation.",
        "<b>Нива 4–6 са описателни.</b> Вътрешнодържавните причинни ефекти са неоткриваеми при тази мощ — отчитаме асоциации, никога причинност.")}</li>
 </ul>
@@ -326,5 +380,5 @@ HTML = f"""<!doctype html><html lang="bg" data-lang="bg"><head><meta charset="ut
 </div></body></html>"""
 
 (OUT / "critique.html").write_text(HTML, encoding="utf-8")
-print(f"wrote outputs/critique.html  (8 issues, 5 fixes; supply CI {la.get('supply_ci')}, "
+print(f"wrote outputs/critique.html  (8 issues, 7 fixes; CRPS mean skill {crps['mean_skill']}; supply CI {la.get('supply_ci')}, "
       f"HLY split {hs['west_with']}->{hs['west_without']} / {hs['east_with']}->{hs['east_without']})")

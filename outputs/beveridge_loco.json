@@ -1,0 +1,24 @@
+{
+ "slopes": {
+  "pooled": -0.1816,
+  "loco_mean": -0.1865,
+  "own_mean": -0.3557,
+  "own_range": [
+   -0.692,
+   -0.0133
+  ]
+ },
+ "mape": {
+  "pooled": 25.5,
+  "loco": 25.7,
+  "own": 25.8,
+  "naive": 24.7
+ },
+ "skill_vs_naive": {
+  "pooled": -0.034,
+  "loco": -0.04,
+  "own": -0.048
+ },
+ "n": 120,
+ "test_h": 5
+}
