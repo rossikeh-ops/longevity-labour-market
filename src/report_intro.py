@@ -94,11 +94,69 @@ border-radius:14px;padding:20px 22px;margin:18px 0;font-size:17px}
 .lv h3{margin:0 0 4px;font-size:15px;color:var(--c)}.lv p{margin:0;color:var(--mut);font-size:13.5px}
 .note{color:var(--mut);font-size:14px;background:var(--card);border:1px solid var(--line);
 border-radius:10px;padding:15px;margin-top:12px}.note b{color:var(--ink)}
+.proc{margin:18px 0 6px}
+.pstep{position:relative;padding:2px 0 20px 60px;border-left:2px solid var(--line);margin-left:18px}
+.pstep:last-child{border-left-color:transparent;padding-bottom:2px}
+.pnum{position:absolute;left:-19px;top:-3px;width:36px;height:36px;border-radius:50%;
+background:#F5F5F0;border:2px solid var(--acc);color:var(--acc);font-weight:800;
+display:grid;place-items:center;font-size:14px}
+.pstep h3{margin:0 0 3px;font-size:16px}.pstep h3 .e{margin-right:8px;font-size:18px}
+.pstep p{margin:0;color:var(--mut);font-size:14px;max-width:760px}.pstep code{color:var(--acc);font-size:12.5px}
 a{color:var(--acc)}.links{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
 .links a{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:8px 15px;
 text-decoration:none;font-size:14px;font-weight:600}.links a:hover{border-color:var(--acc)}
 .foot{color:var(--mut);font-size:13px;margin-top:30px}code{color:var(--acc)}
 """
+
+# ---- "how we got here": the data-to-answer pipeline ----
+STEPS = [
+    ("📥", "Gather the raw evidence", "Събери суровите данни",
+     "Pull official series for all 8 countries, by sex, back to ~2011 — population, employment &amp; unemployment, "
+     "job vacancies, life expectancy and healthy-life years, retirement rules and government spending — mostly from "
+     "<b>Eurostat</b>, plus OECD.AI / OWID for the AI signal.",
+     "Изтегли официални редове за всичките 8 държави, по пол, назад до ~2011 г. — население, заетост и безработица, "
+     "свободни работни места, продължителност на живота и здрави години живот, пенсионни правила и държавни разходи — "
+     "предимно от <b>Евростат</b>, плюс OECD.AI / OWID за сигнала за ИИ."),
+    ("🧹", "Harmonize into one panel", "Хармонизирай в един панел",
+     "Clean and align everything into a single tidy table (country × sex × year): reconcile units, bridge definition "
+     "changes and line up a common timeline — one source of truth in <code>panel.parquet</code>.",
+     "Изчисти и подреди всичко в една таблица (държава × пол × година): уеднакви мерните единици, преодолей промени в "
+     "дефинициите и подреди обща времева линия — един източник на истина в <code>panel.parquet</code>."),
+    ("🧱", "Build the person-year drivers", "Изгради двигателите в човеко-години",
+     "Turn raw series into the ingredients the identities need — <b>healthy share</b> (HLY ÷ LE), <b>expected working "
+     "life</b>, <b>employment rate</b> and <b>vacancy rate</b> — the dials that convert headcounts into working-years.",
+     "Превърни суровите редове в съставките, нужни на тъждествата — <b>здравословен дял</b> (ЗГЖ ÷ ОПЖ), <b>очакван "
+     "трудов живот</b>, <b>коефициент на заетост</b> и <b>коефициент на свободни места</b> — лостовете, които "
+     "превръщат броя хора в работни години."),
+    ("🔮", "Forecast each driver to 2033", "Прогнозирай всеки двигател до 2033",
+     "A small ensemble of transparent models (linear, Holt, drift, naïve, AR(1)) extends each driver, with Monte-Carlo "
+     "bands for uncertainty — deliberately <b>no neural networks</b>. Population uses Eurostat's own projection, "
+     "calibrated to observed 2024.",
+     "Малък ансамбъл от прозрачни модели (линеен, Holt, дрейф, наивен, AR(1)) удължава всеки двигател, с Монте-Карло "
+     "ленти за несигурност — умишлено <b>без невронни мрежи</b>. Населението използва собствената прогноза на Евростат, "
+     "калибрирана към наблюдаваната 2024 г."),
+    ("⚙️", "Compose supply, demand &amp; balance", "Сглоби предлагане, търсене и баланс",
+     "Feed the forecast drivers through the person-year identities to assemble <b>supply</b>, <b>demand</b> and their "
+     "difference — per country × sex, every year to 2033, with the uncertainty bands carried through.",
+     "Прекарай прогнозните двигатели през тъждествата в човеко-години, за да сглобиш <b>предлагане</b>, <b>търсене</b> и "
+     "разликата им — по държава × пол, всяка година до 2033 г., с пренесените ленти на несигурност."),
+    ("🔍", "Stress-test the engine", "Подложи двигателя на тест",
+     "Before trusting a number, backtest it: rolling-origin, leakage-safe, a COVID holdout, skill-versus-naïve, and "
+     "now <b>bootstrap confidence intervals</b> — so every result arrives with how far it can be trusted.",
+     "Преди да се довериш на число, го тествай назад: с плъзгащ произход, без изтичане, COVID тест, умение-срещу-наивно "
+     "и вече <b>бутстрап доверителни интервали</b> — така всеки резултат идва с това докъде може да му се вярва."),
+    ("🧭", "Read it &amp; translate to choices", "Прочети и преведи в избори",
+     "Turn the stock into meaning — the East–West headline, the three policy levers, the what-if sandbox, and Levels "
+     "4–6 (health burden, retirement dividend, macroeconomy) read <b>descriptively</b>, never as causation.",
+     "Превърни величината в смисъл — заглавието Изток–Запад, трите лоста на политиката, пясъчника „какво-ако“ и Нива "
+     "4–6 (тежест на здравето, пенсионен дивидент, макроикономика), четени <b>описателно</b>, никога като причинност."),
+]
+PROC = '<div class="proc">' + "".join(
+    f'<div class="pstep"><div class="pnum">{i}</div>'
+    f'<h3><span class="e">{ic}</span><span lang="en">{en_t}</span><span lang="bg">{bg_t}</span></h3>'
+    f'<p><span lang="en">{en_b}</span><span lang="bg">{bg_b}</span></p></div>'
+    for i, (ic, en_t, bg_t, en_b, bg_b) in enumerate(STEPS, 1)
+) + "</div>"
 
 netcol = "var(--up)" if net >= 0 else "var(--down)"
 HTML = f"""<!doctype html><html lang="bg" data-lang="bg"><head><meta charset="utf-8">
@@ -149,6 +207,13 @@ and tests whether it lifts leisure, education &amp; culture spending. In both, t
 <b>дивидента от здраво пенсиониране</b> (население × здравите години след пенсионната възраст, ЗГЖ − пенс.) и
 проверява дали повишава разходите за свободно време, образование и култура. И при двете връзката в рамките на
 държавата е ≈ 0 — следват БВП и доходите, не демографията.</p>
+
+<h2><span lang="en">How we got here — from raw data to the answer</span><span lang="bg">Как стигнахме дотук — от сурови данни до отговора</span></h2>
+<p class="sub" lang="en">Seven steps take public statistics to the headline below. Each is transparent and reproducible — the same
+pipeline, run end to end, produces every number on this site.</p>
+<p class="sub" lang="bg">Седем стъпки превеждат публичната статистика до заглавието по-долу. Всяка е прозрачна и възпроизводима —
+същият процес, пуснат от край до край, произвежда всяко число на този сайт.</p>
+{PROC}
 
 <h2><span lang="en">The headline, previewed</span><span lang="bg">Заглавието, накратко</span></h2>
 <div class="hero" style="border-left-color:{netcol}" lang="en"><b>Roughly balanced in aggregate — but not where it's
