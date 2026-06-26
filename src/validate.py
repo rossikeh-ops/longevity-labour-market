@@ -81,6 +81,29 @@ def bias_pct(rows):           # signed: + means model over-forecasts
     return float(np.mean(e)) * 100 if e else np.nan
 
 
+def block_ci(rows_by_country, key="pred", B=2000, seed=0):
+    """90% CI for the pooled MAPE via a BLOCK bootstrap over countries — the honest
+    precision once you stop treating correlated country×sex rows as independent."""
+    rng = np.random.default_rng(seed)
+    cs = [c for c in rows_by_country if rows_by_country[c]]
+    if len(cs) < 3:
+        return None
+    est = [mape([r for i in rng.integers(0, len(cs), len(cs)) for r in rows_by_country[cs[i]]], key)
+           for _ in range(B)]
+    return [round(float(np.percentile(est, 5)) * 100, 1), round(float(np.percentile(est, 95)) * 100, 1)]
+
+
+def block_ci_vals(vals_by_country, B=2000, seed=0):
+    """Same block bootstrap, on a per-country list of absolute relative errors."""
+    rng = np.random.default_rng(seed)
+    cs = [c for c in vals_by_country if vals_by_country[c]]
+    if len(cs) < 3:
+        return None
+    est = [float(np.mean([v for i in rng.integers(0, len(cs), len(cs)) for v in vals_by_country[cs[i]]]))
+           for _ in range(B)]
+    return [round(float(np.percentile(est, 5)) * 100, 1), round(float(np.percentile(est, 95)) * 100, 1)]
+
+
 def insample_rows(years, vals, members=DEFAULT_MEMBERS):
     """One-step-ahead IN-SAMPLE fit of the (equal-weight) ensemble: each member is
     fit on the full series and produces its in-sample fitted value for year t; we
@@ -123,6 +146,7 @@ for col, label in IND.items():
     allrows = []
     trainrows = []
     per_country = {}
+    rows_by_country = {}
     for c in COUNTRIES:
         crows = []
         _mem = DRIVER_MEMBERS.get(col)
@@ -132,6 +156,7 @@ for col, label in IND.items():
             trainrows += insample_rows(y, v, **({"members": _mem} if _mem else {}))
         if crows:
             per_country[c] = round((1 - mape(crows, "pred")), 3)   # accuracy 0-1
+        rows_by_country[c] = crows
         allrows += crows
     if not allrows:
         continue
@@ -147,6 +172,7 @@ for col, label in IND.items():
         "label": label, "n": len(allrows),
         "accuracy": round(1 - me, 3),                    # 0-1, e.g. 0.97
         "mape_ens": round(me * 100, 2), "mape_naive": round(mn * 100, 2),
+        "mape_ci": block_ci(rows_by_country),     # 90% block-bootstrap CI (country blocks)
         "rmse": round(bt_rmse, 3),
         "bias_pct": round(bias_pct(allrows), 1),
         "skill": round(1 - me / mn, 3) if mn else None,
@@ -182,9 +208,13 @@ ret = pd.read_csv(ROOT / "data" / "retirement_params.csv")
 svc = {(r.country, r.sex): r.required_service_years for r in ret.itertuples()}
 retage_d = {(r.country, r.sex): r.statutory_retirement_age for r in ret.itertuples()}
 sobs = pd.read_csv(OUT / "supply_observed.csv")
+# in-fold Beveridge: refit on data <= each origin (no look-ahead leakage in the vacancy leg)
+bev_by_origin = {o: fit_beveridge(panel[panel.year <= o]) for o in [2020, 2021, 2022, 2023]}
 eS, eD, eB, baseB, eC, eV = [], [], [], [], [], []
 bsS, bsD, bsC, bsV = [], [], [], []   # signed relative error (bias)
 hS, hD, hB, hC, hV = {}, {}, {}, {}, {}   # error by horizon
+eS_c = {c: [] for c in COUNTRIES}     # per-country, for the block-bootstrap CI
+eD_c = {c: [] for c in COUNTRIES}
 for c in COUNTRIES:
     oc = sobs[sobs.country == c].groupby("year").agg(
         S=("supply_realized", "sum"), D=("demand", "sum"), B=("balance_realized", "sum"))
@@ -212,7 +242,7 @@ for c in COUNTRIES:
         # vacancies anchored at the last observed rate <= origin (matches balance_forecast.py)
         _vt = panel[(panel.country == c) & panel.vacancy_rate.notna() & (panel.year <= origin)]
         lvr = float(_vt.sort_values("year")["vacancy_rate"].iloc[-1]) if len(_vt) else 1.0
-        vac = bev.reconstruct_count(np.full(empF.shape, lvr), empF + empM, c)
+        vac = bev_by_origin[origin].reconstruct_count(np.full(empF.shape, lvr), empF + empM, c)
         demF = (empF + vac * empF / den) * svc[(c, "F")]
         demM = (empM + vac * empM / den) * svc[(c, "M")]
         Sp, Dp = supF + supM, demF + demM
@@ -227,8 +257,8 @@ for c in COUNTRIES:
             if y in oc.index:
                 So, Do, Bo = oc.loc[y, "S"], oc.loc[y, "D"], oc.loc[y, "B"]
                 h = int(y - origin)
-                eS.append(abs(Sp[i] - So) / So); bsS.append((Sp[i] - So) / So)
-                eD.append(abs(Dp[i] - Do) / Do); bsD.append((Dp[i] - Do) / Do)
+                eS.append(abs(Sp[i] - So) / So); bsS.append((Sp[i] - So) / So); eS_c[c].append(abs(Sp[i] - So) / So)
+                eD.append(abs(Dp[i] - Do) / Do); bsD.append((Dp[i] - Do) / Do); eD_c[c].append(abs(Dp[i] - Do) / Do)
                 eB.append(abs(Bp[i] - Bo) / 1e6); baseB.append(abs(Bo) / 1e6)
                 hS.setdefault(h, []).append(abs(Sp[i] - So) / So)
                 hD.setdefault(h, []).append(abs(Dp[i] - Do) / Do)
@@ -252,6 +282,7 @@ level_acc = {
     "dividend_bias": round(float(np.mean(bsV)) * 100, 1) if bsV else None,
     "dividend_by_h": {h: round(float(np.mean(v)) * 100, 1) for h, v in sorted(hV.items())},
     "supply_mape": round(mS * 100, 1), "demand_mape": round(mD * 100, 1),
+    "supply_ci": block_ci_vals(eS_c), "demand_ci": block_ci_vals(eD_c),
     "supply_bias": round(float(np.mean(bsS)) * 100, 1),
     "demand_bias": round(float(np.mean(bsD)) * 100, 1),
     "balance_mae_m": round(float(np.mean(eB))),
@@ -320,9 +351,42 @@ vacancy_model_test = {
                       "r2": round(bev.r2, 3), "n": bev.n},
 }
 
+# ---- HLY sensitivity: how much the self-perceived GALI health multiplier moves the headline ----
+# Supply is proportional to healthy_share (= HLY/LE). Removing that multiplier (healthy_share -> 1)
+# bounds how much of the East-surplus / West-shortage split is real demography vs a GALI artifact.
+def _f33(c, s, col):
+    y, v = history(panel, c, s, col)
+    return float(_ensemble_mean(y, v, [2033], weighting="backtest")[0])
+
+WEST, EAST = ["DE", "FR", "CH", "NO"], ["PL", "RO", "CZ", "BG"]
+_s33 = pd.read_csv(OUT / "supply_forecast.csv").query("year == 2033").groupby("country")["supply_realized"].sum() / 1e6
+_d33 = pd.read_csv(OUT / "demand_forecast.csv").query("year == 2033").groupby("country")["demand"].sum() / 1e6
+sup_w, sup_wo, balw, balwo = {}, {}, {}, {}
+for c in COUNTRIES:
+    hs = (sum(_f33(c, s, "healthy_share") * _f33(c, s, "pop_total") for s in ("F", "M"))
+          / sum(_f33(c, s, "pop_total") for s in ("F", "M")))
+    sup_w[c] = float(_s33.get(c, 0.0))
+    sup_wo[c] = sup_w[c] / hs                       # remove the health multiplier
+    balw[c] = sup_w[c] - float(_d33.get(c, 0.0))
+    balwo[c] = sup_wo[c] - float(_d33.get(c, 0.0))
+_sum = lambda d, g=COUNTRIES: round(sum(d[c] for c in g))
+hly_sensitivity = {
+    "supply_with_M": _sum(sup_w), "supply_without_M": _sum(sup_wo),
+    "supply_lift_pct": round((sum(sup_wo.values()) / sum(sup_w.values()) - 1) * 100, 1),
+    "net_with": _sum(balw), "net_without": _sum(balwo),
+    "west_with": _sum(balw, WEST), "west_without": _sum(balwo, WEST),
+    "east_with": _sum(balw, EAST), "east_without": _sum(balwo, EAST),
+}
+
 result = {"metrics": metrics, "show": show, "test_h": TEST_H, "level_acc": level_acc,
-          "vacancy_model_test": vacancy_model_test}
+          "vacancy_model_test": vacancy_model_test, "hly_sensitivity": hly_sensitivity,
+          "beveridge_infold": True}
 (OUT / "validation_metrics.json").write_text(json.dumps(result, indent=1), encoding="utf-8")
+print("\n=== Fixes ===")
+print(f"driver MAPE CIs: " + ", ".join(f"{m['label'].split('(')[0].strip()} {m['mape_ens']}% {m.get('mape_ci')}" for m in metrics.values()))
+print(f"supply MAPE {level_acc['supply_mape']}% CI {level_acc['supply_ci']} | demand {level_acc['demand_mape']}% CI {level_acc['demand_ci']}")
+print(f"HLY sensitivity: supply +{hly_sensitivity['supply_lift_pct']}% if multiplier removed; "
+      f"West {hly_sensitivity['west_with']}→{hly_sensitivity['west_without']}M, East {hly_sensitivity['east_with']}→{hly_sensitivity['east_without']}M")
 
 vo, vn = vacancy_model_test["old_direct_ensemble"], vacancy_model_test["new_beveridge"]
 if vo and vn:
