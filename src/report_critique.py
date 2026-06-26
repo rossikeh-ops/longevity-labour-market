@@ -22,6 +22,10 @@ m, la, hs = V["metrics"], V["level_acc"], V["hly_sensitivity"]
 crps = V["crps"]
 TR = json.loads((OUT / "tree_compare.json").read_text(encoding="utf-8"))
 LO = json.loads((OUT / "beveridge_loco.json").read_text(encoding="utf-8"))
+C4 = json.loads((OUT / "cost_relationship.json").read_text(encoding="utf-8"))
+C5 = json.loads((OUT / "dividend_relationship.json").read_text(encoding="utf-8"))
+C6 = json.loads((OUT / "macro_relationship.json").read_text(encoding="utf-8"))
+BEV_R2 = V["vacancy_model_test"]["beveridge_fit"]["r2"]
 
 
 def H(en, bg, tag="p", cls=None):
@@ -144,6 +148,31 @@ loco_rows = "".join(
                       ("loco", "Leave-one-country-out (other 7)", "Изключена държава (другите 7)"),
                       ("own", "Own country only", "Само собствената държава"),
                       ("naive", "Naïve (flat rate)", "Наивен (плосък коеф.)")])
+
+# ---------- explanatory power: cross-country vs within-country R² ----------
+_c6r2 = C6["cross_corr"] ** 2
+
+
+def _prow(en, bg, cross, within, ven, vbg):
+    return (f'<tr><td>{T(en, bg)}</td><td class="num" style="color:var(--mut)">{cross}</td>'
+            f'<td class="num swing dn">{within}</td>'
+            f'<td style="font-size:13px;color:#44403C">{T(ven, vbg)}</td></tr>')
+
+
+power_rows = (
+    _prow("L4 · burden → health spend", "Н4 · тежест → разходи за здраве",
+          f"{C4['r2_levels_fe']:.2f}", f"{C4['r2_within_diff']:.3f}",
+          "size &amp; trend, not a real effect", "размер и тренд, не реален ефект")
+    + _prow("L5 · dividend → leisure/edu", "Н5 · дивидент → свободно/образование",
+            f"{C5['r2_levels_fe']:.2f}", f"{C5['r2_within_diff']:.3f}",
+            "size &amp; trend, not a real effect", "размер и тренд, не реален ефект")
+    + _prow("L6 · health share → productivity", "Н6 · здравен дял → производителност",
+            f"{_c6r2:.2f}", f"{C6['within_r2']:.3f}",
+            f"r = {C6['cross_corr']:+.2f} — <b>wrong sign</b> (GALI)", f"r = {C6['cross_corr']:+.2f} — <b>грешен знак</b> (GALI)")
+    + f'<tr class="sep"><td>{T("Beveridge vacancy model (a genuine fit)", "Модел на Бевъридж (същински фит)")}</td>'
+      f'<td class="num" style="color:var(--mut)">—</td><td class="num swing up">{BEV_R2:.2f}</td>'
+      f'<td style="font-size:13px;color:#44403C">{T("the one relationship with real explanatory power", "единствената връзка с реална обяснителна сила")}</td></tr>'
+)
 
 CSS = """
 :root{--bg:#FAFAF9;--card:#FFFFFF;--ink:#292524;--mut:#78716C;--line:#E7E5E4;
@@ -343,6 +372,30 @@ HTML = f"""<!doctype html><html lang="bg" data-lang="bg"><head><meta charset="ut
    f"най-лош резултат). Честната уговорка е последният ред: дори добре обединеният наклон ({_LOMP['pooled']}%) едва "
    f"изостава от <b>наивния ({_LOMP['naive']}%)</b> — свободните места са близо до случаен ход, затова моделът на Бевъридж "
    f"заслужава мястото си с това, че е <i>стабилен и сценариен</i>, а не като побеждава устойчивостта.")}</div>
+
+<h2>{T("Explanatory power — cross-country vs within-country", "Обяснителна сила — между държави срещу вътре в държава")}</h2>
+{H("The coefficient of determination (R²) tells two opposite stories depending on how you slice the data — and the gap "
+   "between them is the single most important honesty check on Levels 4–6.",
+   "Коефициентът на детерминация (R²) разказва две противоположни истории според това как срязваш данните — и разликата "
+   "между тях е най-важната проверка за честност на Нива 4–6.", cls="sub")}
+<table><thead><tr><th>{T("Relationship", "Връзка")}</th>
+<th class="num">{T("Cross-country R²", "R² между държави")}</th>
+<th class="num">{T("Within-country R²", "R² вътре в държава")}</th>
+<th>{T("What it means", "Какво значи")}</th></tr></thead><tbody>{power_rows}</tbody></table>
+{H(f"The contrast is the whole point. The impressive cross-country R² (<b>{C4['r2_levels_fe']:.2f}–{C5['r2_levels_fe']:.2f}</b>, "
+   f"and r = {C6['cross_corr']:+.2f} for Level 6) is <b>pure country size and shared trend</b>; difference within a country "
+   f"and it collapses to <b>≈ 0</b> ({C4['r2_within_diff']:.3f}, {C5['r2_within_diff']:.3f}, {C6['within_r2']:.3f}) — longevity "
+   f"does <b>not</b> drive spending within a country, and Level 6’s cross-country correlation even has the <b>wrong sign</b> "
+   f"(a self-reported-health artifact). Only the Beveridge vacancy model carries genuine explanatory power "
+   f"(R² <b>{BEV_R2:.2f}</b>). This is exactly why Levels 4–6 are reported <b>descriptively</b> — and why the forecasting "
+   f"levels (1–3) use MAPE / skill / coverage / CRPS instead of R², which is trivially high for any trending series.",
+   f"Контрастът е целият смисъл. Внушителното R² между държави (<b>{C4['r2_levels_fe']:.2f}–{C5['r2_levels_fe']:.2f}</b>, "
+   f"и r = {C6['cross_corr']:+.2f} за Ниво 6) е <b>чист размер на държавата и общ тренд</b>; диференцирай вътре в държава "
+   f"и то се срива до <b>≈ 0</b> ({C4['r2_within_diff']:.3f}, {C5['r2_within_diff']:.3f}, {C6['within_r2']:.3f}) — "
+   f"дълголетието <b>не</b> движи разходите вътре в държава, а междудържавната корелация на Ниво 6 дори е с <b>грешен "
+   f"знак</b> (артефакт на самооценено здраве). Само моделът на Бевъридж носи реална обяснителна сила (R² <b>{BEV_R2:.2f}</b>). "
+   f"Точно затова Нива 4–6 се отчитат <b>описателно</b> — и затова прогнозните нива (1–3) ползват MAPE / умение / покритие / "
+   f"CRPS вместо R², което е тривиално високо за всеки трендов ред.")}
 
 <h2>{T("Limits we cannot engineer away", "Граници, които не можем да премахнем")}</h2>
 <ul>
