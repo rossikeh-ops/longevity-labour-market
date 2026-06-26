@@ -49,6 +49,23 @@ for i, r in enumerate(rows):
         svg.append(f'<text x="{x21+9:.0f}" y="{y:.0f}" font-size="10.5" fill="{col}" dominant-baseline="middle">{r["d21"]:+.0f}%</text>')
 CHART = f'<svg viewBox="0 0 {W} {len(rows)*rh+24}" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">{"".join(svg)}</svg>'
 
+# ---- AI adoption by enterprises (% using any AI), the slow structural force ----
+ai = pd.read_csv(sorted((ROOT / "data" / "raw").glob("ai_adoption_enterprises__*.csv"))[-1])
+ai = ai[ai.indic_is == "E_AI_TANY"]
+AI_Y = int(ai.year.max())
+ai = ai[ai.year == AI_Y].sort_values("value", ascending=False)
+airows = [(r.country, float(r.value)) for r in ai.itertuples()]
+AW, arh, AL = 720, 32, 130
+amax = max(v for _, v in airows) * 1.2
+AX = lambda v: AL + v / amax * (AW - AL - 56)
+asvg = []
+for i, (c, v) in enumerate(airows):
+    y = i * arh + arh / 2 + 2
+    asvg.append(f'<text x="14" y="{y:.0f}" font-size="12.5" fill="#292524" dominant-baseline="middle">{NAME[c]}</text>')
+    asvg.append(f'<rect x="{AL}" y="{i*arh+8}" width="{AX(v)-AL:.0f}" height="16" rx="3" fill="#166534" opacity="0.85"/>')
+    asvg.append(f'<text x="{AX(v)+7:.0f}" y="{y:.0f}" font-size="11.5" fill="#166534" dominant-baseline="middle">{v:.0f}%</text>')
+AICHART = f'<svg viewBox="0 0 {AW} {len(airows)*arh+8}" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">{"".join(asvg)}</svg>'
+
 CSS = """
 :root{--bg:#FAFAF9;--card:#FFFFFF;--ink:#292524;--mut:#78716C;--line:#E7E5E4;--acc:#166534;--up:#15803D;--down:#B91C1C;--warn:#D97706;}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);
@@ -57,7 +74,7 @@ font:16px/1.62 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:
 .home{color:var(--mut);text-decoration:none;font-size:13px}.home:hover{color:var(--acc)}
 h1{font-size:27px;margin:6px 0 4px}h2{font-size:20px;margin:32px 0 12px;border-bottom:1px solid var(--line);padding-bottom:6px}
 .sub{color:var(--mut);margin:0 0 8px;max-width:840px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:14px 0}
 .shape{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:12px;padding:16px 18px}
 .shape h3{margin:0 0 5px;font-size:16px;color:var(--c)}.shape p{margin:0;color:var(--mut);font-size:14px}
 .fig{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:14px 0}
@@ -84,15 +101,15 @@ HTML = f"""<!doctype html><html lang="bg" data-lang="bg"><head><meta charset="ut
 <title>Wars &amp; pandemics — shocks to the labour market</title>
 <style>{CSS}{lang_css()}</style></head><body>{lang_toggle()}<div class="wrap">
 <a class="home" href="../index.html"><span lang="en">← Overview</span><span lang="bg">← Обзор</span></a>
-<h1><span lang="en">Wars &amp; pandemics — how shocks hit the labour market</span><span lang="bg">Войни и пандемии — как сътресенията удрят пазара на труда</span></h1>
-{H("Two of the biggest forces that move a labour market are sudden, not slow. Our panel already spans the "
-   "<b>COVID-19 shock</b>, so we can measure it directly; for wars, the live case is the war in Ukraine. Here is "
-   "what each does — and why it shapes our 2033 forecast.",
-   "Две от най-големите сили, които движат пазара на труда, са внезапни, не бавни. Нашият панел вече обхваща "
-   "<b>шока COVID-19</b>, затова можем да го измерим директно; за войните живият пример е войната в Украйна. Ето "
-   "какво прави всяка от тях — и защо оформя прогнозата ни за 2033 г.", cls="sub")}
+<h1><span lang="en">Wars, pandemics &amp; AI — forces on the labour market</span><span lang="bg">Войни, пандемии и ИИ — сили върху пазара на труда</span></h1>
+{H("Three of the biggest forces that move a labour market sit outside the slow demographics our model forecasts. Our "
+   "panel already spans the <b>COVID-19 shock</b>, so we measure it directly; for wars, the live case is Ukraine; and "
+   "<b>AI</b> is the slow, structural force now reshaping labour demand. Here is what each does — and why it shapes our 2033 forecast.",
+   "Три от най-големите сили, които движат пазара на труда, са извън бавната демография, която моделът ни прогнозира. "
+   "Нашият панел вече обхваща <b>шока COVID-19</b>, затова го измерваме директно; за войните живият пример е Украйна; а "
+   "<b>ИИ</b> е бавната, структурна сила, която сега преоформя търсенето на труд. Ето какво прави всяка — и защо оформя прогнозата ни за 2033 г.", cls="sub")}
 
-<h2><span lang="en">Two different shock shapes</span><span lang="bg">Две различни форми на сътресение</span></h2>
+<h2><span lang="en">Three different shock shapes</span><span lang="bg">Три различни форми на сътресение</span></h2>
 <div class="grid2">
 <div class="shape" style="--c:var(--warn)">{H("Pandemic — sharp but transitory", "Пандемия — рязка, но преходна", "h3")}
 {H("A broad demand collapse plus a health hit, heavily cushioned by furlough schemes. Tends to be <b>V-shaped</b>: a quick fall, then a quick rebound.",
@@ -100,6 +117,9 @@ HTML = f"""<!doctype html><html lang="bg" data-lang="bg"><head><meta charset="ut
 <div class="shape" style="--c:var(--down)">{H("War — structural and persistent", "Война — структурна и трайна", "h3")}
 {H("Labour-supply <b>destruction</b> in the warring country (mobilisation, casualties, displacement), but a supply <b>boost</b> (refugees) and demand shocks (energy, defence) in the countries around it.",
    "<b>Унищожаване</b> на предлагането на труд във воюващата страна (мобилизация, жертви, разселване), но <b>увеличение</b> на предлагането (бежанци) и шокове в търсенето (енергия, отбрана) в съседните държави.")}</div>
+<div class="shape" style="--c:var(--acc)">{H("AI — slow but structural", "ИИ — бавна, но структурна", "h3")}
+{H("Not a sudden shock but a <b>gradual reshaping of demand</b>: automating some tasks, augmenting others, and shifting hiring toward AI and digital skills. No V-shape — a slow tilt, very uneven across countries.",
+   "Не внезапен шок, а <b>постепенно преоформяне на търсенето</b>: автоматизира едни задачи, подсилва други и измества наемането към ИИ и дигитални умения. Без V-форма — бавен наклон, много неравномерен между държавите.")}</div>
 </div>
 
 <h2><span lang="en">The pandemic — what our data shows</span><span lang="bg">Пандемията — какво показват данните ни</span></h2>
@@ -134,22 +154,49 @@ HTML = f"""<!doctype html><html lang="bg" data-lang="bg"><head><meta charset="ut
    "пазари. Други канали: ценови шок при енергията (удрящ най-силно енергоемката индустрия на Германия) и тласък в "
    "търсенето от разходи за отбрана.")}
 
+<h2><span lang="en">AI — the slow, structural force</span><span lang="bg">ИИ — бавната, структурна сила</span></h2>
+{H(f"Unlike a war or a pandemic, AI is not a sudden shock — it is a <b>gradual reshaping of labour demand</b>: it "
+   f"automates routine tasks, augments others, and tilts hiring toward AI and digital skills. As of {AI_Y}, the share "
+   f"of enterprises (10+ employees) using any AI technology runs from <b>~29% in Norway and ~26% in Germany</b> down to "
+   f"<b>~5–9% in Romania, Poland and Bulgaria</b> — the same West/Nordic-leads, East-lags gradient we see across this "
+   f"study. The demand for the workforce that builds it is large too: ICT specialists range from ~140k in Bulgaria to "
+   f"~2.3 million in Germany, and AI-specific job postings reach ~2.9% of all postings in Poland.",
+   f"За разлика от война или пандемия, ИИ не е внезапен шок — той е <b>постепенно преоформяне на търсенето на труд</b>: "
+   f"автоматизира рутинни задачи, подсилва други и измества наемането към ИИ и дигитални умения. Към {AI_Y} г. делът на "
+   f"предприятията (10+ заети), използващи някаква ИИ технология, е от <b>~29% в Норвегия и ~26% в Германия</b> до "
+   f"<b>~5–9% в Румъния, Полша и България</b> — същият градиент Запад/Север води, Изток изостава, който виждаме в цялото "
+   f"изследване. Търсенето на работната сила, която го изгражда, също е голямо: ИКТ специалистите варират от ~140 хил. в "
+   f"България до ~2.3 милиона в Германия, а обявите за ИИ работа достигат ~2.9% от всички в Полша.")}
+<div class="lgd"><span><span class="sw" style="background:#166534"></span><span lang="en">Enterprises (10+) using any AI technology, {AI_Y}</span><span lang="bg">Предприятия (10+), използващи ИИ технология, {AI_Y} г.</span></span></div>
+<div class="fig">{AICHART}
+{H(f"<b>AI adoption by enterprises, {AI_Y}.</b> Switzerland is absent from this EU survey. The honest caveat: whether AI "
+   f"is net job-destroying or job-creating is <b>genuinely uncertain</b> — displacement and augmentation run at once, so "
+   f"we treat it as a structural risk, not a forecast.",
+   f"<b>Внедряване на ИИ от предприятията, {AI_Y} г.</b> Швейцария липсва в това проучване на ЕС. Честната уговорка: дали "
+   f"ИИ нетно унищожава или създава работни места е <b>наистина несигурно</b> — изместването и подсилването вървят "
+   f"едновременно, затова го третираме като структурен риск, не като прогноза.", cls="cap")}</div>
+
 <h2><span lang="en">The mechanisms, side by side</span><span lang="bg">Механизмите, един до друг</span></h2>
 <table><thead><tr><th><span lang="en">Channel</span><span lang="bg">Канал</span></th>
 <th><span lang="en">Pandemic</span><span lang="bg">Пандемия</span></th>
-<th><span lang="en">War</span><span lang="bg">Война</span></th></tr></thead><tbody>
+<th><span lang="en">War</span><span lang="bg">Война</span></th>
+<th><span lang="en">AI</span><span lang="bg">ИИ</span></th></tr></thead><tbody>
 <tr><td><b><span lang="en">Supply</span><span lang="bg">Предлагане</span></b></td>
 <td><span lang="en">illness; some leave for childcare</span><span lang="bg">болест; някои напускат заради грижи за деца</span></td>
-<td><span lang="en">mobilisation &amp; casualties; <b>out</b>-migration (warring) and <b>in</b>-migration (receivers)</span><span lang="bg">мобилизация и жертви; <b>изходяща</b> миграция (воюваща) и <b>входяща</b> (приемащи)</span></td></tr>
+<td><span lang="en">mobilisation &amp; casualties; <b>out</b>-migration (warring) and <b>in</b>-migration (receivers)</span><span lang="bg">мобилизация и жертви; <b>изходяща</b> миграция (воюваща) и <b>входяща</b> (приемащи)</span></td>
+<td><span lang="en">skills shift — demand for AI/digital skills, some routine roles obsolete</span><span lang="bg">промяна в уменията — търсене на ИИ/дигитални умения, някои рутинни роли остаряват</span></td></tr>
 <tr><td><b><span lang="en">Demand</span><span lang="bg">Търсене</span></b></td>
 <td><span lang="en">contact-sector collapse (lockdowns)</span><span lang="bg">срив в контактните сектори (локдауни)</span></td>
-<td><span lang="en">defence &amp; reconstruction up; energy/supply-chain hit</span><span lang="bg">отбрана и възстановяване нагоре; удар по енергия/вериги</span></td></tr>
+<td><span lang="en">defence &amp; reconstruction up; energy/supply-chain hit</span><span lang="bg">отбрана и възстановяване нагоре; удар по енергия/вериги</span></td>
+<td><span lang="en">automates routine tasks, augments others — net effect <b>uncertain</b></span><span lang="bg">автоматизира рутинни задачи, подсилва други — нетен ефект <b>несигурен</b></span></td></tr>
 <tr><td><b><span lang="en">Policy cushion</span><span lang="bg">Политическа възглавница</span></b></td>
 <td><span lang="en">furlough / short-time work</span><span lang="bg">запазване на заетостта / непълно работно време</span></td>
-<td><span lang="en">temporary protection + fast labour access</span><span lang="bg">временна закрила + бърз достъп до труд</span></td></tr>
+<td><span lang="en">temporary protection + fast labour access</span><span lang="bg">временна закрила + бърз достъп до труд</span></td>
+<td><span lang="en">re-skilling, education, AI regulation</span><span lang="bg">преквалификация, образование, регулация на ИИ</span></td></tr>
 <tr><td><b><span lang="en">Persistence</span><span lang="bg">Трайност</span></b></td>
 <td><span lang="en"><b>transitory</b> — V-shape</span><span lang="bg"><b>преходна</b> — V-образна</span></td>
-<td><span lang="en"><b>structural</b> — migration, capital destruction</span><span lang="bg"><b>структурна</b> — миграция, унищожен капитал</span></td></tr>
+<td><span lang="en"><b>structural</b> — migration, capital destruction</span><span lang="bg"><b>структурна</b> — миграция, унищожен капитал</span></td>
+<td><span lang="en"><b>structural</b>, ongoing — a slow tilt, not a shock</span><span lang="bg"><b>структурна</b>, продължаваща — бавен наклон, не шок</span></td></tr>
 </tbody></table>
 
 <h2><span lang="en">Why this matters for the 2033 forecast</span><span lang="bg">Защо това е важно за прогнозата за 2033</span></h2>
@@ -173,7 +220,8 @@ HTML = f"""<!doctype html><html lang="bg" data-lang="bg"><head><meta charset="ut
 <p class="foot" lang="en">Sources: own panel (Eurostat <code>jvs_q_r21</code>, <code>une_rt_a</code>, <code>lfsa_egan</code>) for COVID;
 <a href="https://doku.iab.de/forschungsbericht/2024/fb1624en.pdf">IAB 2024</a>,
 <a href="https://cepr.org/voxeu/columns/ukrainian-refugee-labour-market-access-shows-no-impact-local-employment-outcomes">CEPR/Czechia</a> and
-<a href="https://pie.net.pl/en/65-ukrainian-refugees-work-but-face-many-challenges-in-the-polish-labour-market/">PIE</a> for the Ukraine refugee figures.</p>
+<a href="https://pie.net.pl/en/65-ukrainian-refugees-work-but-face-many-challenges-in-the-polish-labour-market/">PIE</a> for the Ukraine refugee figures;
+Eurostat <code>isoc_eb_ain2</code> (AI adoption), <code>isoc_sks_itsps</code> (ICT specialists) and OECD.AI / Lightcast (AI job postings) for AI.</p>
 <p class="foot" lang="bg">Източници: собствен панел (Eurostat <code>jvs_q_r21</code>, <code>une_rt_a</code>, <code>lfsa_egan</code>) за COVID;
 <a href="https://doku.iab.de/forschungsbericht/2024/fb1624en.pdf">IAB 2024</a>,
 <a href="https://cepr.org/voxeu/columns/ukrainian-refugee-labour-market-access-shows-no-impact-local-employment-outcomes">CEPR/Чехия</a> и
