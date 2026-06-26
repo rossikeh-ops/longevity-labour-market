@@ -1,0 +1,14 @@
+<svg viewBox="0 0 250 60" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" role="img" aria-label="Primus">
+  <!-- monogram tile -->
+  <rect x="6" y="8" width="44" height="44" rx="12" fill="#166534"/>
+  <!-- white P, drawn as strokes (font-independent) -->
+  <g fill="none" stroke="#FFFFFF" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 18 V42"/>
+    <path d="M21 18 H30 a7 7 0 0 1 0 14 H21"/>
+  </g>
+  <!-- mustard data point: 'first / the forecast endpoint' -->
+  <circle cx="40.5" cy="16.5" r="3" fill="#D97706"/>
+  <!-- wordmark -->
+  <text x="62" y="33" font-size="25" font-weight="800" letter-spacing="2.4" fill="#292524">PRIMUS</text>
+  <text x="63" y="47" font-size="8.5" font-weight="600" letter-spacing="2.2" fill="#78716C">PERSON-YEAR FORECASTS</text>
+</svg>

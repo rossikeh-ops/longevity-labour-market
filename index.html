@@ -1,6 +1,7 @@
 <!doctype html><html lang="bg" data-lang="bg"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Longevity & the Labour Market — Person-Year Engine</title>
+<link rel="icon" type="image/svg+xml" href="outputs/logo_primus_mark.svg">
 <style>
 :root{--bg:#FAFAF9;--card:#FFFFFF;--ink:#292524;--mut:#78716C;--line:#E7E5E4;
 --acc:#166534;--ok:#15803D;--warn:#D97706;}
@@ -55,6 +56,12 @@ th{color:var(--mut);font-weight:600}.done{color:var(--ok)}.prog{color:var(--warn
 .note{color:var(--mut);font-size:14px;background:var(--card);border:1px solid var(--line);
 border-radius:10px;padding:16px;margin-top:12px}code{color:var(--acc)}
 a{color:var(--acc)}.foot{color:var(--mut);font-size:13px;margin-top:30px}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20px}
+.brand img{height:46px;display:block}
+.brand .team{color:var(--mut);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px}
+.madeby{display:flex;align-items:center;gap:9px;color:var(--mut);font-size:13px;margin-top:8px}
+.madeby img{height:24px;display:block}
 .qr{display:flex;align-items:center;gap:16px;margin-top:30px;flex-wrap:wrap}
 .qr img{width:118px;height:118px;border:1px solid var(--line);border-radius:10px;padding:6px;background:#fff}
 .qr .qrt{font-weight:650;font-size:14px;margin-bottom:4px;color:var(--ink)}
@@ -67,6 +74,11 @@ border-radius:20px;padding:7px 15px;cursor:pointer;font:700 13px/1 inherit;color
 </style></head><body>
 <button class="langtoggle" id="langtoggle" aria-label="switch language">БГ</button>
 <div class="wrap">
+
+<div class="brand">
+<img src="outputs/logo_primus.svg" alt="Primus — team logo">
+<span class="team"><span lang="en">our team</span><span lang="bg">нашият екип</span></span>
+</div>
 
 <h1><span lang="en">Longevity &amp; the Labour Market</span><span lang="bg">Дълголетие и пазарът на труда</span></h1>
 <p class="tag" lang="en">A person-year engine: converting demographic averages into human-working-years,
@@ -231,6 +243,7 @@ see <a href="https://github.com/rossikeh-ops/longevity-labour-market">the reposi
 <p class="foot" lang="bg">Възпроизводим поток в <code>src/</code> · данни в <code>data/</code> ·
 вижте <a href="https://github.com/rossikeh-ops/longevity-labour-market">хранилището</a> и
 <code>docs/</code> за допускания и дефиниции.</p>
+<div class="madeby"><img src="outputs/logo_primus_mark.svg" alt="Primus"><span><span lang="en">Built by <b style="color:var(--ink)">team Primus</b></span><span lang="bg">Създадено от <b style="color:var(--ink)">екип Primus</b></span></span></div>
 
 </div>
 <script>
