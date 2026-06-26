@@ -120,6 +120,10 @@ pairs (15 → 3), so a long-horizon specialist is estimated from almost nothing 
 The single ensemble pools the full history and stays close to the naive floor (the best achievable on these
 near-random-walk drivers). One horizon-aware ensemble is the more accurate <i>and</i> more honest choice.
 (See the <a href="model_validation_report.html">Model trust</a> report for the full error-by-horizon.)</p>
+<p><b>See it for yourself.</b> The <a href="flexibility.html">model-flexibility playground</a> lets you drag one
+slider from underfit to overfit on a real Healthy-Life-Years series, with the cross-validated optimum — and the
+classic train-error-falls / CV-error-U-shape tradeoff — computed live. It is the same lesson, made tactile:
+on 13–21 years of data, the sweet spot is a modest flexibility, and a neural network would sit far into the overfit zone.</p>
 
 <h2><span class="hnum" style="background:#D97706">2</span>Building labour demand</h2>
 <p>From the forecast components we build demand using the formula from the case brief. Population is
