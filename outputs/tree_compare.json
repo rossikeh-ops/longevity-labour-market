@@ -1,0 +1,58 @@
+{
+ "level4": {
+  "n": 149,
+  "countries": 8,
+  "feats": [
+   "burden",
+   "gdp",
+   "pop65",
+   "pop"
+  ],
+  "target": "health",
+  "linear": {
+   "r2_oos": -0.211,
+   "rmse": 0.0805
+  },
+  "tree_d3": {
+   "r2_oos": -0.147,
+   "rmse": 0.0784
+  },
+  "gboost": {
+   "r2_oos": -0.007,
+   "rmse": 0.0734
+  },
+  "linear_no_burden": {
+   "r2_oos": -0.082
+  },
+  "label": "Level 4 \u2014 poor-health burden -> health spending"
+ },
+ "level5": {
+  "n": 81,
+  "countries": 8,
+  "feats": [
+   "dividend",
+   "gdp",
+   "pop",
+   "emp"
+  ],
+  "target": "leisure",
+  "linear": {
+   "r2_oos": 0.001,
+   "rmse": 0.0744
+  },
+  "tree_d3": {
+   "r2_oos": -0.107,
+   "rmse": 0.0783
+  },
+  "gboost": {
+   "r2_oos": -0.515,
+   "rmse": 0.0916
+  },
+  "linear_no_dividend": {
+   "r2_oos": 0.006
+  },
+  "label": "Level 5 \u2014 healthy-retirement dividend -> leisure/education/culture spending"
+ },
+ "cv": "leave-one-country-out",
+ "framing": "within-country YoY growth"
+}

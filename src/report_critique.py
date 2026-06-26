@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "outputs"
 V = json.loads((OUT / "validation_metrics.json").read_text(encoding="utf-8"))
 m, la, hs = V["metrics"], V["level_acc"], V["hly_sensitivity"]
+TR = json.loads((OUT / "tree_compare.json").read_text(encoding="utf-8"))
 
 
 def H(en, bg, tag="p", cls=None):
@@ -115,6 +116,22 @@ ci_rows += (
     f'<tr><td>{T("Demand (composed)", "Търсене (съставено)")}</td>'
     f'<td class="num">{la["demand_mape"]}%</td><td class="num ciband">{ci(la.get("demand_ci"))}</td></tr>'
 )
+
+# ---------- regression-tree head-to-head table ----------
+_l4, _l5 = TR["level4"], TR["level5"]
+
+
+def _r2(o, k):
+    v = o[k]["r2_oos"]
+    cls = "up" if v > 0.02 else "dn"
+    return f'<td class="num swing {cls}">{v:+.2f}</td>'
+
+
+tree_rows = "".join(
+    f'<tr><td>{T(en, bg)}</td>{_r2(_l4, k)}{_r2(_l5, k)}</tr>'
+    for k, en, bg in [("linear", "Linear elasticity", "Линейна еластичност"),
+                      ("tree_d3", "Regression tree (depth 3)", "Регресионно дърво (дълб. 3)"),
+                      ("gboost", "Gradient boosting", "Градиентно усилване")])
 
 CSS = """
 :root{--bg:#FAFAF9;--card:#FFFFFF;--ink:#292524;--mut:#78716C;--line:#E7E5E4;
@@ -246,6 +263,33 @@ HTML = f"""<!doctype html><html lang="bg" data-lang="bg"><head><meta charset="ut
    "предлагане/търсене, където добавянето ѝ би <i>стеснило</i> лентата на баланса. Затова текущото теглене е консервативно; "
    "налагане на произволна корелация би направило лентите фалшиво тесни.")}</div>
 
+<div class="fix"><span class="badge null">{T("tested — no improvement", "проверено — без подобрение")}</span>
+{H("5 · A regression tree on the descriptive levels (4–5)", "5 · Регресионно дърво върху описателните нива (4–5)", "h3")}
+{H("Could a flexible learner find a nonlinearity the linear elasticity misses? We ran a leave-one-country-out backtest "
+   "of the within-country growth relationships — poor-health burden → health spending (Level 4) and the healthy-retirement "
+   "dividend → leisure/education/culture spending (Level 5) — pitting the linear model against a depth-3 regression tree "
+   "and gradient boosting. Out-of-sample R² (higher is better; below zero means worse than guessing the mean):",
+   "Може ли гъвкав модел да открие нелинейност, която линейната еластичност пропуска? Пуснахме бектест с изключване на "
+   "по една държава върху вътрешнодържавните връзки на растежа — тежест от лошо здраве → разходи за здраве (Ниво 4) и "
+   "дивидент от здраво пенсиониране → разходи за свободно време/образование/култура (Ниво 5) — изправяйки линейния модел "
+   "срещу регресионно дърво (дълбочина 3) и градиентно усилване. Out-of-sample R² (по-високо е по-добро; под нулата "
+   "значи по-зле от налучкване на средната):")}
+<table><thead><tr><th>{T("Model", "Модел")}</th>
+<th class="num">{T("L4 burden→health", "Н4 тежест→здраве")}</th>
+<th class="num">{T("L5 dividend→leisure", "Н5 дивидент→свободно")}</th></tr></thead><tbody>{tree_rows}</tbody></table>
+{H(f"Nobody wins — every R² is ≈ 0 or negative, so there is <b>no generalisable signal</b> to capture. The flexible "
+   f"models overfit exactly as expected (gradient boosting collapses to <b>{_l5['gboost']['r2_oos']:+.2f}</b> on Level 5), "
+   f"and dropping the longevity feature leaves the line the <i>same or better</i> (Level 4: "
+   f"<b>{_l4['linear_no_burden']['r2_oos']:+.2f}</b> without the burden vs {_l4['linear']['r2_oos']:+.2f} with). A tree "
+   f"finds no nonlinearity the line misses — confirming, with a flexible model, that Levels 4–5 are descriptive with a "
+   f"within-country effect of <b>≈ 0</b>.",
+   f"Никой не печели — всяко R² е ≈ 0 или отрицателно, тоест <b>няма обобщаем сигнал</b> за улавяне. Гъвкавите модели "
+   f"пренапасват точно както се очаква (градиентното усилване се срива до <b>{_l5['gboost']['r2_oos']:+.2f}</b> на Ниво 5), "
+   f"а премахването на дълголетийния признак оставя линията <i>същата или по-добра</i> (Ниво 4: "
+   f"<b>{_l4['linear_no_burden']['r2_oos']:+.2f}</b> без тежестта срещу {_l4['linear']['r2_oos']:+.2f} с нея). Дървото не "
+   f"намира нелинейност, която линията пропуска — потвърждавайки с гъвкав модел, че Нива 4–5 са описателни с "
+   f"вътрешнодържавен ефект <b>≈ 0</b>.")}</div>
+
 <h2>{T("Limits we cannot engineer away", "Граници, които не можем да премахнем")}</h2>
 <ul>
 <li>{T("<b>13 annual points.</b> Damped-Holt and AR(1) are barely identified on so few observations; the ensemble’s "
@@ -282,5 +326,5 @@ HTML = f"""<!doctype html><html lang="bg" data-lang="bg"><head><meta charset="ut
 </div></body></html>"""
 
 (OUT / "critique.html").write_text(HTML, encoding="utf-8")
-print(f"wrote outputs/critique.html  (8 issues, 4 fixes; supply CI {la.get('supply_ci')}, "
+print(f"wrote outputs/critique.html  (8 issues, 5 fixes; supply CI {la.get('supply_ci')}, "
       f"HLY split {hs['west_with']}->{hs['west_without']} / {hs['east_with']}->{hs['east_without']})")
