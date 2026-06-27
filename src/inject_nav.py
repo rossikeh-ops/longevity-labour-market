@@ -118,7 +118,6 @@ def nav_block(root_pre, out_pre):
   <button class="pn-lang" id="pn-lang" aria-label="switch language">БГ</button>
  </div>
  <div class="pn-r2">
-  <span class="pn-burger">☰</span>
   <a class="pn-link" href="{home}"><span lang="en">Home</span><span lang="bg">Начало</span></a>
   {links}
  </div>
