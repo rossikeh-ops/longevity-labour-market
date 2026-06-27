@@ -17,25 +17,25 @@ from pathlib import Path
 ROOTDIR = Path(__file__).resolve().parents[1]
 OUTDIR = ROOTDIR / "outputs"
 
-# pages offered in the search box and the links row (file, en, bg)
+# links row — in the PRESENTATION running order (the 10-stop talk track), file, en, bg
 LINKS = [
-    ("introduction.html", "Introduction", "Въведение"),
-    ("level1.html", "Supply", "Предлагане"),
-    ("level2.html", "Demand", "Търсене"),
-    ("level3.html", "Balance", "Баланс"),
-    ("whatif.html", "What-if", "Какво-ако"),
-    ("methodology_report.html", "Methodology", "Методология"),
-    ("critique.html", "Trust &amp; critique", "Доверие и критика"),
-    ("script.html", "Run-sheet", "Сценарий"),
+    ("introduction.html", "Introduction", "Въведение"),       # 1
+    ("level1.html", "Supply", "Предлагане"),                   # 2
+    ("level2.html", "Demand", "Търсене"),                      # 3
+    ("level3.html", "Balance", "Баланс"),                      # 4
+    ("level4.html", "Open horizons", "Хоризонти"),             # 5
+    ("implications.html", "Implications", "Последици"),        # 6
+    ("methodology_report.html", "Methodology", "Методология"), # 7
+    ("playground.html", "Playground", "Лаборатория"),          # 8
+    ("critique.html", "Trust", "Доверие"),                     # 9
+    ("whatif.html", "What-if", "Какво-ако"),                   # 10
+    ("script.html", "Run-sheet", "Сценарий"),                  # the spoken script
 ]
-# fuller list for the search index
+# fuller list for the search index (LINKS + pages not on the menu row)
 SEARCH = LINKS + [
-    ("level4.html", "Cost (L4)", "Цена (Н4)"),
     ("level5.html", "Dividend (L5)", "Дивидент (Н5)"),
     ("level6.html", "Macroeconomy (L6)", "Макроикономика (Н6)"),
     ("model_validation_report.html", "Model trust", "Доверие в модела"),
-    ("playground.html", "Model playground", "Лаборатория"),
-    ("implications.html", "Implications &amp; shocks", "Последици и сътресения"),
     ("kpis.html", "KPIs", "КПИ"),
     ("flexibility.html", "Flexibility", "Гъвкавост"),
 ]
