@@ -52,7 +52,7 @@ html[data-lang='bg'] .pn-wrap [lang='en']{display:none!important}
 @media(min-width:760px){.pn-scope{display:flex}}
 .pn-search{flex:1;display:flex;min-width:120px;max-width:760px;margin:0 6px;position:relative}
 .pn-search select{border:none;background:#e7e5e4;color:#292524;border-radius:8px 0 0 8px;padding:0 8px;font:inherit;cursor:pointer}
-.pn-search input{flex:1;border:none;padding:9px 12px;font:inherit;min-width:60px}
+.pn-search input{flex:1;border:none;padding:9px 12px;font:inherit;min-width:60px;border-radius:8px 0 0 8px}
 .pn-search button{border:none;background:#D97706;color:#26221f;padding:0 16px;border-radius:0 8px 8px 0;cursor:pointer;font-size:17px}
 .pn-search button:hover{background:#ea8a16}
 .pn-sug{position:absolute;top:42px;left:0;right:0;background:#fff;color:#292524;border:1px solid #E7E5E4;border-radius:10px;
@@ -71,7 +71,6 @@ cursor:pointer;font:700 13px/1 inherit}.pn-lang:hover{border-color:#D97706}
   <a class="pn-logo" href="../index.html"><img src="logo_primus_mark.svg" alt="Primus"><b>PRIMUS</b></a>
   <span class="pn-scope">📍 <b>8</b>&nbsp;<span lang="en">countries</span><span lang="bg">държави</span>&nbsp;·&nbsp;→ 2033</span>
   <div class="pn-search">
-   <select aria-label="scope"><option>All</option></select>
    <input id="pn-q" type="text" autocomplete="off" placeholder="Search…">
    <button id="pn-go" aria-label="search" onclick="var q=document.getElementById('pn-q');q.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter'}));">🔍</button>
    <div class="pn-sug" id="pn-sug"></div>
@@ -79,7 +78,7 @@ cursor:pointer;font:700 13px/1 inherit}.pn-lang:hover{border-color:#D97706}
   <button class="pn-lang" id="pn-lang" aria-label="switch language">БГ</button>
  </div>
  <div class="pn-r2">
-  <span class="pn-burger">☰ <span lang="en">All</span><span lang="bg">Всички</span></span>
+  <span class="pn-burger">☰</span>
   <a class="pn-link" href="../index.html"><span lang="en">Home</span><span lang="bg">Начало</span></a>
   <a class="pn-link" href="introduction.html"><span lang="en">Introduction</span><span lang="bg">Въведение</span></a><a class="pn-link" href="level1.html"><span lang="en">Supply</span><span lang="bg">Предлагане</span></a><a class="pn-link" href="level2.html"><span lang="en">Demand</span><span lang="bg">Търсене</span></a><a class="pn-link" href="level3.html"><span lang="en">Balance</span><span lang="bg">Баланс</span></a><a class="pn-link" href="whatif.html"><span lang="en">What-if</span><span lang="bg">Какво-ако</span></a><a class="pn-link" href="methodology_report.html"><span lang="en">Methodology</span><span lang="bg">Методология</span></a><a class="pn-link" href="critique.html"><span lang="en">Trust &amp; critique</span><span lang="bg">Доверие и критика</span></a><a class="pn-link" href="script.html"><span lang="en">Run-sheet</span><span lang="bg">Сценарий</span></a>
  </div>
