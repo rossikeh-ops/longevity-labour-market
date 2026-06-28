@@ -1,7 +1,18 @@
-pandas>=2.2
-numpy>=1.26
+# Libraries for the submission notebook  longevity_labour_market.ipynb
+# Google Colab already ships most of these; the notebook's first code cell also
+# pip-installs them, so it is fully self-contained. Versions are lower bounds
+# (any recent release works); OS-independent.
+
+pandas>=2.0
+numpy>=1.24
 statsmodels>=0.14
-scikit-learn>=1.4
-eurostat>=1.1
-openpyxl>=3.1
-pyarrow>=15
+matplotlib>=3.7
+pyarrow>=12
+requests>=2.28
+
+# Verified working with (Python 3.13):
+#   pandas 3.0.3 · numpy 2.5.0 · statsmodels 0.14.6
+#   matplotlib 3.11.0 · pyarrow 24.0.0 · requests 2.34.2
+
+# Optional — only for re-running the FULL repository pipeline (not the notebook):
+#   scikit-learn>=1.4   eurostat>=1.1   openpyxl>=3.1
