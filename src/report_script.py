@@ -138,6 +138,14 @@ A = act("Presenter A — “The answer” · stops 1–6 · ~10 min",
 B = act("Presenter B — “Why believe it” · stops 7–10 · ~9 min",
         "Представящ Б — „Защо да вярваме“ · стъпки 7–10 · ~9 мин", "B", [s for s in STOPS if s[1] == "B"])
 
+VIDEO = (
+    f'<div class="vidwrap">'
+    f'<h2 style="font-size:20px;margin:30px 0 6px;color:#475569">'
+    f'{T("▶ Narrated video — Speaker 2", "▶ Видео с разказ — Представящ 2")}</h2>'
+    f'<p class="sub">{T("“Engineering Honest Uncertainty: Deconstructing the 2033 Forecast” — Speaker 2’s full narrated walkthrough (~7.5 min).", "„Engineering Honest Uncertainty“ — пълният разказан преглед на Представящ 2 (~7,5 мин).")}</p>'
+    f'<video controls preload="metadata" playsinline class="vid"><source src="presenter2_video.mp4" type="video/mp4"></video>'
+    f'</div>')
+
 TROWS = "".join(
     f'<tr class="t-{w}"><td>{n}</td><td>{"A" if w=="A" else "B"}</td>'
     f'<td><span lang="en">{ten}</span><span lang="bg">{tbg}</span></td>'
@@ -173,6 +181,8 @@ tr.t-A td:nth-child(2){color:var(--acc);font-weight:800}tr.t-B td:nth-child(2){c
 .tot{font-weight:750;margin-top:6px}
 .note{color:#44403C;font-size:14px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:13px 15px;margin-top:14px}
 .foot{color:var(--mut);font-size:13px;margin-top:24px;border-top:1px solid var(--line);padding-top:14px}a{color:var(--acc)}
+.vidwrap{margin:8px 0 6px}
+video.vid{width:100%;max-width:900px;border:1px solid var(--line);border-radius:14px;display:block;background:#000}
 """
 
 HTML = (f'<!doctype html><html lang="bg" data-lang="bg"><head><meta charset="utf-8">'
@@ -183,7 +193,7 @@ HTML = (f'<!doctype html><html lang="bg" data-lang="bg"><head><meta charset="utf
         f'<h1>{T("Presentation run-sheet — 20 minutes, 2 presenters", "Сценарий за презентация — 20 минути, 2-ма представящи")}</h1>'
         f'{T("Spoken, story-style lines for the homepage track. Presenter <b>A</b> tells the answer (stops 1–6); presenter <b>B</b> shows why to trust it (7–10). Each stop is clickable — it opens the page it narrates. Total talking ≈ 19 min, inside 20.", "Изговорени, разказвателни реплики за маршрута от началната страница. Представящ <b>А</b> разказва отговора (стъпки 1–6); представящ <b>Б</b> показва защо да му вярваме (7–10). Всяка стъпка е кликаема — отваря страницата, която описва. Общо говорене ≈ 19 мин, в рамките на 20.", "p")}'
         f'<p class="sub">{T("Tip: read at a measured pace; the live demos (stops 8 &amp; 10) fill the time. Trim the <em>italic asides</em> first if you run long.", "Съвет: четете с премерено темпо; живите демота (стъпки 8 и 10) запълват времето. Съкратете първо <em>курсивните вмятания</em>, ако надхвърляте.")}</p>'
-        f'{A}{B}'
+        f'{A}{VIDEO}{B}'
         f'<h2 style="font-size:18px;margin:28px 0 4px">{T("Timing", "Тайминг")}</h2>'
         f'<table><thead><tr><th>#</th><th>{T("Who","Кой")}</th><th>{T("Stop","Стъпка")}</th>'
         f'<th class="num">{T("Budget","Бюджет")}</th><th class="num">{T("Running","Текущо")}</th></tr></thead><tbody>{TROWS}</tbody></table>'
