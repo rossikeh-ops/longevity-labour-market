@@ -29,7 +29,6 @@ LINKS = [
     ("playground.html", "Playground", "Лаборатория"),          # 8
     ("critique.html", "Trust", "Доверие"),                     # 9
     ("whatif.html", "What-if", "Какво-ако"),                   # 10
-    ("script.html", "Run-sheet", "Сценарий"),                  # the spoken script
 ]
 # fuller list for the search index (LINKS + pages not on the menu row)
 SEARCH = LINKS + [
