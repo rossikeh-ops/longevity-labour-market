@@ -177,7 +177,7 @@ online, at the address shown here. Thank you.
 | 6–7 | Landscape + paradigm shift | ~2:25 |
 | 8 | The headline finding | ~1:10 |
 | 9–10 | Conclusion + thanks | ~1:30 |
-| | **Total** | **~13 min** |
+| | **Total** | **~11 min** (≈10 min of words + delivery pauses) |
 
 **Running short of your slot?** Expand slide 3 (add a concrete example per vector)
 and pause on slide 8's map. **Running long?** Trim slide 6 to the tool names and the
