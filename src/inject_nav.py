@@ -19,19 +19,20 @@ OUTDIR = ROOTDIR / "outputs"
 
 # links row — in the PRESENTATION running order (the 10-stop talk track), file, en, bg
 LINKS = [
-    ("introduction.html", "Introduction", "Въведение"),       # 1
-    ("level1.html", "Supply", "Предлагане"),                   # 2
-    ("level2.html", "Demand", "Търсене"),                      # 3
-    ("level3.html", "Balance", "Баланс"),                      # 4
-    ("level4.html", "Open horizons", "Хоризонти"),             # 5
-    ("implications.html", "Implications", "Последици"),        # 6
-    ("methodology_report.html", "Methodology", "Методология"), # 7
-    ("playground.html", "Playground", "Лаборатория"),          # 8
-    ("critique.html", "Trust", "Доверие"),                     # 9
-    ("whatif.html", "What-if", "Какво-ако"),                   # 10
+    ("introduction.html", "Introduction", "Въведение"),
+    ("market.html", "Market", "Пазар"),                        # supply + demand + balance
+    ("level4.html", "Open horizons", "Хоризонти"),
+    ("implications.html", "Implications", "Последици"),
+    ("methodology_report.html", "Methodology", "Методология"),
+    ("playground.html", "Playground", "Лаборатория"),
+    ("critique.html", "Trust", "Доверие"),
+    ("whatif.html", "What-if", "Какво-ако"),
 ]
 # fuller list for the search index (LINKS + pages not on the menu row)
 SEARCH = LINKS + [
+    ("market.html", "Supply", "Предлагане"),
+    ("market.html", "Demand", "Търсене"),
+    ("market.html", "Balance", "Баланс"),
     ("level5.html", "Dividend (L5)", "Дивидент (Н5)"),
     ("level6.html", "Macroeconomy (L6)", "Макроикономика (Н6)"),
     ("model_validation_report.html", "Model trust", "Доверие в модела"),

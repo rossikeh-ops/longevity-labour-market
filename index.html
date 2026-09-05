@@ -115,7 +115,7 @@ cursor:pointer;font:700 13px/1 inherit}.pn-lang:hover{border-color:#D97706}
  </div>
  <div class="pn-r2">
   <a class="pn-link" href="index.html"><span lang="en">Home</span><span lang="bg">Начало</span></a>
-  <a class="pn-link" href="outputs/introduction.html"><span lang="en">Introduction</span><span lang="bg">Въведение</span></a><a class="pn-link" href="outputs/level1.html"><span lang="en">Supply</span><span lang="bg">Предлагане</span></a><a class="pn-link" href="outputs/level2.html"><span lang="en">Demand</span><span lang="bg">Търсене</span></a><a class="pn-link" href="outputs/level3.html"><span lang="en">Balance</span><span lang="bg">Баланс</span></a><a class="pn-link" href="outputs/level4.html"><span lang="en">Open horizons</span><span lang="bg">Хоризонти</span></a><a class="pn-link" href="outputs/implications.html"><span lang="en">Implications</span><span lang="bg">Последици</span></a><a class="pn-link" href="outputs/methodology_report.html"><span lang="en">Methodology</span><span lang="bg">Методология</span></a><a class="pn-link" href="outputs/playground.html"><span lang="en">Playground</span><span lang="bg">Лаборатория</span></a><a class="pn-link" href="outputs/critique.html"><span lang="en">Trust</span><span lang="bg">Доверие</span></a><a class="pn-link" href="outputs/whatif.html"><span lang="en">What-if</span><span lang="bg">Какво-ако</span></a>
+  <a class="pn-link" href="outputs/introduction.html"><span lang="en">Introduction</span><span lang="bg">Въведение</span></a><a class="pn-link" href="outputs/market.html"><span lang="en">Market</span><span lang="bg">Пазар</span></a><a class="pn-link" href="outputs/level4.html"><span lang="en">Open horizons</span><span lang="bg">Хоризонти</span></a><a class="pn-link" href="outputs/implications.html"><span lang="en">Implications</span><span lang="bg">Последици</span></a><a class="pn-link" href="outputs/methodology_report.html"><span lang="en">Methodology</span><span lang="bg">Методология</span></a><a class="pn-link" href="outputs/playground.html"><span lang="en">Playground</span><span lang="bg">Лаборатория</span></a><a class="pn-link" href="outputs/critique.html"><span lang="en">Trust</span><span lang="bg">Доверие</span></a><a class="pn-link" href="outputs/whatif.html"><span lang="en">What-if</span><span lang="bg">Какво-ако</span></a>
  </div>
 </div>
 
@@ -124,7 +124,7 @@ cursor:pointer;font:700 13px/1 inherit}.pn-lang:hover{border-color:#D97706}
   if(window.top!==window.self){var n=document.getElementById('pn');if(n)n.remove();return;}/* hide inside iframes */
   var root=document.documentElement;
   var L=localStorage.getItem('site-lang')||'bg';root.dataset.lang=L;
-  var PAGES=[{u:"outputs/introduction.html",en:"Introduction",bg:"Въведение"},{u:"outputs/level1.html",en:"Supply",bg:"Предлагане"},{u:"outputs/level2.html",en:"Demand",bg:"Търсене"},{u:"outputs/level3.html",en:"Balance",bg:"Баланс"},{u:"outputs/level4.html",en:"Open horizons",bg:"Хоризонти"},{u:"outputs/implications.html",en:"Implications",bg:"Последици"},{u:"outputs/methodology_report.html",en:"Methodology",bg:"Методология"},{u:"outputs/playground.html",en:"Playground",bg:"Лаборатория"},{u:"outputs/critique.html",en:"Trust",bg:"Доверие"},{u:"outputs/whatif.html",en:"What-if",bg:"Какво-ако"},{u:"outputs/level5.html",en:"Dividend (L5)",bg:"Дивидент (Н5)"},{u:"outputs/level6.html",en:"Macroeconomy (L6)",bg:"Макроикономика (Н6)"},{u:"outputs/model_validation_report.html",en:"Model trust",bg:"Доверие в модела"},{u:"outputs/kpis.html",en:"KPIs",bg:"КПИ"},{u:"outputs/flexibility.html",en:"Flexibility",bg:"Гъвкавост"}];
+  var PAGES=[{u:"outputs/introduction.html",en:"Introduction",bg:"Въведение"},{u:"outputs/market.html",en:"Market",bg:"Пазар"},{u:"outputs/level4.html",en:"Open horizons",bg:"Хоризонти"},{u:"outputs/implications.html",en:"Implications",bg:"Последици"},{u:"outputs/methodology_report.html",en:"Methodology",bg:"Методология"},{u:"outputs/playground.html",en:"Playground",bg:"Лаборатория"},{u:"outputs/critique.html",en:"Trust",bg:"Доверие"},{u:"outputs/whatif.html",en:"What-if",bg:"Какво-ако"},{u:"outputs/market.html",en:"Supply",bg:"Предлагане"},{u:"outputs/market.html",en:"Demand",bg:"Търсене"},{u:"outputs/market.html",en:"Balance",bg:"Баланс"},{u:"outputs/level5.html",en:"Dividend (L5)",bg:"Дивидент (Н5)"},{u:"outputs/level6.html",en:"Macroeconomy (L6)",bg:"Макроикономика (Н6)"},{u:"outputs/model_validation_report.html",en:"Model trust",bg:"Доверие в модела"},{u:"outputs/kpis.html",en:"KPIs",bg:"КПИ"},{u:"outputs/flexibility.html",en:"Flexibility",bg:"Гъвкавост"}];
   var box=document.getElementById('pn');
   var inp=document.getElementById('pn-q'), sug=document.getElementById('pn-sug'), lang=document.getElementById('pn-lang');
   function isBg(){return root.dataset.lang==='bg';}
@@ -175,49 +175,6 @@ countries (BG, PL, CZ, RO, DE, FR, NO, CH), by sex. Solution to the
 </div>
 
 
-<h2><span lang="en">Start here — introduction</span><span lang="bg">Започнете оттук — въведение</span></h2>
-<div class="cards">
-<a class="card" href="outputs/introduction.html" style="grid-column:1/-1;border-color:var(--acc)">
-<div class="ic">🧭</div>
-<h3 lang="en">Introduction — can Europe balance its labour market by 2033?</h3>
-<h3 lang="bg">Въведение — може ли Европа да балансира пазара си на труда до 2033 г.?</h3>
-<p lang="en">The question, the person-year approach, and the <b>three policy levers</b> (increase supply, ease
-demand, maintain balance) — with a preview of the headline <b>East-surplus / West-shortage</b> finding.</p>
-<p lang="bg">Въпросът, подходът на човеко-годините и <b>трите политически лоста</b> (увеличаване на предлагането,
-намаляване на търсенето, поддържане на баланс) — с преглед на ключовия извод: <b>излишък на Изток / недостиг на Запад</b>.</p></a>
-</div>
-
-<h2><span lang="en">Supporting</span><span lang="bg">Помощни материали</span></h2>
-<div class="cards">
-<a class="card" href="outputs/model_validation_report.html">
-<div class="ic">🔍</div>
-<h3 lang="en">Model trust — can we believe it?</h3><h3 lang="bg">Доверие в модела — можем ли да му вярваме?</h3>
-<p lang="en">Rolling-origin cross-validation: accuracy by driver and by country, calibration,
-observed-vs-predicted charts, and honest failure points.</p>
-<p lang="bg">Крос-валидация с плъзгащ произход: точност по показател и по държава, калибрация,
-графики наблюдавано-срещу-прогнозирано и честни слаби места.</p></a>
-<a class="card" href="outputs/methodology_report.html">
-<div class="ic">🧭</div>
-<h3 lang="en">Methodology — how the model works</h3><h3 lang="bg">Методология — как работи моделът</h3>
-<p lang="en">Three diagrams: the 5-model ensemble engine, and how supply &amp; demand are
-assembled into human-working-years.</p>
-<p lang="bg">Три диаграми: ансамбловият двигател от 5 модела и как предлагането и търсенето се сглобяват
-в човеко-работни години.</p></a>
-<a class="card" href="outputs/playground.html">
-<div class="ic">🎛️</div>
-<h3 lang="en">Model playground — two interactives</h3><h3 lang="bg">Лаборатория на модела — две интерактивни</h3>
-<p lang="en">One page, drag live: the <b>ensemble uncertainty</b> band (size + noise) and the <b>flexibility / bias–variance</b>
-tradeoff (underfit → optimal → overfit, with the cross-validated optimum computed on a real series).</p>
-<p lang="bg">Една страница, плъзгайте на живо: лентата на <b>несигурност на ансамбъла</b> (размер + шум) и компромисът
-<b>гъвкавост / отклонение–дисперсия</b> (недонапасване → оптимум → пренапасване, с крос-валидиран оптимум върху реален ред).</p></a>
-<a class="card" href="outputs/critique.html">
-<div class="ic">⚖️</div>
-<h3 lang="en">Critical review — the model on the stand</h3><h3 lang="bg">Критичен преглед — моделът на изпит</h3>
-<p lang="en">A sceptical statistician's audit: the strongest case <b>against</b> the forecasts, plus the fixes we made —
-<b>bootstrap confidence intervals</b>, a leakage-safe vacancy curve, and a self-reported-health sensitivity that nearly erases the East–West split.</p>
-<p lang="bg">Одит от скептичен статистик: най-силните аргументи <b>срещу</b> прогнозите и поправките, които направихме —
-<b>бутстрап доверителни интервали</b>, безопасна крива за свободни места и чувствителност към самооценено здраве, която почти изтрива разделението Изток–Запад.</p></a>
-</div>
 
 <h2><span lang="en">KPIs at a glance</span><span lang="bg">Ключови показатели накратко</span></h2>
 <div class="cards">
@@ -231,46 +188,6 @@ quantities, and the backtest accuracy — grouped, each tile linking to its repo
 величините от отворените хоризонти и точността при бектест — групирани, всяка плочка води към доклада си.</p></a>
 </div>
 
-<h2><span lang="en">Explore by level — guided story &amp; full report, together</span><span lang="bg">Разгледайте по нива — водена презентация и пълен доклад, заедно</span></h2>
-<p class="tag" style="margin:-6px 0 16px"><span lang="en">Pick a level to preview its <b>guided presentation</b> right here —
-then open it full-screen for the <b>full report</b> (maps, bands, data appendix + Excel).</span><span lang="bg">Изберете ниво, за да видите <b>водената му презентация</b> тук — после го отворете на цял екран
-за <b>пълния доклад</b> (карти, ленти, приложение с данни + Excel).</span></p>
-
-<div class="viewer">
-  <div class="vbar">
-    <span class="vtitle"><span lang="en">Level</span><span lang="bg">Ниво</span></span>
-    <div class="lvbtns" id="lvbtns"></div>
-  </div>
-  <iframe id="vframe" title="Level viewer" loading="lazy"></iframe>
-  <p class="tag" style="margin:10px 2px 0;font-size:13px"><a class="vopen" id="vopen" href="outputs/level1.html"><span lang="en">Open this level full-screen ↗</span><span lang="bg">Отворете нивото на цял екран ↗</span></a></p>
-</div>
-
-<div class="cards">
-<a class="card" href="outputs/whatif.html" style="grid-column:1/-1;border-color:var(--acc)">
-<div class="ic">🎚️</div>
-<h3 lang="en">What-if — do longer, healthier lives reshape the economy?</h3>
-<h3 lang="bg">Какво-ако — преобразяват ли по-дългите и по-здрави животи икономиката?</h3>
-<p lang="en">An interactive sandbox: three dials (<b>healthy life years</b>, retirement age, participation) and four
-live answers — <b>who keeps working, who retires, who needs healthcare, and who fills the concert halls &amp;
-adult-education courses</b>. Built on the Level 1/4/5 identities.</p>
-<p lang="bg">Интерактивен пясъчник: три плъзгача (<b>здрави години живот</b>, пенсионна възраст, участие) и четири живи
-отговора — <b>кой продължава да работи, кой се пенсионира, кой има нужда от здравни грижи и кой пълни концертните
-зали и курсовете за възрастни</b>. Базирано на тъждествата от Нива 1/4/5.</p></a>
-</div>
-
-<h2><span lang="en">Implications &amp; shocks</span><span lang="bg">Последици и сътресения</span></h2>
-<div class="cards">
-<a class="card" href="outputs/implications.html" style="grid-column:1/-1;border-color:var(--acc)">
-<div class="ic">🧩</div>
-<h3 lang="en">Implications &amp; shocks — applications, plus wars, pandemics &amp; AI</h3>
-<h3 lang="bg">Последици и сътресения — приложения, плюс войни, пандемии и ИИ</h3>
-<p lang="en">One page: where the analysis is used in the real world (<b>pensions, health &amp; long-term care, labour &amp;
-migration, fiscal sustainability, the silver economy</b>) — and the forces outside the slow demographics: the
-<b>COVID vacancy collapse</b>, the Ukraine-war <b>refugee supply shock</b>, and <b>AI</b> reshaping demand.</p>
-<p lang="bg">Една страница: къде анализът се използва в реалния свят (<b>пенсии, здравеопазване и дългосрочни грижи, труд и
-миграция, фискална устойчивост, сребърната икономика</b>) — и силите извън бавната демография: <b>сривът на
-свободните места при COVID</b>, <b>бежанският шок</b> от Украйна и <b>ИИ</b>, преоформящ търсенето.</p></a>
-</div>
 
 
 <p class="foot" lang="en">Reproducible pipeline in <code>src/</code> · data in <code>data/</code> ·
@@ -289,34 +206,6 @@ see <a href="https://github.com/rossikeh-ops/longevity-labour-market">the reposi
   var b=document.getElementById('langtoggle');
   function u(){b.textContent=r.dataset.lang==='en'?'БГ':'EN';}
   b.onclick=function(){var n=r.dataset.lang==='en'?'bg':'en';r.dataset.lang=n;localStorage.setItem('site-lang',n);u();};u();
-})();
-(function(){
-  // Inline preview shows the guided STORY directly (no tabs). The full report
-  // lives on the merged page (level{n}.html), reachable via "open full-screen".
-  const LV={
-    1:{en:"1 · Supply",  bg:"1 · Предлагане", story:"outputs/supply_story.html",   page:"outputs/level1.html"},
-    2:{en:"2 · Demand",  bg:"2 · Търсене",    story:"outputs/demand_story.html",   page:"outputs/level2.html"},
-    3:{en:"3 · Balance", bg:"3 · Баланс",     story:"outputs/balance_story.html",  page:"outputs/level3.html"},
-    4:{en:"4 · Cost",    bg:"4 · Цена",       story:"outputs/cost_story.html",     page:"outputs/level4.html"},
-    5:{en:"5 · Dividend",bg:"5 · Дивидент",   story:"outputs/dividend_story.html", page:"outputs/level5.html"},
-    6:{en:"6 · Macro",   bg:"6 · Макро",      story:"outputs/macro_story.html",    page:"outputs/level6.html"}
-  };
-  const frame=document.getElementById('vframe'), bts=document.getElementById('lvbtns'),
-        vopen=document.getElementById('vopen');
-  let lvl=1;
-  function lbl(k){return document.documentElement.dataset.lang==='bg'?LV[k].bg:LV[k].en;}
-  Object.keys(LV).forEach(k=>{
-    const b=document.createElement('button'); b.className='lvbtn'; b.dataset.lvl=k;
-    b.onclick=()=>{lvl=+k; render();}; bts.appendChild(b);
-  });
-  function render(){
-    const cfg=LV[lvl];
-    if(frame.getAttribute('src')!==cfg.story) frame.src=cfg.story;
-    vopen.href=cfg.page;
-    [...bts.children].forEach(b=>{b.textContent=lbl(b.dataset.lvl);b.classList.toggle('on',+b.dataset.lvl===lvl);});
-  }
-  render();
-  document.getElementById('langtoggle').addEventListener('click',()=>setTimeout(render,0));
 })();
 </script>
 </body></html>
