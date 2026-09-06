@@ -91,10 +91,14 @@ cursor:pointer;font:700 13px/1 inherit}.pn-lang:hover{border-color:#D97706}
   function prep(){try{var t=F.contentDocument.getElementById('langtoggle');if(t)t.style.display='none';}catch(e){}fit();}
   F.addEventListener('load',function(){prep();[300,800,1600].forEach(function(d){setTimeout(fit,d);});});
   window.addEventListener('resize',fit);
+  function go(src){ // setting iframe.src does not re-navigate an already-loaded frame; use location.replace
+    try{ if(F.contentWindow && F.contentWindow.location){ F.contentWindow.location.replace(src); return; } }catch(e){}
+    F.src=src;
+  }
   document.querySelectorAll('.tab').forEach(function(b){b.addEventListener('click',function(){
     document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on');}); b.classList.add('on');
     document.querySelectorAll('.subx').forEach(function(p){p.hidden = p.getAttribute('data-for')!==b.dataset.src;});
-    F.src=b.dataset.src;
+    go(b.dataset.src);
   });});
   var tg=document.getElementById('langtoggle');
   if(tg)tg.addEventListener('click',function(){setTimeout(function(){try{F.contentWindow.location.reload();}catch(e){}},50);});
