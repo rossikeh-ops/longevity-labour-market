@@ -23,9 +23,7 @@ LINKS = [
     ("market.html", "Market", "Пазар"),                        # supply + demand + balance
     ("level4.html", "Open horizons", "Хоризонти"),
     ("implications.html", "Implications", "Последици"),
-    ("methodology_report.html", "Methodology", "Методология"),
-    ("playground.html", "Playground", "Лаборатория"),
-    ("critique.html", "Trust", "Доверие"),
+    ("model.html", "The model", "Моделът"),                     # methodology + playground + trust
     ("whatif.html", "What-if", "Какво-ако"),
 ]
 # fuller list for the search index (LINKS + pages not on the menu row)
@@ -33,6 +31,9 @@ SEARCH = LINKS + [
     ("market.html", "Supply", "Предлагане"),
     ("market.html", "Demand", "Търсене"),
     ("market.html", "Balance", "Баланс"),
+    ("model.html", "Methodology", "Методология"),
+    ("model.html", "Playground", "Лаборатория"),
+    ("model.html", "Trust &amp; critique", "Доверие и критика"),
     ("level5.html", "Dividend (L5)", "Дивидент (Н5)"),
     ("level6.html", "Macroeconomy (L6)", "Макроикономика (Н6)"),
     ("model_validation_report.html", "Model trust", "Доверие в модела"),

@@ -1,26 +1,19 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Level 2 — Labour demand</title>
-<style>
+<!doctype html><html lang="bg" data-lang="bg"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>The model — how it works, why to trust it</title><style>
 :root{--bg:#FAFAF9;--card:#FFFFFF;--ink:#292524;--mut:#78716C;--line:#E7E5E4;--acc:#166534;}
-*{box-sizing:border-box}html,body{margin:0;height:100%}
-body{display:flex;flex-direction:column;height:100vh;background:var(--bg);color:var(--ink);
-font:15px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-header{flex:0 0 auto;padding:12px 22px;border-bottom:1px solid var(--line);background:var(--card);
-display:flex;align-items:center;gap:18px;flex-wrap:wrap}
-.home{color:var(--mut);text-decoration:none;font-size:13px;white-space:nowrap}.home:hover{color:var(--acc)}
-.tt{display:flex;flex-direction:column;min-width:0}
-.tt h1{font-size:16px;margin:0;font-weight:650}.tt .sub{color:var(--mut);font-size:12px;
-overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60ch}
-.spacer{flex:1}
-.tabs{display:inline-flex;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px}
-.tab{appearance:none;border:none;background:transparent;color:var(--mut);font-size:13.5px;font-weight:600;
-padding:7px 15px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:7px}
-.tab.active{background:var(--acc);color:#fff}
-.tab:not(.active):hover{color:var(--ink)}
-.pop{color:var(--mut);text-decoration:none;font-size:12.5px;white-space:nowrap}.pop:hover{color:var(--acc)}
-iframe{flex:1 1 auto;width:100%;border:none;background:var(--bg)}
-</style></head><body>
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);
+font:16px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:32px 22px}
+.wrap{max-width:1000px;margin:0 auto}
+.home{color:var(--mut);text-decoration:none;font-size:13px}.home:hover{color:var(--acc)}
+h1{font-size:27px;margin:8px 0 4px}.sub{color:var(--mut);max-width:760px;margin:0 0 10px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 6px;position:sticky;top:0;
+background:rgba(250,250,249,.92);backdrop-filter:blur(6px);padding:8px 0;z-index:50}
+.tab{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:20px;
+padding:9px 20px;font:700 15px/1 inherit;cursor:pointer}
+.tab:hover{border-color:var(--acc)}
+.tab.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+iframe.embed{width:100%;height:1000px;border:1px solid var(--line);border-radius:14px;background:#fff;display:block;margin-top:6px}
+.foot{color:var(--mut);font-size:13px;margin-top:24px;border-top:1px solid var(--line);padding-top:14px}a{color:var(--acc)}
+html[data-lang='en'] [lang='bg']{display:none!important}html[data-lang='bg'] [lang='en']{display:none!important}.langtoggle{position:fixed;top:14px;right:14px;z-index:9999;background:var(--card,#fff);border:1px solid var(--line,#E7E5E4);border-radius:20px;padding:7px 15px;cursor:pointer;font:700 13px/1 -apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--acc,#166534);box-shadow:0 2px 10px rgba(0,0,0,.08)}.langtoggle:hover{border-color:var(--acc,#166534)}</style></head><body>
 <!--PN-START-->
 <style id="pn-css">
 html[data-lang='en'] .pn-wrap [lang='bg']{display:none!important}
@@ -91,26 +84,19 @@ cursor:pointer;font:700 13px/1 inherit}.pn-lang:hover{border-color:#D97706}
   setLang();offset();window.addEventListener('resize',offset);setTimeout(offset,300);
 })();
 </script>
-<!--PN-END-->
-<header>
-  <a class="home" href="../index.html">← Overview</a>
-  <div class="tt"><h1>Level 2 — Labour demand</h1><span class="sub">(Employed + vacancies) × required service — the career-years jobs require.</span></div>
-  <span class="spacer"></span>
-  <div class="tabs"><button class="tab" data-key="story" data-src="demand_story.html">▶ Guided story</button><button class="tab" data-key="report" data-src="level2_demand_report.html">📄 Full report</button></div>
-  <a class="pop" id="pop" href="demand_story.html" target="_blank" rel="noopener">open ↗</a>
-</header>
-<iframe id="view" src="demand_story.html" title="Level 2 content"></iframe>
-<script>
-const VIEW=document.getElementById('view'),POP=document.getElementById('pop'),TABS=[...document.querySelectorAll('.tab')];
-function show(key){
-  const t=TABS.find(x=>x.dataset.key===key)||TABS[0];
-  TABS.forEach(x=>x.classList.toggle('active',x===t));
-  const src=t.dataset.src;
-  if(VIEW.getAttribute('src')!==src){VIEW.src=src;}
-  POP.href=src;
-  if(location.hash.slice(1)!==t.dataset.key) history.replaceState(null,'','#'+t.dataset.key);
-}
-TABS.forEach(t=>t.onclick=()=>show(t.dataset.key));
-show(location.hash.slice(1)||TABS[0].dataset.key);
-</script>
-</body></html>
+<!--PN-END--><button class="langtoggle" id="langtoggle" aria-label="switch language">БГ</button><script>(function(){var r=document.documentElement;var L=localStorage.getItem('site-lang')||'bg';r.dataset.lang=L;var b=document.getElementById('langtoggle');function u(){b.textContent=r.dataset.lang==='en'?'БГ':'EN';}b.onclick=function(){var n=r.dataset.lang==='en'?'bg':'en';r.dataset.lang=n;localStorage.setItem('site-lang',n);u();};u();})();</script><div class="wrap"><a class="home" href="../index.html"><span lang="en">← Overview</span><span lang="bg">← Обзор</span></a><h1><span lang="en">The model</span><span lang="bg">Моделът</span></h1><p class="sub"><span lang="en">How it works, made interactive, and put on trial — the method behind the numbers.</span><span lang="bg">Как работи, направено интерактивно и подложено на изпит — методът зад числата.</span></p><div class="tabs"><button class="tab on" data-src="methodology_report.html"><span lang="en">How it works</span><span lang="bg">Как работи</span></button><button class="tab" data-src="playground.html"><span lang="en">Playground</span><span lang="bg">Лаборатория</span></button><button class="tab" data-src="critique.html"><span lang="en">Trust &amp; critique</span><span lang="bg">Доверие и критика</span></button></div><p class="sub subx" data-for="methodology_report.html"><span lang="en">the 5-model ensemble engine — deliberately no neural networks</span><span lang="bg">ансамбловият двигател от 5 модела — умишлено без невронни мрежи</span></p><p class="sub subx" data-for="playground.html" hidden><span lang="en">drag the ensemble band and the flexibility / bias–variance tradeoff, live</span><span lang="bg">плъзгайте лентата на ансамбъла и компромиса гъвкавост / дисперсия, на живо</span></p><p class="sub subx" data-for="critique.html" hidden><span lang="en">rolling-origin validation, bootstrap CIs, CRPS, and the honest self-audit</span><span lang="bg">валидация с плъзгащ произход, бутстрап интервали, CRPS и честен самоодит</span></p><iframe id="mframe" class="embed" src="methodology_report.html" loading="lazy" title="The model"></iframe><p class="foot"><a href="../index.html"><span lang="en">← back to overview</span><span lang="bg">← обратно към обзора</span></a> · src/report_model.py</p></div><script>
+(function(){
+  var F=document.getElementById('mframe');
+  function fit(){try{var h=F.contentDocument.body.scrollHeight;if(h>140)F.style.height=h+'px';}catch(e){}}
+  function prep(){try{var t=F.contentDocument.getElementById('langtoggle');if(t)t.style.display='none';}catch(e){}fit();}
+  F.addEventListener('load',function(){prep();[300,800,1600].forEach(function(d){setTimeout(fit,d);});});
+  window.addEventListener('resize',fit);
+  document.querySelectorAll('.tab').forEach(function(b){b.addEventListener('click',function(){
+    document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on');}); b.classList.add('on');
+    document.querySelectorAll('.subx').forEach(function(p){p.hidden = p.getAttribute('data-for')!==b.dataset.src;});
+    F.src=b.dataset.src;
+  });});
+  var tg=document.getElementById('langtoggle');
+  if(tg)tg.addEventListener('click',function(){setTimeout(function(){try{F.contentWindow.location.reload();}catch(e){}},50);});
+})();
+</script></body></html>
