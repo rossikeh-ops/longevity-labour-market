@@ -283,7 +283,7 @@ function drawPyramid(){
               {label:'Women',data:women,backgroundColor:C.mustard,borderRadius:2}]},
     options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
       scales:{x:{stacked:true,...axis('thousand people'),ticks:{callback:v=>Math.abs(v)}},
-              y:{stacked:true,grid:{display:false}}},
+              y:{stacked:true,reverse:true,grid:{display:false}}},  // youngest at bottom, oldest at top (standard pyramid)
       plugins:{title:{display:true,text:`Population pyramid — ${DATA.countries[state.country]}, ${state.year}`,color:C.ink,font:{size:15}},
         tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${Math.abs(c.raw).toLocaleString()}k (age ${c.label})`}},
         legend:{position:'bottom'}}}});
