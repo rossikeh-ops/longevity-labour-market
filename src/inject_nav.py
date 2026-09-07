@@ -19,7 +19,6 @@ OUTDIR = ROOTDIR / "outputs"
 
 # links row — in the PRESENTATION running order (the 10-stop talk track), file, en, bg
 LINKS = [
-    ("introduction.html", "Introduction", "Въведение"),
     ("market.html", "Market", "Пазар"),                        # supply + demand + balance
     ("level4.html", "Open horizons", "Хоризонти"),
     ("implications.html", "Implications", "Последици"),
@@ -28,6 +27,7 @@ LINKS = [
 ]
 # fuller list for the search index (LINKS + pages not on the menu row)
 SEARCH = LINKS + [
+    ("introduction.html", "Introduction", "Въведение"),        # tab removed; also embedded on the home page
     ("market.html", "Supply", "Предлагане"),
     ("market.html", "Demand", "Търсене"),
     ("market.html", "Balance", "Баланс"),

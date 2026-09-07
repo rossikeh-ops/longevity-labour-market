@@ -56,6 +56,8 @@ th{color:var(--mut);font-weight:600}.done{color:var(--ok)}.prog{color:var(--warn
 .note{color:var(--mut);font-size:14px;background:var(--card);border:1px solid var(--line);
 border-radius:10px;padding:16px;margin-top:12px}code{color:var(--acc)}
 a{color:var(--acc)}.foot{color:var(--mut);font-size:13px;margin-top:30px}
+.introwrap{margin:22px 0 4px}
+.introwrap iframe{width:100%;height:1200px;border:1px solid var(--line);border-radius:16px;background:var(--card);display:block}
 .brand{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
 border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20px}
 .brand img{height:46px;display:block}
@@ -115,7 +117,7 @@ cursor:pointer;font:700 13px/1 inherit}.pn-lang:hover{border-color:#D97706}
  </div>
  <div class="pn-r2">
   <a class="pn-link" href="index.html"><span lang="en">Home</span><span lang="bg">Начало</span></a>
-  <a class="pn-link" href="outputs/introduction.html"><span lang="en">Introduction</span><span lang="bg">Въведение</span></a><a class="pn-link" href="outputs/market.html"><span lang="en">Market</span><span lang="bg">Пазар</span></a><a class="pn-link" href="outputs/level4.html"><span lang="en">Open horizons</span><span lang="bg">Хоризонти</span></a><a class="pn-link" href="outputs/implications.html"><span lang="en">Implications</span><span lang="bg">Последици</span></a><a class="pn-link" href="outputs/model.html"><span lang="en">The model</span><span lang="bg">Моделът</span></a><a class="pn-link" href="outputs/whatif.html"><span lang="en">What-if</span><span lang="bg">Какво-ако</span></a>
+  <a class="pn-link" href="outputs/market.html"><span lang="en">Market</span><span lang="bg">Пазар</span></a><a class="pn-link" href="outputs/level4.html"><span lang="en">Open horizons</span><span lang="bg">Хоризонти</span></a><a class="pn-link" href="outputs/implications.html"><span lang="en">Implications</span><span lang="bg">Последици</span></a><a class="pn-link" href="outputs/model.html"><span lang="en">The model</span><span lang="bg">Моделът</span></a><a class="pn-link" href="outputs/whatif.html"><span lang="en">What-if</span><span lang="bg">Какво-ако</span></a>
  </div>
 </div>
 
@@ -124,7 +126,7 @@ cursor:pointer;font:700 13px/1 inherit}.pn-lang:hover{border-color:#D97706}
   if(window.top!==window.self){var n=document.getElementById('pn');if(n)n.remove();return;}/* hide inside iframes */
   var root=document.documentElement;
   var L=localStorage.getItem('site-lang')||'bg';root.dataset.lang=L;
-  var PAGES=[{u:"outputs/introduction.html",en:"Introduction",bg:"Въведение"},{u:"outputs/market.html",en:"Market",bg:"Пазар"},{u:"outputs/level4.html",en:"Open horizons",bg:"Хоризонти"},{u:"outputs/implications.html",en:"Implications",bg:"Последици"},{u:"outputs/model.html",en:"The model",bg:"Моделът"},{u:"outputs/whatif.html",en:"What-if",bg:"Какво-ако"},{u:"outputs/market.html",en:"Supply",bg:"Предлагане"},{u:"outputs/market.html",en:"Demand",bg:"Търсене"},{u:"outputs/market.html",en:"Balance",bg:"Баланс"},{u:"outputs/model.html",en:"Methodology",bg:"Методология"},{u:"outputs/model.html",en:"Playground",bg:"Лаборатория"},{u:"outputs/model.html",en:"Trust & critique",bg:"Доверие и критика"},{u:"outputs/level5.html",en:"Dividend (L5)",bg:"Дивидент (Н5)"},{u:"outputs/level6.html",en:"Macroeconomy (L6)",bg:"Макроикономика (Н6)"},{u:"outputs/model_validation_report.html",en:"Model trust",bg:"Доверие в модела"},{u:"outputs/kpis.html",en:"KPIs",bg:"КПИ"},{u:"outputs/flexibility.html",en:"Flexibility",bg:"Гъвкавост"}];
+  var PAGES=[{u:"outputs/market.html",en:"Market",bg:"Пазар"},{u:"outputs/level4.html",en:"Open horizons",bg:"Хоризонти"},{u:"outputs/implications.html",en:"Implications",bg:"Последици"},{u:"outputs/model.html",en:"The model",bg:"Моделът"},{u:"outputs/whatif.html",en:"What-if",bg:"Какво-ако"},{u:"outputs/introduction.html",en:"Introduction",bg:"Въведение"},{u:"outputs/market.html",en:"Supply",bg:"Предлагане"},{u:"outputs/market.html",en:"Demand",bg:"Търсене"},{u:"outputs/market.html",en:"Balance",bg:"Баланс"},{u:"outputs/model.html",en:"Methodology",bg:"Методология"},{u:"outputs/model.html",en:"Playground",bg:"Лаборатория"},{u:"outputs/model.html",en:"Trust & critique",bg:"Доверие и критика"},{u:"outputs/level5.html",en:"Dividend (L5)",bg:"Дивидент (Н5)"},{u:"outputs/level6.html",en:"Macroeconomy (L6)",bg:"Макроикономика (Н6)"},{u:"outputs/model_validation_report.html",en:"Model trust",bg:"Доверие в модела"},{u:"outputs/kpis.html",en:"KPIs",bg:"КПИ"},{u:"outputs/flexibility.html",en:"Flexibility",bg:"Гъвкавост"}];
   var box=document.getElementById('pn');
   var inp=document.getElementById('pn-q'), sug=document.getElementById('pn-sug'), lang=document.getElementById('pn-lang');
   function isBg(){return root.dataset.lang==='bg';}
@@ -176,16 +178,8 @@ countries (BG, PL, CZ, RO, DE, FR, NO, CH), by sex. Solution to the
 
 
 
-<h2><span lang="en">KPIs at a glance</span><span lang="bg">Ключови показатели накратко</span></h2>
-<div class="cards">
-<a class="card" href="outputs/kpis.html" style="grid-column:1/-1;border-color:var(--acc)">
-<div class="ic">📊</div>
-<h3 lang="en">KPIs at a glance — every headline number, in one place</h3>
-<h3 lang="bg">Ключови показатели накратко — всички основни числа на едно място</h3>
-<p lang="en">The balance (<b>+89M net</b>, East <b>+369M</b> / West <b>−280M</b>), supply &amp; demand, the open-horizon
-quantities, and the backtest accuracy — grouped, each tile linking to its report.</p>
-<p lang="bg">Балансът (<b>+89 млн. нето</b>, Изток <b>+369 млн.</b> / Запад <b>−280 млн.</b>), предлагане и търсене,
-величините от отворените хоризонти и точността при бектест — групирани, всяка плочка води към доклада си.</p></a>
+<div class="introwrap">
+<iframe id="introframe" src="outputs/introduction.html" title="Introduction" loading="eager"></iframe>
 </div>
 
 
@@ -206,6 +200,19 @@ see <a href="https://github.com/rossikeh-ops/longevity-labour-market">the reposi
   var b=document.getElementById('langtoggle');
   function u(){b.textContent=r.dataset.lang==='en'?'БГ':'EN';}
   b.onclick=function(){var n=r.dataset.lang==='en'?'bg':'en';r.dataset.lang=n;localStorage.setItem('site-lang',n);u();};u();
+})();
+</script>
+<script>
+(function(){
+  var F=document.getElementById('introframe');if(!F)return;
+  function fit(){try{var h=F.contentDocument.body.scrollHeight;if(h>200)F.style.height=h+'px';}catch(e){}}
+  function prep(){try{var t=F.contentDocument.getElementById('langtoggle');if(t)t.style.display='none';}catch(e){}fit();}
+  F.addEventListener('load',function(){prep();[300,800,1600].forEach(function(d){setTimeout(fit,d);});});
+  window.addEventListener('resize',fit);
+  // reload the embedded introduction whenever the site language changes, so it follows
+  var root=document.documentElement,last=root.dataset.lang;
+  new MutationObserver(function(){if(root.dataset.lang!==last){last=root.dataset.lang;
+    try{F.contentWindow.location.reload();}catch(e){}}}).observe(root,{attributes:true,attributeFilter:['data-lang']});
 })();
 </script>
 </body></html>
