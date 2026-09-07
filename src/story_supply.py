@@ -24,26 +24,47 @@ OUT = ROOT / "outputs"
 NAME = {"ALL": "All 8 countries", "BG": "Bulgaria", "PL": "Poland", "CZ": "Czechia",
         "RO": "Romania", "DE": "Germany", "FR": "France", "NO": "Norway", "CH": "Switzerland"}
 GEO = [c for c in NAME if c != "ALL"]
-BANDS_RAW = ["Y15-19", "Y20-24", "Y25-29", "Y30-34", "Y35-39", "Y40-44", "Y45-49",
-             "Y50-54", "Y55-59", "Y60-64", "Y65-69", "Y70-74", "Y_GE75"]
-BANDS_LBL = ["15–19", "20–24", "25–29", "30–34", "35–39", "40–44", "45–49",
-             "50–54", "55–59", "60–64", "65–69", "70–74", "75+"]
+# pyramid bands, young→old. 5-year up to 70–74, then the 75+ tail split into
+# 5-year cohorts (from single-year demo_pjan) up to a 100+ open bucket.
+PYR_BANDS = [("15–19", 15, 19), ("20–24", 20, 24), ("25–29", 25, 29), ("30–34", 30, 34),
+             ("35–39", 35, 39), ("40–44", 40, 44), ("45–49", 45, 49), ("50–54", 50, 54),
+             ("55–59", 55, 59), ("60–64", 60, 64), ("65–69", 65, 69), ("70–74", 70, 74),
+             ("75–79", 75, 79), ("80–84", 80, 84), ("85–89", 85, 89), ("90–94", 90, 94),
+             ("95–99", 95, 99), ("100+", 100, 200)]
+BANDS_LBL = [b[0] for b in PYR_BANDS]
 OLD_BANDS = {"Y65-69", "Y70-74", "Y_GE75"}
-PYR_YEARS = list(range(2004, 2025))
+PYR_YEARS = list(range(2016, 2025))     # single-year age data (demo_pjan) coverage
+AGE_YEARS = list(range(2004, 2025))     # 5-year-band data (demo_pjangroup) for the ageing trend
 
 # ---------------- load sources ----------------
 pg = sorted(glob.glob(str(ROOT / "data/raw/demo_pjangroup__*.parquet")))[-1]
-g = pd.read_parquet(pg)
+g = pd.read_parquet(pg)                                    # 5-year bands, 2004+ (ageing trend)
 g = g[g.country.isin(GEO)]
+# single year of age (demo_pjan) — lets us split the 75+ tail into 5-year cohorts
+pjf = sorted(glob.glob(str(ROOT / "data/demo_pjan__custom_*.csv.gz")))[-1]
+pj = pd.read_csv(pjf).rename(columns={"geo": "country", "TIME_PERIOD": "year", "OBS_VALUE": "value"})
+pj = pj[pj.country.isin(GEO)]
+
+
+def _agenum(a):
+    if isinstance(a, str) and a.startswith("Y") and a[1:].isdigit():
+        return int(a[1:])
+    return {"Y_LT1": 0, "Y_OPEN": 100}.get(a)          # 100+ collapses onto the open bucket
+
+
+pj["agenum"] = pj["age"].map(_agenum)
+pj = pj.dropna(subset=["agenum"])
+pj["agenum"] = pj["agenum"].astype(int)
 so = pd.read_csv(OUT / "supply_observed.csv")
 so["lfpr"] = (so.employed_ths * 1000 / (1 - so.unemp_rate / 100)) / so.pop_15_64 * 100
 pw = pd.read_csv(ROOT / "data/processed/proj_pop_wa.csv")
 sf = pd.read_csv(OUT / "supply_forecast.csv")
 
 
-def _band_count(country, sex, year, band):
-    q = g[(g.country.isin(country) if isinstance(country, list) else (g.country == country))
-          & (g.sex == sex) & (g.year == year) & (g.indicator == band)]
+def _band_count(country, sex, year, lo, hi):
+    cs = country if isinstance(country, list) else [country]
+    q = pj[pj.country.isin(cs) & (pj.sex == sex) & (pj.year == year)
+           & (pj.agenum >= lo) & (pj.agenum <= hi)]
     v = q["value"].sum()
     return round(float(v) / 1000, 1) if pd.notna(v) and v else None
 
@@ -58,10 +79,10 @@ for c in NAME:
     d = {"M": {}, "F": {}}
     for s in ("M", "F"):
         for y in PYR_YEARS:
-            d[s][str(y)] = [_band_count(cs, s, y, b) for b in BANDS_RAW]
+            d[s][str(y)] = [_band_count(cs, s, y, lo, hi) for (_, lo, hi) in PYR_BANDS]
     pyramid[c] = d
     share = []
-    for y in PYR_YEARS:
+    for y in AGE_YEARS:
         tot = g[g.country.isin(cs) & (g.year == y) & (g.indicator == "TOTAL")]["value"].sum()
         old = g[g.country.isin(cs) & (g.year == y) & (g.indicator.isin(OLD_BANDS))]["value"].sum()
         share.append(round(old / tot * 100, 1) if tot else None)
@@ -105,7 +126,7 @@ for c in NAME:
                  "fy": [int(y) for y in f.index], "fm": [round(v, 1) for v in f["m"].values],
                  "lo": [round(v, 1) for v in f["lo"].values], "hi": [round(v, 1) for v in f["hi"].values]}
 
-DATA = {"countries": NAME, "bands": BANDS_LBL, "pyrYears": PYR_YEARS,
+DATA = {"countries": NAME, "bands": BANDS_LBL, "pyrYears": PYR_YEARS, "ageYears": AGE_YEARS,
         "pyramid": pyramid, "ageing": ageing, "lfpr": lfpr, "migration": mig, "supply": supply}
 
 HTML = r"""<!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -175,11 +196,12 @@ a{color:var(--acc)}
     <div class="kick">Step 1 · Demographics</div>
     <h2>The demographic baseline</h2>
     <p class="lead">Every projection starts from who is alive today. The pyramid shows the working-age and
-    older cohorts by sex; drag the year to watch the bulge move up as Europe ages.</p>
+    older cohorts by sex — with the 75+ tail broken into 5-year cohorts up to 100+ (single-year ages,
+    available 2016–2024). Drag the year to watch the bulge move up as Europe ages.</p>
     <div class="grid2">
       <div class="panel"><div class="chwrap"><canvas id="pyramid"></canvas></div>
         <div class="ctrls"><span>Year <b id="pyrYearLbl"></b></span>
-          <input type="range" id="pyrYear" min="2004" max="2024" step="1" value="2024"></div></div>
+          <input type="range" id="pyrYear" min="2016" max="2024" step="1" value="2024"></div></div>
       <div>
         <div class="panel"><div class="chwrap sm"><canvas id="ageing"></canvas></div></div>
         <div class="kpis" id="demoKpis"></div>
@@ -291,7 +313,7 @@ function drawPyramid(){
 function drawAgeing(){
   destroy('ageing');
   charts.ageing=new Chart(document.getElementById('ageing'),{type:'line',
-    data:{labels:DATA.pyrYears,datasets:[{label:'Share aged 65+',data:DATA.ageing[state.country],
+    data:{labels:DATA.ageYears,datasets:[{label:'Share aged 65+',data:DATA.ageing[state.country],
       borderColor:C.terra,backgroundColor:'rgba(185,28,28,.12)',fill:true,tension:.3,pointRadius:0}]},
     options:{responsive:true,maintainAspectRatio:false,
       scales:{y:{...axis('% of population'),ticks:{callback:v=>v+'%'}},x:axis()},
