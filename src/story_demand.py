@@ -4,11 +4,13 @@ Build outputs/demand_story.html — a guided, slide-based narrative of the LABOU
 DEMAND build-up, mirroring the supply story, with interactive Chart.js + a
 methodology progress tracker and a present/autoplay mode.
 
-Four slides follow the demand equation  Demand = (employed + vacancies) × service:
+Three slides follow the demand equation  Demand = (employed + vacancies) × service:
   1. Jobs base       — employment + vacancies = number of jobs, to 2033
-  2. Vacancies       — the Beveridge curve (vacancies fall as unemployment rises)
-  3. Required service— length of service for a full pension, by country & sex
-  4. Final demand    — jobs × service = potential demand (person-years) to 2033 + band
+  2. Required service— length of service for a full pension, by country & sex
+  3. Final demand    — jobs × service = potential demand (person-years) to 2033 + band
+
+(Vacancies are still forecast internally via the Beveridge curve in
+balance_forecast.py; the standalone Beveridge scatter slide was removed.)
 
 Data inlined as JSON; Chart.js from CDN. Self-contained for GitHub Pages.
 """
@@ -41,20 +43,6 @@ for c in NAME:
     jobs[c] = {"oy": [int(y) for y in o.index], "ov": [round(v, 2) for v in o.values],
                "fy": [int(y) for y in f.index], "fv": [round(v, 2) for v in f.values]}
 
-# ---- Beveridge scatter: (unemployment, vacancy rate) per year ----
-bev = {}
-for c in NAME:
-    cs = _geos(c)
-    sub = so[so.country.isin(cs)]
-    pts = []
-    for y in sorted(sub.year.unique()):
-        r = sub[sub.year == y]
-        u = (r["unemp_rate"] * r["employed_ths"]).sum() / r["employed_ths"].sum()
-        v = r["vacancy_rate"].mean()
-        if pd.notna(u) and pd.notna(v):
-            pts.append({"x": round(float(u), 2), "y": round(float(v), 2), "year": int(y)})
-    bev[c] = pts
-
 # ---- required service length (all 8 countries, by sex) ----
 service = {"countries": [NAME[c] for c in GEO], "codes": GEO,
            "M": [float(rp[(rp.country == c) & (rp.sex == "M")]["required_service_years"].iloc[0]) for c in GEO],
@@ -71,7 +59,7 @@ for c in NAME:
                  "fy": [int(y) for y in f.index], "fm": [round(v, 1) for v in f["m"].values],
                  "lo": [round(v, 1) for v in f["lo"].values], "hi": [round(v, 1) for v in f["hi"].values]}
 
-DATA = {"countries": NAME, "jobs": jobs, "bev": bev, "service": service, "demand": demand}
+DATA = {"countries": NAME, "jobs": jobs, "service": service, "demand": demand}
 
 HTML = r"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -133,17 +121,7 @@ a{color:var(--acc)}
     <div class="note">Jobs = employment (<code>lfsa_egan</code>) + job vacancies (<code>jvs_q_r21</code>).</div>
   </section>
   <section class="slide" data-i="1">
-    <div class="kick">Step 2 · Vacancies</div>
-    <h2>Vacancies &amp; the Beveridge curve</h2>
-    <p class="lead">Vacancies are shock-driven, but they obey one rule: they <b>fall as unemployment
-    rises</b> (the Beveridge curve). We forecast vacancies through this relationship. Each point is a year.</p>
-    <div class="panel"><div class="chwrap"><canvas id="bev"></canvas></div></div>
-    <div class="kpis" id="bevKpis"></div>
-    <div class="note">Job vacancy rate vs unemployment rate, per year (<code>jvs_q_r21</code>, <code>une_rt_a</code>).
-    The downward cloud is the Beveridge curve the vacancy model anchors to.</div>
-  </section>
-  <section class="slide" data-i="2">
-    <div class="kick">Step 3 · Required service</div>
+    <div class="kick">Step 2 · Required service</div>
     <h2>Required length of service</h2>
     <p class="lead">Each job demands a full career to earn a pension. The <b>required years of service</b>
     differ sharply by country and sex — the multiplier that turns jobs into career person-years.</p>
@@ -152,8 +130,8 @@ a{color:var(--acc)}
     <div class="note">Required contributory years for a full pension, by sex (MISSOC / OECD Pensions at a Glance).
     France uses a points system (effective ≈ 43y). Shown for all 8 countries.</div>
   </section>
-  <section class="slide" data-i="3">
-    <div class="kick">Step 4 · Total demand</div>
+  <section class="slide" data-i="2">
+    <div class="kick">Step 3 · Total demand</div>
     <h2>Potential labour demand</h2>
     <p class="lead">Jobs × required service = potential demand for labour in <b>human-working-years</b>,
     observed then forecast to 2033 with an 80% uncertainty band.</p>
@@ -172,7 +150,7 @@ a{color:var(--acc)}
 </footer>
 <script>const DATA = __DATA__;</script>
 <script>
-const STEPS=[["Jobs","Employed + vacancies"],["Vacancies","Beveridge curve"],
+const STEPS=[["Jobs","Employed + vacancies"],
   ["Service","Years per career"],["Total demand","Forecast 2033"]];
 const C={slate:'#475569',mustard:'#D97706',sage:'#4ADE80',terra:'#B91C1C',acc:'#166534',ink:'#292524',mut:'#78716C',line:'#E7E5E4'};
 Chart.defaults.color=C.mut;Chart.defaults.font.family="-apple-system,Segoe UI,Roboto,Arial,sans-serif";Chart.defaults.borderColor=C.line;
@@ -184,13 +162,13 @@ const track=document.getElementById('track');
 STEPS.forEach((s,i)=>{if(i>0){const l=document.createElement('span');l.className='link';l.dataset.link=i;track.appendChild(l);}
   const el=document.createElement('div');el.className='step';el.dataset.step=i;
   el.innerHTML=`<span class="dot">${i+1}</span><span>${s[0]}</span>`;el.onclick=()=>go(i);track.appendChild(el);});
-function go(i){state.slide=Math.max(0,Math.min(3,i));
+function go(i){state.slide=Math.max(0,Math.min(2,i));
   document.querySelectorAll('.slide').forEach(s=>s.classList.toggle('active',+s.dataset.i===state.slide));
   document.querySelectorAll('.step').forEach((s,idx)=>{s.classList.toggle('active',idx===state.slide);s.classList.toggle('done',idx<state.slide);});
   document.querySelectorAll('.link').forEach(l=>l.classList.toggle('done',+l.dataset.link<=state.slide));
   document.getElementById('prev').disabled=state.slide===0;
-  document.getElementById('next').textContent=state.slide===3?'Finish':'Next ›';
-  document.getElementById('counter').textContent=`Step ${state.slide+1} of 4 — ${STEPS[state.slide][1]}`;renderAll();}
+  document.getElementById('next').textContent=state.slide===2?'Finish':'Next ›';
+  document.getElementById('counter').textContent=`Step ${state.slide+1} of 3 — ${STEPS[state.slide][1]}`;renderAll();}
 document.getElementById('prev').onclick=()=>go(state.slide-1);
 document.getElementById('next').onclick=()=>go(state.slide+1);
 document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')go(state.slide+1);if(e.key==='ArrowLeft')go(state.slide-1);});
@@ -217,16 +195,6 @@ function drawJobs(){const d=DATA.jobs[state.country];
   lineOF('jobs',d,'jobs (millions of people)',`Number of jobs — ${DATA.countries[state.country]}`);
   document.getElementById('jobsKpis').innerHTML=kpi(d.ov[d.ov.length-1]+'M','Jobs 2024')+
     kpi(d.fv[d.fv.length-1]+'M','Jobs 2033')+kpi(((d.fv[d.fv.length-1]/d.ov[d.ov.length-1]-1)*100).toFixed(1)+'%','Change to 2033');}
-function drawBev(){destroy('bev');const pts=DATA.bev[state.country];
-  charts.bev=new Chart(document.getElementById('bev'),{type:'scatter',
-    data:{datasets:[{label:'Year',data:pts,backgroundColor:C.mustard,borderColor:C.acc,pointRadius:5,pointHoverRadius:7}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      scales:{x:{...axis('unemployment rate %'),ticks:{callback:v=>v+'%'}},y:{...axis('vacancy rate %'),ticks:{callback:v=>v+'%'}}},
-      plugins:{title:{display:true,text:`Beveridge curve — ${DATA.countries[state.country]}`,color:C.ink,font:{size:15}},legend:{display:false},
-        tooltip:{callbacks:{label:c=>`${c.raw.year}: unemp ${c.raw.x}% · vacancy ${c.raw.y}%`}}}}});
-  const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y);
-  document.getElementById('bevKpis').innerHTML=kpi(Math.min(...xs)+'–'+Math.max(...xs)+'%','Unemployment range')+
-    kpi(Math.min(...ys)+'–'+Math.max(...ys)+'%','Vacancy-rate range');}
 function drawService(){destroy('service');const s=DATA.service;
   charts.service=new Chart(document.getElementById('service'),{type:'bar',
     data:{labels:s.countries,datasets:[{label:'Men',data:s.M,backgroundColor:C.slate,borderRadius:3},
@@ -243,8 +211,8 @@ function drawDemand(){const d=DATA.demand[state.country];
   document.getElementById('demKpis').innerHTML=kpi(d.ov[d.ov.length-1]+'M','Demand 2024 (M PY)')+
     kpi(d.fm[d.fm.length-1]+'M','Demand 2033 (M PY)')+kpi(((d.fm[d.fm.length-1]/d.ov[d.ov.length-1]-1)*100).toFixed(1)+'%','Change to 2033');}
 function renderAll(){
-  if(state.slide===0)drawJobs();else if(state.slide===1)drawBev();
-  else if(state.slide===2)drawService();else if(state.slide===3)drawDemand();}
+  if(state.slide===0)drawJobs();else if(state.slide===1)drawService();
+  else if(state.slide===2)drawDemand();}
 let timer=null;
 function setPlay(on){const b=document.getElementById('play');
   if(on){b.textContent='⏸ Pause';b.classList.remove('ghost');timer=setInterval(()=>go(state.slide>=3?0:state.slide+1),7000);}
