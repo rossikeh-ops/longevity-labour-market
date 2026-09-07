@@ -235,7 +235,7 @@ demographic basis of West-bound migration.</div>
 <div class="kpis">
 <div class="kpi"><div class="v">{tot35:+,}M</div><div class="l">Net balance 2033 (human-working-years){info_icon("Supply − demand in human-working-years, summed across the 8 countries. Positive = surplus, negative = shortage. A small difference of two large forecasts, so read the direction, not the exact level.")}</div></div>
 <div class="kpi"><div class="v" style="color:var(--down)">{deficit35:+,}M</div><div class="l">West/EFTA shortage (DE, FR, CH, NO){info_icon("Combined supply − demand for the four Western / EFTA countries — a labour shortage (negative balance).")}</div></div>
-<div class="kpi"><div class="v" style="color:var(--up)">{surplus35:+,}M</div><div class="l">East surplus (PL, RO, CZ, BG){info_icon("Combined supply − demand for the four Eastern-EU countries — a labour surplus (positive balance).")}</div></div>
+<div class="kpi"><div class="v" style="color:var(--up)">{surplus35:+,}M</div><div class="l">East surplus (PL, RO, CZ, BG) <a href="#fn-pl" style="color:var(--fc);text-decoration:none;font-weight:800" title="Poland's surplus is sensitive to a pension assumption — see note">*</a>{info_icon("Combined supply − demand for the four Eastern-EU countries — a labour surplus (positive balance). Poland dominates this figure and is sensitive to its required-service assumption — see the note at the foot of the page.")}</div></div>
 </div>
 {map_html}
 <h2>Balance by country, 2033</h2>
@@ -260,6 +260,20 @@ read shortages/surpluses as structural capacity, not literal vacancies.<br>
 • <b>Germany &amp; France</b> shortages depend on participation continuing to rise; under the plateau scenario they deepen.<br>
 • <b>France</b> vacancies carry Eurostat flag <code>d</code>; population from <code>proj_23np</code> calibrated to 2024 (D4).<br>
 • Drivers validated by rolling-origin backtest (see the model-trust report).</div>
+<div class="note" id="fn-pl" style="border-left:3px solid var(--up)">
+<b>* Why Poland's surplus dwarfs Romania's — and why to read it as an upper bound.</b>
+The balance is <b>population × (supply-per-person − demand-per-person)</b>, so two things stack up.
+<b>(1) Scale:</b> Poland's working-age population (≈23.6M) is nearly double Romania's (≈12.2M).
+<b>(2) A pension assumption:</b> demand = jobs × <i>required years of service</i>, and Poland's demand uses a
+<b>minimum-pension</b> service of <b>25y (men) / 20y (women)</b> — the lowest in the set — whereas Romania and
+Czechia use ≈35y. That single input, not any demographic advantage, is why Poland's demand-per-person is only
+≈16 career-years vs Romania's ≈22 (their supply-per-person is almost identical). Re-running Poland at 35y raises
+its demand roughly 1.5× and shrinks its 2033 surplus from <b>≈+282M to ≈+80M</b>. So Poland's headline reserve is
+best read as an <b>upper bound</b> that is highly sensitive to the retirement parameter in
+<code>data/retirement_params.csv</code>.<br>
+<b>Germany vs France</b>, by contrast, is <b>not</b> an assumption artefact: Germany's deeper shortage reflects real
+inputs — the set's <b>longest required career (45y</b> vs France's 43y) and a <b>higher employment rate (≈77% vs ≈67%)</b>,
+which together push German demand-per-person above supply while France sits near balance.</div>
 <h2>Data sources — Eurostat dataset codes</h2>
 <div class="note">Combines all Level 1 &amp; Level 2 sources:
 <code>hlth_hlye</code>, <code>demo_pjangroup</code>, <code>proj_23np</code>, <code>lfsi_dwl_a</code>

@@ -56,12 +56,19 @@ for c in NAME:
                  "fy": [int(y) for y in f.index], "fm": [round(v, 1) for v in f["m"].values],
                  "lo": [round(v, 1) for v in f["lo"].values], "hi": [round(v, 1) for v in f["hi"].values]}
 
-# cross-country scatter (2024): burden (M PY) vs NACE-Q value added (€bn)
+# cross-country scatter (2024): PER-CAPITA burden vs NACE-Q sector, both per head of population
+# (dividing both axes by population removes the country-size artefact that inflates the raw scatter)
 scatter = []
 for c in GEO:
-    b = co[(co.country == c) & (co.year == 2024)]["poor_py"].sum() / M
-    q = float(panel[(panel.country == c) & (panel.year == 2024)]["nace_q_va"].iloc[0]) / 1000
-    scatter.append({"c": c, "name": NAME[c], "poor": round(b), "q": round(q, 1)})
+    poor_py = co[(co.country == c) & (co.year == 2024)]["poor_py"].sum()   # person-years
+    pr = panel[(panel.country == c) & (panel.year == 2024)]
+    pop = float(pr["pop_total"].sum())
+    q_m = float(pr["nace_q_va"].iloc[0])                                   # € millions
+    scatter.append({"c": c, "name": NAME[c],
+                    "poor": round(poor_py / M),          # kept for reference / KPIs
+                    "q": round(q_m / 1000, 1),           # €bn, kept for reference
+                    "bpc": round(poor_py / pop, 1),      # poor-health years per person
+                    "qpc": round(q_m * 1e6 / pop)})      # NACE-Q value added, € per person
 
 # within-country year-on-year cloud: %Δ burden vs %Δ NACE-Q
 panel = panel.copy()
@@ -136,11 +143,17 @@ a{color:var(--acc)}
     <div class="panel"><div class="chwrap"><canvas id="burden"></canvas></div></div>
     <div class="kpis" id="bKpis"></div></section>
   <section class="slide" data-i="2">
-    <div class="kick">Step 3 · Does it cost?</div><h2>Burden vs the health &amp; social-work sector</h2>
-    <p class="lead">Across countries, the burden and the <b>NACE-Q</b> sector's value added rise together — but
-    that's mostly <b>country size</b> (big countries have both). Each point is a country, 2024.</p>
+    <div class="kick">Step 3 · Does it cost?</div><h2>Burden vs the health &amp; social-work sector — per capita</h2>
+    <p class="lead">The raw totals rise together only because <b>big countries have both</b> a big burden and a big
+    sector. So we <b>divide both by population</b>: poor-health <b>years per person</b> against NACE-Q value added
+    <b>per person</b>. The size artefact is gone — and the vertical spread is now driven by <b>national income</b>
+    (rich Norway and Switzerland spend €6–7k/person; Romania and Bulgaria €280–370), not by the health burden.
+    Each point is a country, 2024.</p>
     <div class="panel"><div class="chwrap"><canvas id="scatter"></canvas></div></div>
-    <div class="kpis" id="sKpis"></div></section>
+    <div class="kpis" id="sKpis"></div>
+    <div class="note">Per head of population removes scale: e.g. Poland's burden is ~12× Bulgaria's in totals but
+    similar per person. The sector's spend per capita tracks GDP, not poor-health years — reinforcing Step 4's
+    finding that the demographic burden does not drive the sector's cost.</div></section>
   <section class="slide" data-i="3">
     <div class="kick">Step 4 · The honest answer</div><h2>Within a country, the link vanishes</h2>
     <p class="lead">Plot the <b>year-on-year change</b> in the burden against the change in the sector. The cloud
@@ -210,12 +223,13 @@ function drawBurden(){destroy('burden');const d=DATA.burden[state.country];const
   document.getElementById('bKpis').innerHTML=kpi(d.ov[d.ov.length-1]+'M','Burden 2024')+kpi(d.fm[d.fm.length-1]+'M','Burden 2033')+kpi((chg>=0?'+':'')+chg+'%','Change');}
 function drawScatter(){destroy('scatter');const s=DATA.scatter;
   charts.scatter=new Chart(document.getElementById('scatter'),{type:'scatter',
-    data:{datasets:[{label:'Country',data:s.map(p=>({x:p.poor,y:p.q,name:p.name})),backgroundColor:C.mustard,borderColor:C.acc,pointRadius:7,pointHoverRadius:9}]},
+    data:{datasets:[{label:'Country',data:s.map(p=>({x:p.bpc,y:p.qpc,name:p.name})),backgroundColor:C.mustard,borderColor:C.acc,pointRadius:7,pointHoverRadius:9}]},
     options:{responsive:true,maintainAspectRatio:false,
-      scales:{x:{...axis('poor-health burden, 2024 (million person-years)'),type:'logarithmic'},y:{...axis('NACE-Q value added (€bn)'),type:'logarithmic'}},
-      plugins:{title:{display:true,text:'Cross-country: burden vs health & social-work sector (2024)',color:C.ink,font:{size:15}},legend:{display:false},
-        tooltip:{callbacks:{label:c=>`${c.raw.name}: ${c.raw.x}M PY · €${c.raw.y}bn`}}}}});
-  document.getElementById('sKpis').innerHTML=kpi(DATA.rel.elasticity_levels_fe,'Cross-country elasticity (FE)')+kpi('R² '+DATA.rel.r2_levels_fe,'…but mostly country size');}
+      scales:{x:{...axis('poor-health years per person, 2024')},y:{...axis('NACE-Q value added, € per person')}},
+      plugins:{title:{display:true,text:'Per capita: burden vs health & social-work sector (2024)',color:C.ink,font:{size:15}},legend:{display:false},
+        tooltip:{callbacks:{label:c=>`${c.raw.name}: ${c.raw.x} yrs/person · €${c.raw.y.toLocaleString()}/person`}}}}});
+  const qs=s.map(p=>p.qpc), qmin=Math.min(...qs), qmax=Math.max(...qs);
+  document.getElementById('sKpis').innerHTML=kpi('€'+qmin.toLocaleString()+'–'+qmax.toLocaleString(),'Sector spend per person (RO→NO)')+kpi('per capita','Size artefact removed — spread is national income, not population');}
 function drawDiff(){destroy('diff');
   charts.diff=new Chart(document.getElementById('diff'),{type:'scatter',
     data:{datasets:[{label:'Year-on-year',data:DATA.diff,backgroundColor:'rgba(71,85,105,.6)',borderColor:C.slate,pointRadius:4}]},
